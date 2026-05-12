@@ -69,6 +69,9 @@ export default function VerifyOtpPage() {
 
   function handleKeyDown(index: number, e: React.KeyboardEvent) {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
+      const updated = [...otp]
+      updated[index - 1] = ""
+      setOtp(updated)
       inputRefs.current[index - 1]?.focus()
     }
     if (e.key === "ArrowLeft" && index > 0) {
@@ -84,7 +87,7 @@ export default function VerifyOtpPage() {
     const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LENGTH)
     if (!pasted) return
     const digits = pasted.split("")
-    const updated = [...otp]
+    const updated = Array(OTP_LENGTH).fill("")
     digits.forEach((d, i) => {
       updated[i] = d
     })
@@ -121,7 +124,7 @@ export default function VerifyOtpPage() {
       <motion.div custom={0} variants={fadeIn}>
         <Link
           href="/login"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:rounded"
         >
           <ArrowLeft className="size-4" />
           Back to sign in
@@ -141,7 +144,12 @@ export default function VerifyOtpPage() {
       </motion.div>
 
       <motion.div className="flex flex-col gap-6" custom={2} variants={fadeIn}>
-        <div className="flex justify-center gap-2 sm:gap-3" onPaste={handlePaste}>
+        <div
+          className="flex justify-center gap-2 sm:gap-3"
+          onPaste={handlePaste}
+          role="group"
+          aria-label="Verification code"
+        >
           {Array.from({ length: OTP_LENGTH }).map((_, i) => (
             <input
               key={i}
@@ -154,14 +162,13 @@ export default function VerifyOtpPage() {
               onKeyDown={(e) => handleKeyDown(i, e)}
               onFocus={(e) => e.target.select()}
               className={cn(
-                "size-12 rounded-xl border bg-background text-center text-xl font-semibold text-foreground transition-all outline-none",
+                "size-12 rounded-xl border bg-background text-center text-xl font-semibold text-foreground outline-none transition-all duration-200",
                 "focus:border-primary focus:ring-2 focus:ring-primary/20",
                 otp[i]
-                  ? "border-primary/40 bg-primary/[0.03]"
+                  ? "border-primary/40 bg-primary/3"
                   : "border-input"
               )}
-              style={{ width: 48, height: 48 }}
-              aria-label={`Digit ${i + 1}`}
+              aria-label={`Digit ${i + 1} of ${OTP_LENGTH}`}
             />
           ))}
         </div>
@@ -169,7 +176,7 @@ export default function VerifyOtpPage() {
         <Button
           disabled={!isComplete || isLoading}
           onClick={handleVerify}
-          className="h-[44px] w-full rounded-lg text-sm font-medium"
+          className="h-11 w-full rounded-lg text-sm font-medium transition-colors active:scale-[0.98]"
         >
           {isLoading ? (
             <Loader2 className="size-4 animate-spin" />
@@ -190,7 +197,7 @@ export default function VerifyOtpPage() {
         {canResend ? (
           <button
             onClick={handleResend}
-            className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+            className="text-sm font-semibold text-primary transition-colors duration-150 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:rounded"
           >
             Resend code
           </button>

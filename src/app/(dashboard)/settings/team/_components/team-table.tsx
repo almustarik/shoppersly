@@ -74,19 +74,19 @@ const roleConfig: Record<
 > = {
   owner: {
     label: "Merchant / Owner",
-    className: "bg-indigo-50 text-indigo-700 border border-indigo-200",
+    className: "bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20",
   },
   admin: {
     label: "Admin",
-    className: "bg-violet-50 text-violet-700 border border-violet-200",
+    className: "bg-violet-50 text-violet-700 border border-violet-200 dark:bg-violet-500/10 dark:text-violet-400 dark:border-violet-500/20",
   },
   agent: {
     label: "Support Agent",
-    className: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    className: "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20",
   },
   staff: {
     label: "Staff",
-    className: "bg-slate-100 text-slate-600 border border-slate-200",
+    className: "bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/20",
   },
 }
 
@@ -118,7 +118,7 @@ export function TeamTable({
         {members.map((member) => {
           const role = roleConfig[member.role]
           return (
-            <TableRow key={member.id}>
+            <TableRow key={member.id} className="transition-colors duration-150">
               <TableCell>
                 <div className="flex items-center gap-3">
                   <Avatar size="sm">
@@ -136,6 +136,7 @@ export function TeamTable({
                 <Badge
                   variant="secondary"
                   className={cn("border-0", role.className)}
+                  title={role.label}
                 >
                   {role.label}
                 </Badge>
@@ -157,7 +158,12 @@ export function TeamTable({
                 {member.lastActive}
               </TableCell>
               <TableCell>
-                <Button variant="ghost" size="icon-xs">
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  className="transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+                  aria-label={`More options for ${member.name}`}
+                >
                   <MoreHorizontal className="size-4" />
                 </Button>
               </TableCell>

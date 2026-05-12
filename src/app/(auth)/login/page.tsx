@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod/v4"
-import { motion, type Variants } from "framer-motion"
+import { motion, AnimatePresence, type Variants } from "framer-motion"
 import { Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -71,7 +71,6 @@ export default function LoginPage() {
 
   return (
     <motion.div initial="hidden" animate="visible" className="flex flex-col gap-8">
-      {/* Header */}
       <motion.div className="flex flex-col gap-2" custom={0} variants={fadeIn}>
         <h1 className="text-[28px] font-bold tracking-tight text-foreground">
           Welcome back
@@ -81,50 +80,82 @@ export default function LoginPage() {
         </p>
       </motion.div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-5">
         <motion.div className="flex flex-col gap-1.5" custom={1} variants={fadeIn}>
-          <Label htmlFor="email" className="text-[13px]">Email</Label>
+          <Label htmlFor="email" className="text-[13px] font-medium mb-0">Email</Label>
           <div className="relative">
-            <Mail className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Mail className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="email"
               type="email"
               placeholder="you@example.com"
-              className={cn("h-10 pl-10", errors.email && "border-destructive ring-destructive/20 ring-2")}
+              autoComplete="email"
+              className={cn(
+                "h-11 rounded-lg pl-10 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary",
+                errors.email && "border-destructive ring-2 ring-destructive/20"
+              )}
               {...register("email")}
               aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "email-error" : undefined}
             />
           </div>
-          {errors.email && (
-            <p className="text-xs text-destructive">{errors.email.message}</p>
-          )}
+          <AnimatePresence>
+            {errors.email && (
+              <motion.p
+                id="email-error"
+                className="text-sm text-destructive"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                {errors.email.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         <motion.div className="flex flex-col gap-1.5" custom={2} variants={fadeIn}>
-          <Label htmlFor="password" className="text-[13px]">Password</Label>
+          <Label htmlFor="password" className="text-[13px] font-medium mb-0">Password</Label>
           <div className="relative">
-            <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Lock className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              className={cn("h-10 pr-10 pl-10", errors.password && "border-destructive ring-destructive/20 ring-2")}
+              autoComplete="current-password"
+              className={cn(
+                "h-11 rounded-lg pr-10 pl-10 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary",
+                errors.password && "border-destructive ring-2 ring-destructive/20"
+              )}
               {...register("password")}
               aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? "password-error" : undefined}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:rounded"
               tabIndex={-1}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </button>
           </div>
-          {errors.password && (
-            <p className="text-xs text-destructive">{errors.password.message}</p>
-          )}
+          <AnimatePresence>
+            {errors.password && (
+              <motion.p
+                id="password-error"
+                className="text-sm text-destructive"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                {errors.password.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         <motion.div className="flex items-center justify-between" custom={3} variants={fadeIn}>
@@ -136,7 +167,7 @@ export default function LoginPage() {
           </div>
           <Link
             href="/forgot-password"
-            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+            className="text-sm font-medium text-primary transition-colors duration-150 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:rounded"
           >
             Forgot password?
           </Link>
@@ -146,7 +177,7 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="h-[44px] w-full rounded-lg text-sm font-medium"
+            className="h-11 w-full rounded-lg text-sm font-medium transition-colors active:scale-[0.98]"
           >
             {isLoading ? (
               <Loader2 className="size-4 animate-spin" />
@@ -157,26 +188,37 @@ export default function LoginPage() {
         </motion.div>
       </form>
 
-      {/* Social divider */}
-      <motion.div className="flex items-center gap-3" custom={5} variants={fadeIn}>
+      <motion.div
+        className="flex items-center gap-3"
+        custom={5}
+        variants={fadeIn}
+        role="separator"
+        aria-orientation="horizontal"
+      >
         <div className="h-px flex-1 bg-border" />
-        <span className="text-xs font-medium text-muted-foreground uppercase">OR</span>
+        <span className="text-xs font-medium text-muted-foreground uppercase select-none">OR</span>
         <div className="h-px flex-1 bg-border" />
       </motion.div>
 
-      {/* Social buttons */}
       <motion.div className="flex flex-col gap-3" custom={6} variants={fadeIn}>
-        <Button variant="outline" className="h-10 w-full gap-2.5 rounded-lg text-sm font-medium">
+        <Button
+          type="button"
+          variant="outline"
+          className="h-10 w-full gap-2.5 rounded-lg text-sm font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+        >
           <GoogleIcon className="size-4" />
           Continue with Google
         </Button>
-        <Button variant="outline" className="h-10 w-full gap-2.5 rounded-lg text-sm font-medium">
+        <Button
+          type="button"
+          variant="outline"
+          className="h-10 w-full gap-2.5 rounded-lg text-sm font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+        >
           <FacebookIcon className="size-4" />
           Continue with Facebook
         </Button>
       </motion.div>
 
-      {/* Footer */}
       <motion.p
         className="text-center text-sm text-muted-foreground"
         custom={7}
@@ -185,7 +227,7 @@ export default function LoginPage() {
         Don&apos;t have an account?{" "}
         <Link
           href="/signup"
-          className="font-semibold text-primary hover:text-primary/80 transition-colors"
+          className="font-semibold text-primary transition-colors duration-150 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:rounded"
         >
           Sign up
         </Link>

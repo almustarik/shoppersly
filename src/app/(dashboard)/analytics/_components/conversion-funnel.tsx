@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion"
+import * as React from "react"
 import { conversionFunnel } from "@/mock/analytics-data"
 
 const funnelWidths = ["100%", "75%", "55%", "35%", "22%"]
@@ -20,8 +20,18 @@ const funnelTextColors = [
 ]
 
 export function ConversionFunnel() {
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true))
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
   return (
-    <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+    <section
+      className="rounded-xl border border-border bg-card p-6"
+      aria-label="Conversion funnel"
+    >
       <div className="mb-6 flex items-center justify-between">
         <h3 className="text-[14px] font-semibold">Conversion Funnel</h3>
       </div>
@@ -40,44 +50,58 @@ export function ConversionFunnel() {
           return (
             <div key={stage.stage} className="flex w-full flex-col items-center">
               {dropOff && (
-                <p className="mb-1.5 text-xs text-muted-foreground">
+                <p className="mb-1.5 text-[13px] text-muted-foreground">
                   ↓ {dropOff}% drop-off
                 </p>
               )}
-              <motion.div
-                className={`relative flex items-center justify-center rounded-lg border px-4 py-3.5 ${funnelColors[i]}`}
-                style={{ width: funnelWidths[i] }}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03, duration: 0.25 }}
+              <div
+                className={`relative flex items-center justify-center rounded-lg border px-4 py-3.5 transition-all duration-500 ease-out ${funnelColors[i]}`}
+                style={{ width: mounted ? funnelWidths[i] : "0%" }}
+                role="meter"
+                aria-label={`${stage.stage}: ${stage.count.toLocaleString()} visitors, ${stage.percentage}% conversion`}
+                aria-valuenow={stage.percentage}
+                aria-valuemin={0}
+                aria-valuemax={100}
               >
-                <div className={`flex items-center gap-4 ${funnelTextColors[i]}`}>
+                <div
+                  className={`flex items-center gap-4 ${funnelTextColors[i]}`}
+                >
                   <span className="text-sm font-semibold">{stage.stage}</span>
-                  <span className="tabular-nums text-sm font-bold">
+                  <span className="text-sm font-bold tabular-nums">
                     {stage.count.toLocaleString()}
                   </span>
-                  <span className="text-xs opacity-70">{stage.percentage}%</span>
+                  <span className="text-xs tabular-nums opacity-70">
+                    {stage.percentage}%
+                  </span>
                 </div>
-              </motion.div>
+              </div>
             </div>
           )
         })}
       </div>
 
-      <div className="mt-6 flex items-center justify-between border-t border-[#E2E8F0] pt-4">
+      <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-border pt-4 sm:flex-row">
         <div className="text-center">
-          <p className="text-[28px] font-bold tabular-nums text-[#4F46E5]">9.9%</p>
+          <p className="text-[28px] font-bold tabular-nums text-[#4F46E5]">
+            9.9%
+          </p>
           <p className="text-xs text-muted-foreground">Overall Conversion</p>
         </div>
         <div className="text-center">
-          <p className="text-[28px] font-bold tabular-nums text-[#10B981]">67.1%</p>
-          <p className="text-xs text-muted-foreground">Checkout → Purchase</p>
+          <p className="text-[28px] font-bold tabular-nums text-[#10B981]">
+            67.1%
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Checkout → Purchase
+          </p>
         </div>
         <div className="text-center">
-          <p className="text-[28px] font-bold tabular-nums text-[#8B5CF6]">41.5%</p>
+          <p className="text-[28px] font-bold tabular-nums text-[#8B5CF6]">
+            41.5%
+          </p>
           <p className="text-xs text-muted-foreground">View → Cart</p>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

@@ -12,7 +12,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { Conversation, Message } from "@/mock/inbox-data"
 import { MessageInput } from "./message-input"
@@ -61,12 +60,12 @@ function shouldShowDateSeparator(
 
 function TypingIndicator() {
   return (
-    <div className="flex items-end gap-2 px-4">
-      <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-sm bg-[#F8FAFC] border border-[#E2E8F0] px-4 py-2.5">
+    <div className="flex items-end gap-2 px-4" aria-label="User is typing" role="status">
+      <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-sm bg-muted border border-border px-4 py-2.5">
         {[0, 1, 2].map((i) => (
           <motion.span
             key={i}
-            className="size-1.5 rounded-full bg-[#64748B]/60"
+            className="size-1.5 rounded-full bg-muted-foreground/60"
             animate={{ y: [0, -4, 0] }}
             transition={{
               duration: 0.6,
@@ -115,21 +114,22 @@ export function ChatArea({
   if (!conversation) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-[#FAFBFC]">
-        <div className="rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] p-6">
+        <div className="rounded-2xl bg-muted border border-[#E2E8F0] p-6">
           <svg
-            className="size-12 text-[#64748B]/30"
+            className="size-12 text-muted-foreground/30"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
             strokeWidth={1.2}
+            aria-hidden="true"
           >
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
           </svg>
         </div>
-        <h3 className="text-[16px] font-medium text-[#0F172A]/70">
+        <h3 className="text-base font-medium text-[#0F172A]/70">
           Select a conversation
         </h3>
-        <p className="text-[13px] text-[#64748B]">
+        <p className="text-[13px] text-muted-foreground">
           Choose a conversation from the sidebar to start messaging
         </p>
       </div>
@@ -140,7 +140,7 @@ export function ChatArea({
 
   return (
     <div className="flex flex-1 flex-col bg-[#FAFBFC]">
-      {/* Header - 56px */}
+      {/* Header */}
       <div className="flex flex-none items-center justify-between border-b border-[#E2E8F0] bg-white px-4 h-14">
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -148,12 +148,12 @@ export function ChatArea({
               {getInitials(customer.name)}
             </div>
             {customer.isOnline && (
-              <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-white bg-[#10B981]" />
+              <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full ring-2 ring-white bg-[#10B981]" />
             )}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-[14px] font-semibold text-[#0F172A]">
+              <h3 className="text-sm font-semibold text-[#0F172A]">
                 {customer.name}
               </h3>
               <span
@@ -167,7 +167,7 @@ export function ChatArea({
                 {customer.channel === "facebook" ? "FB" : "IG"}
               </span>
             </div>
-            <p className="text-[12px] text-[#64748B]">
+            <p className="text-xs text-muted-foreground">
               {customer.isOnline ? (
                 <span className="text-[#10B981]">Online</span>
               ) : (
@@ -178,21 +178,29 @@ export function ChatArea({
         </div>
 
         <div className="flex items-center gap-1">
-          <button className="flex items-center justify-center size-9 rounded-lg text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">
+          <button
+            className="flex items-center justify-center size-9 rounded-lg text-muted-foreground hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+            aria-label="Voice call"
+          >
             <Phone className="size-4" />
           </button>
-          <button className="flex items-center justify-center size-9 rounded-lg text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">
+          <button
+            className="flex items-center justify-center size-9 rounded-lg text-muted-foreground hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+            aria-label="Video call"
+          >
             <Video className="size-4" />
           </button>
-          <div className="w-px h-5 bg-[#E2E8F0] mx-1" />
+          <div className="w-px h-5 bg-[#E2E8F0] mx-1" aria-hidden="true" />
           <button
             onClick={onToggleSidebar}
             className={cn(
-              "flex items-center justify-center size-9 rounded-lg transition-colors",
+              "flex items-center justify-center size-9 rounded-lg transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
               sidebarOpen
                 ? "bg-[#F8FAFC] text-[#0F172A]"
-                : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A]"
+                : "text-muted-foreground hover:bg-[#F8FAFC] hover:text-[#0F172A]"
             )}
+            aria-label={sidebarOpen ? "Close customer details" : "Open customer details"}
+            aria-pressed={sidebarOpen}
           >
             <MoreHorizontal className="size-4" />
           </button>
@@ -204,14 +212,17 @@ export function ChatArea({
         className="relative flex-1 overflow-y-auto"
         onScroll={handleScroll}
         ref={scrollRef}
+        role="log"
+        aria-label="Chat messages"
+        aria-live="polite"
       >
         <div className="flex flex-col gap-1 px-4 py-4">
           {messages.map((message, index) => (
             <React.Fragment key={message.id}>
               {shouldShowDateSeparator(messages, index) && (
-                <div className="flex items-center gap-3 py-4">
+                <div className="flex items-center gap-3 py-4" role="separator">
                   <div className="h-px flex-1 bg-[#E2E8F0]" />
-                  <span className="text-[11px] font-medium text-[#64748B]">
+                  <span className="text-[11px] font-medium text-muted-foreground tabular-nums">
                     {formatDateSeparator(message.timestamp)}
                   </span>
                   <div className="h-px flex-1 bg-[#E2E8F0]" />
@@ -229,10 +240,10 @@ export function ChatArea({
               >
                 <div
                   className={cn(
-                    "relative rounded-2xl px-3.5 py-2.5 text-[14px] leading-relaxed",
+                    "relative rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
                     message.sender === "agent"
                       ? "rounded-br-md bg-[#4F46E5] text-white"
-                      : "rounded-bl-md bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A]"
+                      : "rounded-bl-md bg-muted border border-border text-[#0F172A]"
                   )}
                 >
                   {message.content}
@@ -243,11 +254,11 @@ export function ChatArea({
                     message.sender === "agent" ? "flex-row-reverse" : ""
                   )}
                 >
-                  <span className="text-[10px] text-[#64748B]/70">
+                  <span className="text-[11px] text-muted-foreground tabular-nums">
                     {formatMessageTime(message.timestamp)}
                   </span>
                   {message.sender === "agent" && (
-                    <span className="text-[#64748B]/60">
+                    <span className="text-muted-foreground/60">
                       {message.seen ? (
                         <CheckCheck className="size-3 text-[#4F46E5]" />
                       ) : (
@@ -278,11 +289,13 @@ export function ChatArea({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.15 }}
               className="absolute bottom-4 left-1/2 -translate-x-1/2"
             >
               <button
                 onClick={scrollToBottom}
-                className="flex items-center justify-center size-9 rounded-full bg-white border border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] transition-colors"
+                className="flex items-center justify-center size-9 rounded-full bg-white border border-[#E2E8F0] text-muted-foreground hover:text-[#0F172A] shadow-sm transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                aria-label="Scroll to latest messages"
               >
                 <ArrowDown className="size-4" />
               </button>
@@ -291,7 +304,6 @@ export function ChatArea({
         </AnimatePresence>
       </div>
 
-      {/* Input */}
       <MessageInput
         onSend={(msg) => onSendMessage(conversation.id, msg)}
       />

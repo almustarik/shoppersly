@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { cn } from "@/lib/utils"
 
 const usageStats = [
   { label: "Orders this month", value: 847, limit: 2000, icon: ShoppingCart, color: "bg-primary" },
@@ -63,6 +64,8 @@ const plans = [
   },
 ]
 
+const featureRows = ["Orders/month", "Team members", "Storage", "Social integrations", "Payment gateways", "Analytics", "Priority support", "API access"]
+
 const billingHistory = [
   { id: "INV-2024-012", date: "May 1, 2025", amount: "৳2,999", status: "Paid", method: "bKash" },
   { id: "INV-2024-011", date: "Apr 1, 2025", amount: "৳2,999", status: "Paid", method: "bKash" },
@@ -73,7 +76,7 @@ const billingHistory = [
 
 export function BillingSettings() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h2 className="text-lg font-semibold">Billing & Plans</h2>
         <p className="text-sm text-muted-foreground">
@@ -82,8 +85,8 @@ export function BillingSettings() {
       </div>
 
       {/* Current Plan */}
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-violet-500 to-indigo-500" />
+      <div className="overflow-hidden rounded-xl border border-border bg-card" aria-current="true">
+        <div className="h-1.5 bg-linear-to-r from-indigo-500 via-violet-500 to-indigo-500" />
         <div className="p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -93,7 +96,7 @@ export function BillingSettings() {
             <Badge className="bg-primary/10 text-primary border-0">Pro Plan</Badge>
           </div>
           <div className="mt-4 flex items-baseline gap-1">
-            <span className="text-3xl font-bold">৳2,999</span>
+            <span className="text-3xl font-bold tabular-nums">৳2,999</span>
             <span className="text-sm text-muted-foreground">/month</span>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -118,16 +121,23 @@ export function BillingSettings() {
                     <stat.icon className="size-4 text-muted-foreground" />
                     <span>{stat.label}</span>
                   </div>
-                  <span className="font-medium">
+                  <span className="font-medium tabular-nums">
                     {stat.value}{stat.unit ? ` ${stat.unit}` : ""}{" "}
                     <span className="text-muted-foreground font-normal">
                       / {stat.limit}{stat.unit ? ` ${stat.unit}` : ""}
                     </span>
                   </span>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
+                  role="progressbar"
+                  aria-valuenow={stat.value}
+                  aria-valuemin={0}
+                  aria-valuemax={stat.limit}
+                  aria-label={stat.label}
+                >
                   <div
-                    className={`h-full rounded-full transition-all ${stat.color}`}
+                    className={cn("h-full rounded-full transition-all duration-500", stat.color)}
                     style={{ width: `${Math.min(percentage, 100)}%` }}
                   />
                 </div>
@@ -141,14 +151,19 @@ export function BillingSettings() {
       <div>
         <h3 className="mb-4 text-sm font-semibold">Compare Plans</h3>
         <div className="overflow-x-auto rounded-xl border border-border bg-card">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm" aria-label="Plan comparison">
             <thead>
               <tr className="border-b">
-                <th className="p-4 text-left text-xs font-medium text-muted-foreground">Feature</th>
+                <th scope="col" className="p-4 text-left text-xs font-medium text-muted-foreground">Feature</th>
                 {plans.map((plan) => (
-                  <th key={plan.name} className="p-4 text-center">
+                  <th
+                    key={plan.name}
+                    scope="col"
+                    className="p-4 text-center"
+                    aria-current={plan.current ? "true" : undefined}
+                  >
                     <div className="text-sm font-semibold">{plan.name}</div>
-                    <div className="mt-0.5 text-xs text-muted-foreground">
+                    <div className="mt-0.5 text-xs text-muted-foreground tabular-nums">
                       {plan.price}{plan.period}
                     </div>
                     {plan.current && (
@@ -159,9 +174,9 @@ export function BillingSettings() {
               </tr>
             </thead>
             <tbody>
-              {["Orders/month", "Team members", "Storage", "Social integrations", "Payment gateways", "Analytics", "Priority support", "API access"].map((feature, fi) => (
-                <tr key={feature} className="border-b last:border-0">
-                  <td className="p-4 text-sm">{feature}</td>
+              {featureRows.map((feature, fi) => (
+                <tr key={feature} className="border-b last:border-0 transition-colors duration-150 hover:bg-muted/30">
+                  <th scope="row" className="p-4 text-left text-sm font-normal">{feature}</th>
                   {plans.map((plan) => {
                     const has = fi < plan.features.length
                     return (
@@ -186,7 +201,7 @@ export function BillingSettings() {
                       variant={plan.current ? "outline" : "default"}
                       size="sm"
                       disabled={plan.current}
-                      className="h-8 rounded-lg text-xs"
+                      className="h-8 rounded-lg text-xs transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
                     >
                       {plan.current ? "Current" : plan.name === "Enterprise" ? "Contact Sales" : "Upgrade"}
                     </Button>
@@ -204,15 +219,19 @@ export function BillingSettings() {
           <h3 className="text-sm font-semibold">Payment Method</h3>
           <p className="text-xs text-muted-foreground">Your default payment method for subscriptions.</p>
         </div>
-        <div className="flex items-center gap-4 rounded-lg border border-border p-4">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-pink-50">
+        <div className="flex items-center gap-4 rounded-lg border border-border p-4 transition-colors duration-150">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-pink-50 dark:bg-pink-500/10">
             <Smartphone className="size-5 text-pink-600" />
           </div>
           <div className="flex-1">
             <p className="text-sm font-medium">bKash</p>
             <p className="text-sm text-muted-foreground">+880 1712-****78</p>
           </div>
-          <Button variant="outline" size="sm" className="h-8 rounded-lg">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 rounded-lg transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+          >
             Change
           </Button>
         </div>
@@ -225,7 +244,11 @@ export function BillingSettings() {
             <h3 className="text-sm font-semibold">Billing History</h3>
             <p className="text-xs text-muted-foreground">Download invoices for your records.</p>
           </div>
-          <Button variant="outline" size="sm" className="h-8 rounded-lg">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 rounded-lg transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+          >
             <ArrowUpRight className="size-3.5" data-icon="inline-start" />
             Export All
           </Button>
@@ -244,12 +267,12 @@ export function BillingSettings() {
             </TableHeader>
             <TableBody>
               {billingHistory.map((invoice) => (
-                <TableRow key={invoice.id}>
-                  <TableCell className="font-medium font-mono text-xs">{invoice.id}</TableCell>
+                <TableRow key={invoice.id} className="transition-colors duration-150">
+                  <TableCell className="font-medium font-mono text-[13px]">{invoice.id}</TableCell>
                   <TableCell>{invoice.date}</TableCell>
-                  <TableCell>{invoice.amount}</TableCell>
+                  <TableCell className="tabular-nums">{invoice.amount}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-0 text-[10px]">
+                    <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-0 text-[10px] dark:bg-emerald-500/10">
                       {invoice.status}
                     </Badge>
                   </TableCell>
@@ -260,7 +283,11 @@ export function BillingSettings() {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="xs">
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      className="transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+                    >
                       Download
                     </Button>
                   </TableCell>

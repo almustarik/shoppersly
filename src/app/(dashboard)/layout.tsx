@@ -11,9 +11,9 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="overflow-x-hidden">
         <Header />
-        <main className="flex-1 overflow-auto px-4 py-4 sm:px-5 sm:py-5 lg:px-8 lg:py-8">
+        <main className="flex-1 scroll-smooth overflow-y-auto overflow-x-hidden px-4 py-6 md:px-5 md:py-8 lg:px-8">
           <div className="mx-auto max-w-[1440px]">{children}</div>
         </main>
       </SidebarInset>

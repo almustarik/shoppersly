@@ -38,14 +38,16 @@ export function OrderFilters({
   hasActiveFilters,
 }: OrderFiltersProps) {
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-end gap-3">
       <div className="relative w-full max-w-[400px]">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
         <Input
+          role="searchbox"
+          aria-label="Search orders"
           placeholder="Search orders, customers..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="h-9 rounded-lg bg-[#F8FAFC]/50 pl-9 border-[#E2E8F0]"
+          className="h-9 rounded-lg pl-9 transition-colors duration-150"
         />
       </div>
 
@@ -53,7 +55,10 @@ export function OrderFilters({
         value={statusFilter}
         onValueChange={(v) => onStatusFilterChange(v as OrderStatus | "all")}
       >
-        <SelectTrigger className="h-9 w-[140px] rounded-lg border-[#E2E8F0]">
+        <SelectTrigger
+          className="h-9 w-[140px] rounded-lg transition-colors duration-150"
+          aria-label="Filter by status"
+        >
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
@@ -72,7 +77,10 @@ export function OrderFilters({
         value={paymentFilter}
         onValueChange={(v) => onPaymentFilterChange(v as PaymentStatus | "all")}
       >
-        <SelectTrigger className="h-9 w-[140px] rounded-lg border-[#E2E8F0]">
+        <SelectTrigger
+          className="h-9 w-[140px] rounded-lg transition-colors duration-150"
+          aria-label="Filter by payment status"
+        >
           <SelectValue placeholder="Payment" />
         </SelectTrigger>
         <SelectContent>
@@ -88,7 +96,10 @@ export function OrderFilters({
         value={courierFilter}
         onValueChange={(v) => onCourierFilterChange(v as Courier | "all")}
       >
-        <SelectTrigger className="h-9 w-[140px] rounded-lg border-[#E2E8F0]">
+        <SelectTrigger
+          className="h-9 w-[140px] rounded-lg transition-colors duration-150"
+          aria-label="Filter by courier"
+        >
           <SelectValue placeholder="Courier" />
         </SelectTrigger>
         <SelectContent>
@@ -100,17 +111,20 @@ export function OrderFilters({
         </SelectContent>
       </Select>
 
-      {hasActiveFilters && (
+      <div
+        className={`transition-opacity duration-200 ${hasActiveFilters ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      >
         <Button
           variant="ghost"
           size="sm"
           onClick={onReset}
-          className="gap-1.5 text-muted-foreground hover:text-foreground"
+          className="gap-1.5 text-muted-foreground hover:text-foreground transition-colors duration-150 active:scale-[0.98]"
+          aria-label="Reset all filters"
         >
           <X className="size-3.5" />
           Reset
         </Button>
-      )}
+      </div>
     </div>
   )
 }

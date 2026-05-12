@@ -77,26 +77,30 @@ function getStrength(password: string): number {
 }
 
 const strengthColors = ["bg-muted", "bg-red-500", "bg-orange-500", "bg-amber-500", "bg-emerald-500", "bg-emerald-500"]
+const strengthLabels = ["", "Weak", "Fair", "Good", "Strong", "Excellent"]
 
 function PasswordStrengthBar({ strength }: { strength: number }) {
-  const labels = ["", "Weak", "Fair", "Good", "Strong", "Excellent"]
-
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex h-1.5 gap-1 overflow-hidden rounded-full bg-muted">
+      <div className="flex h-1.5 overflow-hidden rounded-full bg-muted">
         <div
           className={cn("h-full rounded-full transition-all duration-300", strengthColors[strength])}
           style={{ width: `${(strength / 5) * 100}%` }}
+          role="progressbar"
+          aria-valuenow={strength}
+          aria-valuemin={0}
+          aria-valuemax={5}
+          aria-label="Password strength"
         />
       </div>
       {strength > 0 && (
         <span
           className={cn(
-            "text-xs font-medium transition-colors",
+            "text-xs font-medium transition-colors duration-150",
             strength <= 2 ? "text-red-500" : strength <= 3 ? "text-amber-600" : "text-emerald-600"
           )}
         >
-          {labels[strength]}
+          {strengthLabels[strength]}
         </span>
       )}
     </div>
@@ -131,7 +135,6 @@ export default function SignupPage() {
 
   return (
     <motion.div initial="hidden" animate="visible" className="flex flex-col gap-6">
-      {/* Header */}
       <motion.div className="flex flex-col gap-2" custom={0} variants={fadeIn}>
         <h1 className="text-[28px] font-bold tracking-tight text-foreground">
           Create your account
@@ -141,87 +144,132 @@ export default function SignupPage() {
         </p>
       </motion.div>
 
-      {/* Social buttons */}
       <motion.div className="flex gap-3" custom={1} variants={fadeIn}>
-        <Button variant="outline" className="h-10 flex-1 gap-2 rounded-lg text-sm font-medium">
+        <Button
+          type="button"
+          variant="outline"
+          className="h-10 flex-1 gap-2 rounded-lg text-sm font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+        >
           <GoogleIcon className="size-4" />
           Google
         </Button>
-        <Button variant="outline" className="h-10 flex-1 gap-2 rounded-lg text-sm font-medium">
+        <Button
+          type="button"
+          variant="outline"
+          className="h-10 flex-1 gap-2 rounded-lg text-sm font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+        >
           <FacebookIcon className="size-4" />
           Facebook
         </Button>
       </motion.div>
 
-      {/* Divider */}
-      <motion.div className="flex items-center gap-3" custom={2} variants={fadeIn}>
+      <motion.div
+        className="flex items-center gap-3"
+        custom={2}
+        variants={fadeIn}
+        role="separator"
+        aria-orientation="horizontal"
+      >
         <div className="h-px flex-1 bg-border" />
-        <span className="text-xs font-medium text-muted-foreground uppercase">OR</span>
+        <span className="text-xs font-medium text-muted-foreground uppercase select-none">OR</span>
         <div className="h-px flex-1 bg-border" />
       </motion.div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-5">
         <motion.div className="flex flex-col gap-1.5" custom={3} variants={fadeIn}>
-          <Label htmlFor="name" className="text-[13px]">Full name</Label>
+          <Label htmlFor="name" className="text-[13px] font-medium mb-0">Full name</Label>
           <div className="relative">
-            <User className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <User className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="name"
               placeholder="John Doe"
-              className={cn("h-10 pl-10", errors.name && "border-destructive ring-destructive/20 ring-2")}
+              autoComplete="name"
+              className={cn(
+                "h-11 rounded-lg pl-10 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary",
+                errors.name && "border-destructive ring-2 ring-destructive/20"
+              )}
               {...register("name")}
               aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? "name-error" : undefined}
             />
           </div>
-          {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+          <AnimatePresence>
+            {errors.name && (
+              <motion.p id="name-error" className="text-sm text-destructive" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                {errors.name.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         <motion.div className="flex flex-col gap-1.5" custom={4} variants={fadeIn}>
-          <Label htmlFor="email" className="text-[13px]">Email</Label>
+          <Label htmlFor="email" className="text-[13px] font-medium mb-0">Email</Label>
           <div className="relative">
-            <Mail className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Mail className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="email"
               type="email"
               placeholder="you@example.com"
-              className={cn("h-10 pl-10", errors.email && "border-destructive ring-destructive/20 ring-2")}
+              autoComplete="email"
+              className={cn(
+                "h-11 rounded-lg pl-10 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary",
+                errors.email && "border-destructive ring-2 ring-destructive/20"
+              )}
               {...register("email")}
               aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "email-error" : undefined}
             />
           </div>
-          {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+          <AnimatePresence>
+            {errors.email && (
+              <motion.p id="email-error" className="text-sm text-destructive" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                {errors.email.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         <motion.div className="flex flex-col gap-1.5" custom={5} variants={fadeIn}>
-          <Label htmlFor="password" className="text-[13px]">Password</Label>
+          <Label htmlFor="password" className="text-[13px] font-medium mb-0">Password</Label>
           <div className="relative">
-            <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Lock className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Create a strong password"
-              className={cn("h-10 pr-10 pl-10", errors.password && "border-destructive ring-destructive/20 ring-2")}
+              autoComplete="new-password"
+              className={cn(
+                "h-11 rounded-lg pr-10 pl-10 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary",
+                errors.password && "border-destructive ring-2 ring-destructive/20"
+              )}
               {...register("password")}
               aria-invalid={!!errors.password}
+              aria-describedby="password-requirements"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:rounded"
               tabIndex={-1}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </button>
           </div>
           {password && <PasswordStrengthBar strength={strength} />}
-          {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+          <AnimatePresence>
+            {errors.password && (
+              <motion.p className="text-sm text-destructive" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                {errors.password.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </motion.div>
 
-        {/* Password requirements - staggered reveal */}
         <AnimatePresence>
           {password && (
             <motion.div
+              id="password-requirements"
               className="flex flex-col gap-1"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
@@ -238,14 +286,20 @@ export default function SignupPage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05, duration: 0.15 }}
                   >
-                    {passed ? (
-                      <Check className="size-3 text-emerald-500" />
-                    ) : (
-                      <X className="size-3 text-muted-foreground/50" />
-                    )}
+                    <motion.span
+                      initial={false}
+                      animate={{ scale: passed ? [1, 1.2, 1] : 1 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      {passed ? (
+                        <Check className="size-3 text-emerald-500" />
+                      ) : (
+                        <X className="size-3 text-muted-foreground/50" />
+                      )}
+                    </motion.span>
                     <span
                       className={cn(
-                        "text-xs transition-colors",
+                        "text-xs transition-colors duration-150",
                         passed ? "text-emerald-600" : "text-muted-foreground/70"
                       )}
                     >
@@ -259,29 +313,39 @@ export default function SignupPage() {
         </AnimatePresence>
 
         <motion.div className="flex flex-col gap-1.5" custom={6} variants={fadeIn}>
-          <Label htmlFor="confirmPassword" className="text-[13px]">Confirm password</Label>
+          <Label htmlFor="confirmPassword" className="text-[13px] font-medium mb-0">Confirm password</Label>
           <div className="relative">
-            <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Lock className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="confirmPassword"
               type={showConfirm ? "text" : "password"}
               placeholder="Confirm your password"
-              className={cn("h-10 pr-10 pl-10", errors.confirmPassword && "border-destructive ring-destructive/20 ring-2")}
+              autoComplete="new-password"
+              className={cn(
+                "h-11 rounded-lg pr-10 pl-10 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary",
+                errors.confirmPassword && "border-destructive ring-2 ring-destructive/20"
+              )}
               {...register("confirmPassword")}
               aria-invalid={!!errors.confirmPassword}
+              aria-describedby={errors.confirmPassword ? "confirm-error" : undefined}
             />
             <button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:rounded"
               tabIndex={-1}
+              aria-label={showConfirm ? "Hide password" : "Show password"}
             >
               {showConfirm ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </button>
           </div>
-          {errors.confirmPassword && (
-            <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
-          )}
+          <AnimatePresence>
+            {errors.confirmPassword && (
+              <motion.p id="confirm-error" className="text-sm text-destructive" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                {errors.confirmPassword.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         <motion.div className="flex flex-col gap-1" custom={7} variants={fadeIn}>
@@ -289,27 +353,34 @@ export default function SignupPage() {
             <Checkbox
               id="terms"
               className="mt-0.5"
+              required
               onCheckedChange={(checked) => setValue("terms", checked === true ? true : false as unknown as true, { shouldValidate: true })}
             />
             <Label htmlFor="terms" className="text-sm font-normal leading-snug text-muted-foreground cursor-pointer">
               I agree to the{" "}
-              <Link href="/terms" className="font-medium text-primary hover:text-primary/80 transition-colors">
+              <Link href="/terms" className="font-medium text-primary transition-colors duration-150 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:rounded">
                 Terms of Service
               </Link>{" "}
               and{" "}
-              <Link href="/privacy" className="font-medium text-primary hover:text-primary/80 transition-colors">
+              <Link href="/privacy" className="font-medium text-primary transition-colors duration-150 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:rounded">
                 Privacy Policy
               </Link>
             </Label>
           </div>
-          {errors.terms && <p className="text-xs text-destructive">{errors.terms.message}</p>}
+          <AnimatePresence>
+            {errors.terms && (
+              <motion.p className="text-sm text-destructive" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                {errors.terms.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         <motion.div custom={8} variants={fadeIn}>
           <Button
             type="submit"
             disabled={isLoading}
-            className="h-[44px] w-full rounded-lg text-sm font-medium"
+            className="h-11 w-full rounded-lg text-sm font-medium transition-colors active:scale-[0.98]"
           >
             {isLoading ? (
               <Loader2 className="size-4 animate-spin" />
@@ -320,7 +391,6 @@ export default function SignupPage() {
         </motion.div>
       </form>
 
-      {/* Footer */}
       <motion.p
         className="text-center text-sm text-muted-foreground"
         custom={9}
@@ -329,7 +399,7 @@ export default function SignupPage() {
         Already have an account?{" "}
         <Link
           href="/login"
-          className="font-semibold text-primary hover:text-primary/80 transition-colors"
+          className="font-semibold text-primary transition-colors duration-150 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:rounded"
         >
           Sign in
         </Link>

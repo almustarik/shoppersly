@@ -2,7 +2,7 @@
 
 import { use, useState } from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   ArrowLeft,
   Users,
@@ -20,12 +20,13 @@ import {
   StickyNote,
   Plus,
   Clock,
+  X,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { EmptyState } from "@/components/ui/empty-state"
 import { customers } from "@/mock/customers-data"
 import type { CustomerSegment, OrderStatus } from "@/types"
 
@@ -116,20 +117,26 @@ export default function CustomerDetailPage({
   const { id } = use(params)
   const customer = customers.find((c) => c.id === id)
   const [noteText, setNoteText] = useState("")
+  const [tags, setTags] = useState<string[]>(customer?.tags ?? [])
+
+  const removeTag = (tag: string) => {
+    setTags((prev) => prev.filter((t) => t !== tag))
+  }
 
   if (!customer) {
     return (
       <div className="flex flex-col items-center justify-center py-24">
-        <Users className="size-12 text-[#64748B]/30 mb-4" />
-        <h2 className="text-lg font-semibold text-[#0F172A]">Customer not found</h2>
-        <p className="text-[14px] text-[#64748B] mt-1">
-          The customer you&apos;re looking for doesn&apos;t exist.
-        </p>
-        <Link href="/customers" className="mt-4">
-          <Button variant="outline" className="border-[#E2E8F0]">
-            <ArrowLeft className="size-4 mr-1.5" />
-            Back to Customers
-          </Button>
+        <EmptyState
+          icon={Users}
+          title="Customer not found"
+          description="The customer you're looking for doesn't exist or has been removed."
+        />
+        <Link
+          href="/customers"
+          className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#4F46E5] hover:text-[#4338CA] transition-colors duration-150 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 px-2 py-1"
+        >
+          <ArrowLeft className="size-4" />
+          Back to Customers
         </Link>
       </div>
     )
@@ -147,57 +154,73 @@ export default function CustomerDetailPage({
         className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
       >
         <div className="flex items-start gap-4">
-          <Link href="/customers">
-            <button className="flex items-center justify-center size-9 rounded-lg border border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors mt-1">
-              <ArrowLeft className="size-4" />
-            </button>
+          <Link
+            href="/customers"
+            className="flex items-center justify-center size-9 rounded-lg border border-[#E2E8F0] text-muted-foreground hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors duration-150 mt-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+            aria-label="Back to customers"
+          >
+            <ArrowLeft className="size-4" />
           </Link>
           <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center size-16 rounded-full bg-[#4F46E5]/10 text-[#4F46E5] text-lg font-bold shrink-0">
+            <div className="flex items-center justify-center size-16 rounded-full bg-[#4F46E5]/10 text-[#4F46E5] text-lg font-bold shrink-0 ring-4 ring-muted">
               {getInitials(customer.name)}
             </div>
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-[24px] font-bold tracking-tight text-[#0F172A]">{customer.name}</h1>
-                <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${seg.className}`}>
+                <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${seg.className}`} title={`Segment: ${seg.label}`}>
                   {seg.label}
                 </span>
               </div>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-[13px] text-[#64748B]">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-[13px] text-muted-foreground">
                 <span className="inline-flex items-center gap-1.5">
-                  <Phone className="size-3.5" />
+                  <Phone className="size-3.5" aria-hidden="true" />
                   {customer.phone}
                 </span>
                 <span className="inline-flex items-center gap-1.5">
-                  <Mail className="size-3.5" />
+                  <Mail className="size-3.5" aria-hidden="true" />
                   {customer.email}
                 </span>
                 <span className="inline-flex items-center gap-1.5">
-                  <MapPin className="size-3.5" />
+                  <MapPin className="size-3.5" aria-hidden="true" />
                   {customer.address}, {customer.city}
                 </span>
               </div>
-              {customer.tags.length > 0 && (
+              {tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
-                  {customer.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center rounded-full bg-[#F8FAFC] border border-[#E2E8F0] px-2 py-0.5 text-[11px] font-medium text-[#64748B]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                  <AnimatePresence mode="popLayout">
+                    {tags.map((tag) => (
+                      <motion.span
+                        key={tag}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.15 }}
+                        layout
+                        className="inline-flex items-center gap-1 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] pl-2.5 pr-1 py-0.5 text-[11px] font-medium text-muted-foreground"
+                      >
+                        {tag}
+                        <button
+                          onClick={() => removeTag(tag)}
+                          className="flex items-center justify-center size-4 rounded-full hover:bg-[#E2E8F0] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                          aria-label={`Remove tag ${tag}`}
+                        >
+                          <X className="size-2.5" />
+                        </button>
+                      </motion.span>
+                    ))}
+                  </AnimatePresence>
                 </div>
               )}
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2 ml-12 sm:ml-0">
-          <Button variant="outline" className="border-[#E2E8F0]">
+          <Button variant="outline" className="border-[#E2E8F0] transition-colors duration-150">
             <MessageSquare className="size-4 mr-1.5" />
             Message
           </Button>
-          <Button className="bg-[#4F46E5] hover:bg-[#4338CA] text-white">
+          <Button className="bg-[#4F46E5] hover:bg-[#4338CA] text-white transition-colors duration-150">
             <ShoppingBag className="size-4 mr-1.5" />
             Create Order
           </Button>
@@ -253,7 +276,7 @@ export default function CustomerDetailPage({
                     <stat.icon className={`size-5 ${stat.color}`} />
                   </div>
                   <div>
-                    <p className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">{stat.label}</p>
+                    <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">{stat.label}</p>
                     <p className="text-[18px] font-bold text-[#0F172A] tabular-nums">{stat.value}</p>
                   </div>
                 </div>
@@ -289,10 +312,11 @@ export default function CustomerDetailPage({
           <TabsContent value="orders" className="mt-4">
             <div className="rounded-xl border border-[#E2E8F0] bg-white overflow-hidden">
               {customer.orders.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <ShoppingBag className="size-10 text-[#64748B]/30 mb-3" />
-                  <p className="text-[14px] font-medium text-[#64748B]">No orders yet</p>
-                </div>
+                <EmptyState
+                  icon={ShoppingBag}
+                  title="No orders yet"
+                  description="This customer hasn't placed any orders."
+                />
               ) : (
                 <div className="divide-y divide-[#F1F5F9]">
                   {customer.orders.map((order, i) => {
@@ -303,24 +327,24 @@ export default function CustomerDetailPage({
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.03 }}
-                        className="flex items-center justify-between px-5 py-3.5 hover:bg-[#F8FAFC]/50 transition-colors"
+                        className="flex items-center justify-between px-5 py-3.5 hover:bg-[#F8FAFC]/50 transition-colors duration-150"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="flex size-9 items-center justify-center rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
-                            <Package className="size-4 text-[#64748B]" />
+                          <div className="flex size-9 items-center justify-center rounded-xl bg-muted border border-[#E2E8F0]">
+                            <Package className="size-4 text-muted-foreground" />
                           </div>
                           <div>
-                            <p className="text-[14px] font-medium text-[#0F172A]">
+                            <p className="text-sm font-medium text-[#0F172A]">
                               #{order.id.toUpperCase()}
                             </p>
-                            <p className="text-[12px] text-[#64748B]">
+                            <p className="text-xs text-muted-foreground">
                               {formatDate(order.date)} &middot; {order.items}{" "}
                               {order.items === 1 ? "item" : "items"}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-[14px] font-semibold text-[#0F172A] tabular-nums">
+                          <span className="text-sm font-semibold text-[#0F172A] tabular-nums">
                             {formatPrice(order.total)}
                           </span>
                           <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${statusCfg.className}`}>
@@ -339,17 +363,19 @@ export default function CustomerDetailPage({
           <TabsContent value="activity" className="mt-4">
             <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
               {customer.activities.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <Clock className="size-10 text-[#64748B]/30 mb-3" />
-                  <p className="text-[14px] font-medium text-[#64748B]">No activity yet</p>
-                </div>
+                <EmptyState
+                  icon={Clock}
+                  title="No activity yet"
+                  description="Activity will appear here once the customer starts interacting."
+                />
               ) : (
                 <div className="relative">
-                  <div className="absolute left-[17px] top-2 bottom-2 w-px bg-[#E2E8F0]" />
+                  <div className="absolute left-[17px] top-2 bottom-2 w-px bg-[#E2E8F0]" aria-hidden="true" />
                   <div className="space-y-6">
                     {customer.activities.map((activity, i) => {
                       const Icon = activityIcons[activity.type]
                       const dotColor = activityColors[activity.type] || "bg-[#64748B]"
+                      const isCurrent = i === 0
                       return (
                         <motion.div
                           key={activity.id}
@@ -358,12 +384,12 @@ export default function CustomerDetailPage({
                           transition={{ delay: i * 0.03 }}
                           className="relative flex gap-3 pl-0"
                         >
-                          <div className={`relative z-10 flex size-[36px] shrink-0 items-center justify-center rounded-full ${dotColor} ring-4 ring-white`}>
+                          <div className={`relative z-10 flex size-[36px] shrink-0 items-center justify-center rounded-full ${dotColor} ring-4 ${isCurrent ? "ring-[#4F46E5]/10" : "ring-white"}`}>
                             <Icon className="size-4 text-white" />
                           </div>
                           <div className="flex-1 pt-1">
-                            <p className="text-[14px] text-[#0F172A]">{activity.description}</p>
-                            <p className="text-[12px] text-[#64748B] mt-0.5">
+                            <p className="text-sm text-[#0F172A]">{activity.description}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5 tabular-nums">
                               {formatDateTime(activity.date)}
                             </p>
                           </div>
@@ -379,38 +405,32 @@ export default function CustomerDetailPage({
           {/* Notes Tab */}
           <TabsContent value="notes" className="mt-4">
             <div className="space-y-4">
-              {/* Add Note */}
               <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
-                <h3 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B] mb-3">
+                <Label htmlFor="customer-note" className="text-xs uppercase tracking-wider font-semibold text-muted-foreground mb-3 block">
                   Add a Note
-                </h3>
+                </Label>
                 <Textarea
+                  id="customer-note"
                   placeholder="Write an internal note about this customer..."
                   value={noteText}
                   onChange={(e) => setNoteText(e.target.value)}
-                  className="min-h-[80px] border-[#E2E8F0]"
+                  className="min-h-[80px] rounded-lg border-[#E2E8F0] transition-colors duration-150"
                 />
                 <div className="flex justify-end mt-3">
-                  <Button size="sm" disabled={!noteText.trim()} className="bg-[#4F46E5] hover:bg-[#4338CA] text-white">
+                  <Button size="sm" disabled={!noteText.trim()} className="bg-[#4F46E5] hover:bg-[#4338CA] text-white transition-colors duration-150 disabled:opacity-50">
                     <Plus className="size-3.5 mr-1" />
                     Add Note
                   </Button>
                 </div>
               </div>
 
-              {/* Existing Notes */}
               {customer.notes.length === 0 ? (
-                <div className="rounded-xl border border-[#E2E8F0] bg-white">
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <StickyNote className="size-10 text-[#64748B]/30 mb-3" />
-                    <p className="text-[14px] font-medium text-[#64748B]">
-                      No notes yet
-                    </p>
-                    <p className="text-[12px] text-[#64748B] mt-0.5">
-                      Add internal notes about this customer
-                    </p>
-                  </div>
-                </div>
+                <EmptyState
+                  icon={StickyNote}
+                  title="No notes yet"
+                  description="Add internal notes about this customer to keep your team informed."
+                  className="rounded-xl border border-[#E2E8F0] bg-white"
+                />
               ) : (
                 customer.notes.map((note, i) => (
                   <motion.div
@@ -420,11 +440,11 @@ export default function CustomerDetailPage({
                     transition={{ delay: i * 0.03 }}
                   >
                     <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
-                      <p className="text-[14px] leading-relaxed text-[#0F172A]">{note.content}</p>
+                      <p className="text-sm leading-relaxed text-[#0F172A]">{note.content}</p>
                       <div className="h-px bg-[#F1F5F9] my-3" />
-                      <div className="flex items-center justify-between text-[12px] text-[#64748B]">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span className="font-medium">{note.author}</span>
-                        <span>{formatDate(note.date)}</span>
+                        <span className="tabular-nums">{formatDate(note.date)}</span>
                       </div>
                     </div>
                   </motion.div>

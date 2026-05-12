@@ -31,7 +31,7 @@ const fadeIn: Variants = {
 function AnimatedCheckmark() {
   return (
     <motion.div
-      className="flex size-16 items-center justify-center rounded-2xl bg-emerald-50"
+      className="flex size-16 items-center justify-center rounded-2xl bg-emerald-50 dark:bg-emerald-500/10"
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
@@ -39,7 +39,7 @@ function AnimatedCheckmark() {
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.3, ease: "easeOut" }}
+        transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.3 }}
       >
         <CheckCircle2 className="size-8 text-emerald-600" />
       </motion.div>
@@ -96,7 +96,7 @@ export default function ForgotPasswordPage() {
           <div className="flex w-full flex-col gap-3">
             <Button
               variant="outline"
-              className="h-10 w-full rounded-lg text-sm font-medium"
+              className="h-11 w-full rounded-lg text-sm font-medium transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
               onClick={() => setIsSubmitted(false)}
             >
               Try a different email
@@ -104,7 +104,7 @@ export default function ForgotPasswordPage() {
             <Link href="/login" className="w-full">
               <Button
                 variant="ghost"
-                className="h-10 w-full gap-2 rounded-lg text-sm font-medium"
+                className="h-11 w-full gap-2 rounded-lg text-sm font-medium transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
               >
                 <ArrowLeft className="size-4" />
                 Back to sign in
@@ -116,7 +116,7 @@ export default function ForgotPasswordPage() {
             Didn&apos;t receive the email? Check your spam folder or{" "}
             <button
               onClick={() => setIsSubmitted(false)}
-              className="font-medium text-primary hover:text-primary/80 transition-colors"
+              className="font-medium text-primary transition-colors duration-150 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:rounded"
             >
               try again
             </button>
@@ -133,7 +133,7 @@ export default function ForgotPasswordPage() {
           <motion.div custom={0} variants={fadeIn}>
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:rounded"
             >
               <ArrowLeft className="size-4" />
               Back to sign in
@@ -149,30 +149,46 @@ export default function ForgotPasswordPage() {
             </p>
           </motion.div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-5">
             <motion.div className="flex flex-col gap-1.5" custom={2} variants={fadeIn}>
-              <Label htmlFor="email" className="text-[13px]">Email</Label>
+              <Label htmlFor="email" className="text-[13px] font-medium mb-0">Email</Label>
               <div className="relative">
-                <Mail className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Mail className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
-                  className={cn("h-10 pl-10", errors.email && "border-destructive ring-destructive/20 ring-2")}
+                  autoComplete="email"
+                  className={cn(
+                    "h-11 rounded-lg pl-10 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary",
+                    errors.email && "border-destructive ring-2 ring-destructive/20"
+                  )}
                   {...register("email")}
                   aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                 />
               </div>
-              {errors.email && (
-                <p className="text-xs text-destructive">{errors.email.message}</p>
-              )}
+              <AnimatePresence>
+                {errors.email && (
+                  <motion.p
+                    id="email-error"
+                    className="text-sm text-destructive"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    {errors.email.message}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </motion.div>
 
             <motion.div custom={3} variants={fadeIn}>
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="h-[44px] w-full rounded-lg text-sm font-medium"
+                className="h-11 w-full rounded-lg text-sm font-medium transition-colors active:scale-[0.98]"
               >
                 {isLoading ? (
                   <Loader2 className="size-4 animate-spin" />

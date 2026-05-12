@@ -18,14 +18,14 @@ export default function InboxPage() {
     [conversations, activeId]
   )
 
-  const handleSelectConversation = (id: string) => {
+  const handleSelectConversation = React.useCallback((id: string) => {
     setActiveId(id)
     setConversations((prev) =>
       prev.map((c) => (c.id === id ? { ...c, unreadCount: 0 } : c))
     )
-  }
+  }, [])
 
-  const handleSendMessage = (conversationId: string, content: string) => {
+  const handleSendMessage = React.useCallback((conversationId: string, content: string) => {
     const newMessage: Message = {
       id: `msg-${Date.now()}`,
       conversationId,
@@ -48,12 +48,11 @@ export default function InboxPage() {
           : c
       )
     )
-  }
+  }, [])
 
   return (
     <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden rounded-xl border border-[#E2E8F0] bg-white">
-      {/* Left Panel - Conversations (320px) */}
-      <div className="w-80 flex-none">
+      <div className="w-80 flex-none hidden sm:block">
         <ConversationsList
           conversations={conversations}
           activeConversationId={activeId}
@@ -61,7 +60,6 @@ export default function InboxPage() {
         />
       </div>
 
-      {/* Center Panel - Chat */}
       <ChatArea
         conversation={activeConversation}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
@@ -69,7 +67,6 @@ export default function InboxPage() {
         onSendMessage={handleSendMessage}
       />
 
-      {/* Right Panel - Customer Sidebar (280px) */}
       <AnimatePresence>
         {sidebarOpen && activeConversation && (
           <CustomerSidebar

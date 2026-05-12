@@ -11,6 +11,7 @@ import {
   Megaphone,
   Package,
   Plus,
+  Search,
   Settings,
   ShoppingCart,
   Truck,
@@ -88,13 +89,24 @@ export function CommandPalette() {
     >
       <CommandInput placeholder="Type a command or search..." />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandEmpty>
+          <div className="flex flex-col items-center gap-3">
+            <Search className="size-10 text-muted-foreground/20" strokeWidth={1.5} />
+            <div>
+              <p className="font-medium text-muted-foreground">No results found</p>
+              <p className="mt-1 text-xs text-muted-foreground/60">
+                Try a different search term
+              </p>
+            </div>
+          </div>
+        </CommandEmpty>
 
         <CommandGroup heading="Pages">
           {pages.map((page) => (
             <CommandItem
               key={page.href}
               onSelect={() => navigateTo(page.href)}
+              className="transition-colors duration-100"
             >
               <page.icon className="mr-2 size-4 text-muted-foreground" />
               <span>{page.name}</span>
@@ -106,7 +118,11 @@ export function CommandPalette() {
 
         <CommandGroup heading="Quick Actions">
           {quickActions.map((action) => (
-            <CommandItem key={action.name} onSelect={() => setCommandPaletteOpen(false)}>
+            <CommandItem
+              key={action.name}
+              onSelect={() => setCommandPaletteOpen(false)}
+              className="transition-colors duration-100"
+            >
               <div className="mr-2 flex size-4 items-center justify-center">
                 <Plus className="size-3 text-muted-foreground" />
               </div>
@@ -123,6 +139,7 @@ export function CommandPalette() {
             <CommandItem
               key={item.name}
               onSelect={() => navigateTo(item.href)}
+              className="transition-colors duration-100"
             >
               <item.icon className="mr-2 size-4 text-muted-foreground" />
               <span>{item.name}</span>
@@ -130,6 +147,22 @@ export function CommandPalette() {
           ))}
         </CommandGroup>
       </CommandList>
+
+      <div className="flex items-center gap-3 border-t px-3 py-2" aria-hidden="true">
+        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+          <kbd className="inline-flex size-5 items-center justify-center rounded border bg-muted font-mono text-[10px]">↑</kbd>
+          <kbd className="inline-flex size-5 items-center justify-center rounded border bg-muted font-mono text-[10px]">↓</kbd>
+          <span className="ml-0.5">Navigate</span>
+        </span>
+        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+          <kbd className="inline-flex h-5 items-center justify-center rounded border bg-muted px-1 font-mono text-[10px]">↵</kbd>
+          <span className="ml-0.5">Select</span>
+        </span>
+        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+          <kbd className="inline-flex h-5 items-center justify-center rounded border bg-muted px-1 font-mono text-[10px]">esc</kbd>
+          <span className="ml-0.5">Close</span>
+        </span>
+      </div>
     </CommandDialog>
   )
 }

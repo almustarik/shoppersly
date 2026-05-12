@@ -29,7 +29,7 @@ export function CourierStatus() {
             {courierProviders.map((courier) => (
               <div
                 key={courier.id}
-                className="rounded-xl border border-border bg-card p-4"
+                className="rounded-xl border border-border bg-card p-4 transition-colors duration-150 hover:bg-muted/30"
               >
                 <div className="flex items-center gap-2.5">
                   <div
@@ -37,6 +37,7 @@ export function CourierStatus() {
                       "flex size-9 items-center justify-center rounded-lg text-xs font-bold text-white",
                       courier.color
                     )}
+                    aria-hidden="true"
                   >
                     {courier.logo}
                   </div>
@@ -48,9 +49,10 @@ export function CourierStatus() {
                   <div className="flex items-center gap-1.5">
                     <span
                       className={cn(
-                        "size-2 rounded-full",
+                        "size-2 rounded-full ring-2 ring-card",
                         courier.connected ? "bg-emerald-500" : "bg-slate-300"
                       )}
+                      aria-hidden="true"
                     />
                     <span className="text-xs text-muted-foreground">
                       {courier.connected ? "Connected" : "Offline"}
@@ -60,7 +62,10 @@ export function CourierStatus() {
                 <div className="mt-4 grid grid-cols-3 gap-2">
                   <div className="text-center">
                     <div className="flex items-center justify-center text-amber-500">
-                      <Package className="size-3.5" />
+                      <Package
+                        className="size-3.5"
+                        aria-hidden="true"
+                      />
                     </div>
                     <p className="mt-1 text-lg font-bold tabular-nums text-foreground">
                       {courier.pendingPickups}
@@ -71,7 +76,10 @@ export function CourierStatus() {
                   </div>
                   <div className="text-center">
                     <div className="flex items-center justify-center text-blue-500">
-                      <Truck className="size-3.5" />
+                      <Truck
+                        className="size-3.5"
+                        aria-hidden="true"
+                      />
                     </div>
                     <p className="mt-1 text-lg font-bold tabular-nums text-foreground">
                       {courier.inTransit}
@@ -82,7 +90,10 @@ export function CourierStatus() {
                   </div>
                   <div className="text-center">
                     <div className="flex items-center justify-center text-emerald-500">
-                      <CheckCircle className="size-3.5" />
+                      <CheckCircle
+                        className="size-3.5"
+                        aria-hidden="true"
+                      />
                     </div>
                     <p className="mt-1 text-lg font-bold tabular-nums text-foreground">
                       {courier.deliveredToday}

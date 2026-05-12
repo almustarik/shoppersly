@@ -85,14 +85,14 @@ export function RolesPermissions() {
         </p>
       </div>
       <div className="overflow-x-auto px-6 pb-6">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm" aria-label="Roles and permissions matrix">
           <thead>
             <tr className="border-b">
-              <th className="sticky left-0 z-10 bg-card py-3 pr-4 text-left text-xs font-medium text-muted-foreground min-w-[180px]">
+              <th scope="col" className="sticky left-0 z-10 bg-card py-3 pr-4 text-left text-xs font-medium text-muted-foreground min-w-[180px]">
                 Permission
               </th>
               {roles.map((role) => (
-                <th key={role.key} className="min-w-[120px] py-3 text-center text-xs font-medium text-muted-foreground">
+                <th scope="col" key={role.key} className="min-w-[120px] py-3 text-center text-xs font-medium text-muted-foreground">
                   {role.label}
                 </th>
               ))}
@@ -100,19 +100,22 @@ export function RolesPermissions() {
           </thead>
           <tbody>
             {permissions.map((perm) => (
-              <tr key={perm.id} className="border-b last:border-0">
-                <td className="sticky left-0 z-10 bg-card py-3 pr-4 font-medium">
+              <tr key={perm.id} className="border-b transition-colors duration-150 last:border-0 hover:bg-muted/30">
+                <th scope="row" className="sticky left-0 z-10 bg-card py-3 pr-4 text-left font-medium">
                   {perm.label}
-                </td>
-                {roles.map((role) => (
-                  <td key={role.key} className="py-3 text-center">
-                    {perm.allowed[role.key] ? (
-                      <Check className="mx-auto size-4 text-emerald-500" />
-                    ) : (
-                      <Minus className="mx-auto size-4 text-muted-foreground/30" />
-                    )}
-                  </td>
-                ))}
+                </th>
+                {roles.map((role) => {
+                  const allowed = perm.allowed[role.key]
+                  return (
+                    <td key={role.key} className="py-3 text-center">
+                      {allowed ? (
+                        <Check className="mx-auto size-4 text-emerald-500" aria-label={`${role.label} can ${perm.label}`} />
+                      ) : (
+                        <Minus className="mx-auto size-4 text-muted-foreground/30" aria-label={`${role.label} cannot ${perm.label}`} />
+                      )}
+                    </td>
+                  )
+                })}
               </tr>
             ))}
           </tbody>

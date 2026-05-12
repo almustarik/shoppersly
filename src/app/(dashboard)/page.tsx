@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { StatsCards } from "./dashboard/_components/stats-cards";
 import { RevenueChart } from "./dashboard/_components/revenue-chart";
 import { OrdersChart } from "./dashboard/_components/orders-chart";
@@ -5,6 +8,11 @@ import { RecentOrders } from "./dashboard/_components/recent-orders";
 import { TopProducts } from "./dashboard/_components/top-products";
 import { ActivityFeed } from "./dashboard/_components/activity-feed";
 import { CourierStatus } from "./dashboard/_components/courier-status";
+import {
+  StatsCardsSkeleton,
+  ChartSkeleton,
+  DataTableSkeleton,
+} from "@/components/ui/data-table-skeleton";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -23,27 +31,51 @@ function formatDate() {
 }
 
 export default function DashboardPage() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
+
   return (
     <div className="mx-auto w-full max-w-[1440px] space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <div>
         <h1 className="text-[28px] font-bold tracking-tight text-foreground">
           {getGreeting()}, Rahim
         </h1>
-        <p className="mt-1 text-[14px] text-muted-foreground">{formatDate()}</p>
+        <p className="mt-1 text-[14px] text-muted-foreground">
+          {formatDate()}
+        </p>
       </div>
 
-      <StatsCards />
-
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-7">
-        <div className="lg:col-span-4">
-          <RevenueChart />
-        </div>
-        <div className="lg:col-span-3">
-          <OrdersChart />
-        </div>
+      <div aria-busy={isLoading} aria-live="polite">
+        {isLoading ? <StatsCardsSkeleton /> : <StatsCards />}
       </div>
 
-      <RecentOrders />
+      <div
+        className="grid grid-cols-1 gap-8 lg:grid-cols-7"
+        aria-busy={isLoading}
+      >
+        {isLoading ? (
+          <>
+            <ChartSkeleton className="lg:col-span-4" />
+            <ChartSkeleton className="lg:col-span-3" />
+          </>
+        ) : (
+          <>
+            <div className="lg:col-span-4">
+              <RevenueChart />
+            </div>
+            <div className="lg:col-span-3">
+              <OrdersChart />
+            </div>
+          </>
+        )}
+      </div>
+
+      <div aria-busy={isLoading}>
+        {isLoading ? <DataTableSkeleton /> : <RecentOrders />}
+      </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <TopProducts />

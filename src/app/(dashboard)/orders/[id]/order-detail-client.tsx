@@ -19,6 +19,7 @@ import {
   MessageSquare,
   Send,
   Copy,
+  Check,
   ExternalLink,
   User,
 } from "lucide-react"
@@ -39,6 +40,51 @@ const stagger = {
   animate: { opacity: 1, y: 0 },
 }
 
+function CopyButton({ text, label }: { text: string; label?: string }) {
+  const [copied, setCopied] = React.useState(false)
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <Button
+      variant="outline"
+      size="xs"
+      className="gap-1 transition-colors duration-150 active:scale-[0.98]"
+      onClick={handleCopy}
+      aria-label={label ?? `Copy ${text}`}
+    >
+      {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+      {copied ? "Copied" : "Copy"}
+    </Button>
+  )
+}
+
+function CopyIconButton({ text, label }: { text: string; label?: string }) {
+  const [copied, setCopied] = React.useState(false)
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon-xs"
+      onClick={handleCopy}
+      className="transition-colors duration-150"
+      aria-label={label ?? `Copy ${text}`}
+    >
+      {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+    </Button>
+  )
+}
+
 export default function OrderDetailPage() {
   const params = useParams()
   const [newNote, setNewNote] = React.useState("")
@@ -49,7 +95,11 @@ export default function OrderDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center gap-4 p-12">
         <h2 className="text-xl font-semibold">Order not found</h2>
-        <Button variant="outline" render={<Link href="/orders" />}>
+        <Button
+          variant="outline"
+          render={<Link href="/orders" />}
+          className="transition-colors duration-150 active:scale-[0.98]"
+        >
           Back to Orders
         </Button>
       </div>
@@ -77,7 +127,7 @@ export default function OrderDetailPage() {
       >
         <Link
           href="/orders"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors w-fit"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors duration-150 w-fit rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
         >
           <ArrowLeft className="size-4" />
           Back to Orders
@@ -91,24 +141,37 @@ export default function OrderDetailPage() {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {canConfirm && (
-              <Button size="sm" className="gap-1.5">
+              <Button
+                size="sm"
+                className="gap-1.5 transition-colors duration-150 active:scale-[0.98]"
+              >
                 <CheckCircle2 className="size-3.5" />
                 Confirm
               </Button>
             )}
             {canPack && (
-              <Button size="sm" className="gap-1.5">
+              <Button
+                size="sm"
+                className="gap-1.5 transition-colors duration-150 active:scale-[0.98]"
+              >
                 <Package className="size-3.5" />
                 Pack
               </Button>
             )}
             {canShip && (
-              <Button size="sm" className="gap-1.5">
+              <Button
+                size="sm"
+                className="gap-1.5 transition-colors duration-150 active:scale-[0.98]"
+              >
                 <Truck className="size-3.5" />
                 Ship
               </Button>
             )}
-            <Button variant="outline" size="sm" className="gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 transition-colors duration-150 active:scale-[0.98]"
+            >
               <Printer className="size-3.5" />
               Print
             </Button>
@@ -116,7 +179,7 @@ export default function OrderDetailPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="gap-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700"
+                className="gap-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:bg-rose-950/30 dark:text-rose-400 dark:hover:bg-rose-950/50 transition-colors duration-150 active:scale-[0.98]"
               >
                 <XCircle className="size-3.5" />
                 Cancel
@@ -148,22 +211,22 @@ export default function OrderDetailPage() {
               </div>
             </CardHeader>
             <CardContent className="p-6 pt-4">
-              <div className="divide-y divide-[#F1F5F9]">
+              <div className="divide-y divide-border/50">
                 {order.items.map((item) => (
                   <div key={item.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
-                    <div className="flex items-center gap-3">
-                      <div className="flex size-10 items-center justify-center rounded-lg bg-[#F8FAFC] text-xs font-medium text-muted-foreground border border-[#E2E8F0]">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-xs font-medium text-muted-foreground border">
                         {item.qty}x
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">{item.name}</p>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{item.name}</p>
                         {item.variant && (
-                          <p className="text-xs text-muted-foreground mt-0.5">{item.variant}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5 truncate">{item.variant}</p>
                         )}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold tabular-nums">
+                    <div className="text-right shrink-0 ml-4">
+                      <p className="text-sm font-medium tabular-nums">
                         ৳{(item.price * item.qty).toLocaleString("en-BD")}
                       </p>
                       {item.qty > 1 && (
@@ -179,16 +242,16 @@ export default function OrderDetailPage() {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span className="tabular-nums">৳{order.subtotal.toLocaleString("en-BD")}</span>
+                  <span className="tabular-nums font-medium">৳{order.subtotal.toLocaleString("en-BD")}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Delivery Charge</span>
-                  <span className="tabular-nums">৳{order.deliveryCharge.toLocaleString("en-BD")}</span>
+                  <span className="tabular-nums font-medium">৳{order.deliveryCharge.toLocaleString("en-BD")}</span>
                 </div>
                 {order.discount > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Discount</span>
-                    <span className="text-emerald-600 tabular-nums">
+                    <span className="text-emerald-600 tabular-nums font-medium">
                       -৳{order.discount.toLocaleString("en-BD")}
                     </span>
                   </div>
@@ -239,7 +302,7 @@ export default function OrderDetailPage() {
               </h3>
             </CardHeader>
             <CardContent className="p-6 pt-4">
-              <OrderTimeline entries={[...order.timeline].reverse()} />
+              <OrderTimeline entries={[...order.timeline].reverse()} currentStatus={order.status} />
             </CardContent>
           </Card>
 
@@ -257,7 +320,7 @@ export default function OrderDetailPage() {
                   order.notes.map((note, i) => (
                     <div
                       key={i}
-                      className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC]/50 px-3 py-2.5 text-sm"
+                      className="rounded-lg border bg-muted/30 px-3 py-2.5 text-sm"
                     >
                       {note}
                     </div>
@@ -270,9 +333,15 @@ export default function OrderDetailPage() {
                     placeholder="Add a note..."
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
-                    className="min-h-[60px] rounded-lg border-[#E2E8F0]"
+                    className="min-h-[80px] rounded-lg transition-colors duration-150"
+                    aria-label="Add a note"
                   />
-                  <Button size="icon" className="shrink-0 self-end" disabled={!newNote.trim()}>
+                  <Button
+                    size="icon"
+                    className="shrink-0 self-end transition-colors duration-150 active:scale-[0.98]"
+                    disabled={!newNote.trim()}
+                    aria-label="Send note"
+                  >
                     <Send className="size-4" />
                   </Button>
                 </div>
@@ -298,7 +367,7 @@ export default function OrderDetailPage() {
             <CardContent className="p-6 pt-4">
               <div className="flex items-center gap-3">
                 <Avatar size="lg">
-                  <AvatarFallback className="bg-[#4F46E5]/10 text-[#4F46E5] font-semibold">
+                  <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
@@ -314,13 +383,15 @@ export default function OrderDetailPage() {
                 <div className="flex items-start gap-2.5">
                   <Phone className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium">{order.customer.phone}</p>
+                    <p className="font-mono text-[13px] font-medium">{order.customer.phone}</p>
                     <div className="mt-1 flex gap-1">
-                      <Button variant="outline" size="xs" className="gap-1">
-                        <Copy className="size-3" />
-                        Copy
-                      </Button>
-                      <Button variant="outline" size="xs" className="gap-1">
+                      <CopyButton text={order.customer.phone} label="Copy phone number" />
+                      <Button
+                        variant="outline"
+                        size="xs"
+                        className="gap-1 transition-colors duration-150 active:scale-[0.98]"
+                        aria-label="Call customer"
+                      >
                         <ExternalLink className="size-3" />
                         Call
                       </Button>
@@ -371,12 +442,10 @@ export default function OrderDetailPage() {
                       Tracking ID
                     </p>
                     <div className="mt-1.5 flex items-center gap-2">
-                      <code className="rounded-md bg-[#F8FAFC] border border-[#E2E8F0] px-2 py-0.5 text-[13px] font-mono">
+                      <code className="rounded-md bg-muted/50 border px-2 py-0.5 font-mono text-[13px]">
                         {order.trackingId}
                       </code>
-                      <Button variant="ghost" size="icon-xs">
-                        <Copy className="size-3" />
-                      </Button>
+                      <CopyIconButton text={order.trackingId} label="Copy tracking ID" />
                     </div>
                   </div>
                 )}
@@ -415,11 +484,11 @@ export default function OrderDetailPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Created</span>
-                  <span>{format(new Date(order.createdAt), "MMM d, yyyy h:mm a")}</span>
+                  <span className="tabular-nums">{format(new Date(order.createdAt), "MMM d, yyyy h:mm a")}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Updated</span>
-                  <span>{format(new Date(order.updatedAt), "MMM d, yyyy h:mm a")}</span>
+                  <span className="tabular-nums">{format(new Date(order.updatedAt), "MMM d, yyyy h:mm a")}</span>
                 </div>
               </div>
             </CardContent>

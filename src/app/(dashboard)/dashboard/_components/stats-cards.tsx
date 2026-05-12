@@ -14,7 +14,7 @@ const iconTints: Record<string, { bg: string; fg: string }> = {
   conversion: { bg: "bg-amber-500/10", fg: "text-amber-600" },
 };
 
-function useAnimatedCounter(end: number, duration = 1200) {
+function useAnimatedCounter(end: number, duration = 800) {
   const [count, setCount] = useState(0);
   const rafRef = useRef<number>(0);
 
@@ -48,6 +48,12 @@ function formatAnimatedValue(card: StatCard, animatedValue: number) {
   return Math.round(animatedValue).toString();
 }
 
+function getTrendLabel(card: StatCard) {
+  if (card.trendDirection === "neutral") return "No change from last week";
+  const direction = card.trendDirection === "up" ? "increased" : "decreased";
+  return `${direction} by ${Math.abs(card.trend)}% vs last week`;
+}
+
 function AnimatedStatCard({
   card,
   index,
@@ -56,7 +62,10 @@ function AnimatedStatCard({
   index: number;
 }) {
   const animatedValue = useAnimatedCounter(card.value);
-  const tint = iconTints[card.id] ?? { bg: "bg-slate-500/10", fg: "text-slate-600" };
+  const tint = iconTints[card.id] ?? {
+    bg: "bg-slate-500/10",
+    fg: "text-slate-600",
+  };
 
   const TrendIcon =
     card.trendDirection === "up"
@@ -78,7 +87,12 @@ function AnimatedStatCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25, delay: index * 0.03, ease: "easeOut" }}
     >
-      <div className="rounded-xl border border-border bg-white p-6">
+      <div
+        role="group"
+        aria-label={`${card.title}: ${card.formattedValue}`}
+        tabIndex={0}
+        className="rounded-xl border border-border bg-white p-5 transition-colors duration-150 hover:bg-slate-50/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 active:scale-[0.98] sm:p-6"
+      >
         <div className="flex items-center justify-between">
           <span className="text-[13px] font-medium text-muted-foreground">
             {card.title}
@@ -89,6 +103,7 @@ function AnimatedStatCard({
               tint.bg,
               tint.fg
             )}
+            aria-hidden="true"
           >
             <card.icon className="size-5" />
           </div>
@@ -105,12 +120,13 @@ function AnimatedStatCard({
               trendClasses
             )}
           >
-            <TrendIcon className="size-3" />
+            <TrendIcon className="size-3" aria-hidden="true" />
             {card.trendDirection !== "neutral" ? (
               <span>{Math.abs(card.trend)}% vs last week</span>
             ) : (
               <span>No change</span>
             )}
+            <span className="sr-only">{getTrendLabel(card)}</span>
           </span>
         </div>
       </div>
@@ -120,7 +136,7 @@ function AnimatedStatCard({
 
 export function StatsCards() {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5">
       {statsCards.map((card, i) => (
         <AnimatedStatCard key={card.id} card={card} index={i} />
       ))}

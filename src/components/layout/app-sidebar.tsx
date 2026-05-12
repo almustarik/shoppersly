@@ -57,7 +57,8 @@ export function AppSidebar() {
               size="lg"
               render={<Link href="/" />}
               tooltip="Shoppersly"
-              className="h-10 gap-2.5 hover:bg-transparent active:bg-transparent"
+              aria-label="Shoppersly home"
+              className="h-10 gap-2.5 hover:bg-transparent active:bg-transparent focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2"
             >
               <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <Sparkles className="size-4" strokeWidth={1.75} />
@@ -86,22 +87,28 @@ export function AppSidebar() {
                       isActive={isActive}
                       tooltip={item.title}
                       className={cn(
-                        "h-9 gap-2.5 rounded-lg px-2 text-[13.5px] font-medium text-sidebar-foreground transition-colors",
+                        "h-9 gap-2.5 rounded-lg px-2 text-[13.5px] font-medium text-sidebar-foreground transition-colors duration-150",
                         "hover:bg-muted/50 hover:text-sidebar-foreground",
+                        "focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2",
                         isActive && [
                           "bg-sidebar-accent text-sidebar-accent-foreground",
                           "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                         ]
                       )}
                     >
-                      {isActive && (
-                        <div className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-primary" />
-                      )}
-                      <item.icon className="size-[18px] shrink-0 [stroke-width:1.75]" />
-                      <span>{item.title}</span>
+                      <div
+                        className={cn(
+                          "absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-primary transition-all duration-200",
+                          isActive
+                            ? "scale-y-100 opacity-100"
+                            : "scale-y-0 opacity-0"
+                        )}
+                      />
+                      <item.icon className="size-[18px] shrink-0 stroke-[1.75]" />
+                      <span className="truncate">{item.title}</span>
                     </SidebarMenuButton>
                     {item.badge != null && (
-                      <SidebarMenuBadge className="min-w-[18px] rounded-full bg-primary px-1 text-center text-[11px] font-medium text-primary-foreground">
+                      <SidebarMenuBadge className="min-w-[18px] rounded-full bg-primary px-1 text-center text-[11px] font-medium text-primary-foreground transition-transform duration-200">
                         {item.badge}
                       </SidebarMenuBadge>
                     )}
@@ -121,16 +128,20 @@ export function AppSidebar() {
                 render={
                   <SidebarMenuButton
                     size="lg"
-                    className="h-12 gap-2.5 rounded-lg px-2 data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
+                    aria-label="User menu"
+                    className="h-12 gap-2.5 rounded-lg px-2 transition-colors duration-150 data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
                   />
                 }
               >
-                <Avatar className="size-9 rounded-lg">
-                  <AvatarImage src={user.avatar} />
-                  <AvatarFallback className="rounded-lg bg-primary/10 text-xs font-medium text-primary">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="size-9 rounded-lg">
+                    <AvatarImage src={user.avatar} />
+                    <AvatarFallback className="rounded-lg bg-primary/10 text-xs font-medium text-primary">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="absolute -bottom-px -right-px size-2.5 rounded-full bg-success ring-2 ring-card" />
+                </div>
                 <div className="grid flex-1 text-left leading-tight">
                   <span className="truncate text-[13.5px] font-semibold text-foreground">
                     {user.name}
@@ -149,12 +160,15 @@ export function AppSidebar() {
               >
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar className="size-9 rounded-lg">
-                      <AvatarImage src={user.avatar} />
-                      <AvatarFallback className="rounded-lg bg-primary/10 text-xs font-medium text-primary">
-                        {initials}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className="relative">
+                      <Avatar className="size-9 rounded-lg">
+                        <AvatarImage src={user.avatar} />
+                        <AvatarFallback className="rounded-lg bg-primary/10 text-xs font-medium text-primary">
+                          {initials}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="absolute -bottom-px -right-px size-2.5 rounded-full bg-success ring-2 ring-card" />
+                    </div>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">{user.name}</span>
                       <span className="truncate text-xs text-muted-foreground">

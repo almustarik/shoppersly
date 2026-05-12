@@ -20,30 +20,38 @@ export default function AnalyticsPage() {
   const [dateRange, setDateRange] = React.useState("30d")
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 p-4 sm:p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-[28px] font-bold tracking-tight">Analytics</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-[28px]">
+            Analytics
+          </h1>
           <p className="text-sm text-muted-foreground">
             Insights and performance metrics for your store
           </p>
         </div>
-        <div className="flex items-center gap-1 rounded-lg border border-[#E2E8F0] bg-white p-1">
+        <nav
+          className="flex items-center gap-1 rounded-lg border border-border bg-card p-1"
+          aria-label="Date range"
+        >
           {ranges.map((r) => (
             <Button
               key={r.value}
               variant={dateRange === r.value ? "default" : "ghost"}
               size="sm"
               onClick={() => setDateRange(r.value)}
-              className={dateRange === r.value ? "" : "text-muted-foreground"}
+              className={`transition-colors duration-150 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary/20 ${
+                dateRange === r.value ? "" : "text-muted-foreground"
+              }`}
+              aria-pressed={dateRange === r.value}
             >
               {r.label}
             </Button>
           ))}
-        </div>
+        </nav>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}

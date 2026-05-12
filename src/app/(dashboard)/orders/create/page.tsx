@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useForm, useFieldArray } from "react-hook-form"
 import { z } from "zod"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   ArrowLeft,
   Plus,
@@ -68,6 +68,8 @@ export default function CreateOrderPage() {
   const router = useRouter()
   const [customerSearch, setCustomerSearch] = React.useState("")
   const [showCustomerResults, setShowCustomerResults] = React.useState(false)
+  const [highlightedCustomer, setHighlightedCustomer] = React.useState(-1)
+  const customerResultsRef = React.useRef<HTMLDivElement>(null)
 
   const {
     register,
@@ -119,6 +121,36 @@ export default function CreateOrderPage() {
     setValue("customerCity", customer.city)
     setCustomerSearch(customer.name)
     setShowCustomerResults(false)
+    setHighlightedCustomer(-1)
+  }
+
+  const handleCustomerKeyDown = (e: React.KeyboardEvent) => {
+    if (!showCustomerResults || filteredCustomers.length === 0) return
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault()
+        setHighlightedCustomer((prev) =>
+          prev < filteredCustomers.length - 1 ? prev + 1 : 0
+        )
+        break
+      case "ArrowUp":
+        e.preventDefault()
+        setHighlightedCustomer((prev) =>
+          prev > 0 ? prev - 1 : filteredCustomers.length - 1
+        )
+        break
+      case "Enter":
+        e.preventDefault()
+        if (highlightedCustomer >= 0) {
+          selectCustomer(filteredCustomers[highlightedCustomer])
+        }
+        break
+      case "Escape":
+        setShowCustomerResults(false)
+        setHighlightedCustomer(-1)
+        break
+    }
   }
 
   const selectProduct = (index: number, productId: string) => {
@@ -146,7 +178,7 @@ export default function CreateOrderPage() {
       <div className="flex flex-col gap-4">
         <Link
           href="/orders"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors w-fit"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors duration-150 w-fit rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
         >
           <ArrowLeft className="size-4" />
           Back to Orders
@@ -154,7 +186,7 @@ export default function CreateOrderPage() {
         <h1 className="text-[28px] font-bold tracking-tight">Create Order</h1>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
         {/* Customer Selection */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -168,40 +200,58 @@ export default function CreateOrderPage() {
                 Customer Information
               </h3>
             </CardHeader>
-            <CardContent className="p-6 pt-4 space-y-4">
+            <CardContent className="p-6 pt-4 space-y-5">
               <div className="relative">
-                <Label htmlFor="customer-search" className="text-[13px] font-medium">
+                <Label htmlFor="customer-search" className="text-[13px] font-medium mb-1.5 block">
                   Search Customer
                 </Label>
-                <div className="relative mt-1.5">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
                   <Input
                     id="customer-search"
+                    role="combobox"
+                    aria-expanded={showCustomerResults && filteredCustomers.length > 0}
+                    aria-controls="customer-results"
+                    aria-autocomplete="list"
+                    aria-activedescendant={highlightedCustomer >= 0 ? `customer-${highlightedCustomer}` : undefined}
                     placeholder="Search by name or phone..."
                     value={customerSearch}
                     onChange={(e) => {
                       setCustomerSearch(e.target.value)
                       setShowCustomerResults(true)
+                      setHighlightedCustomer(-1)
                     }}
                     onFocus={() => setShowCustomerResults(true)}
-                    className="h-10 rounded-lg border-[#E2E8F0] pl-9"
+                    onBlur={() => setTimeout(() => setShowCustomerResults(false), 200)}
+                    onKeyDown={handleCustomerKeyDown}
+                    className="h-10 rounded-lg pl-9 transition-colors duration-150"
                   />
                 </div>
                 {showCustomerResults && filteredCustomers.length > 0 && (
-                  <div className="absolute z-20 mt-1 w-full rounded-lg border border-[#E2E8F0] bg-popover p-1 shadow-lg">
-                    {filteredCustomers.map((c) => (
+                  <div
+                    ref={customerResultsRef}
+                    id="customer-results"
+                    role="listbox"
+                    className="absolute z-20 mt-1 w-full rounded-lg border bg-popover p-1 shadow-lg"
+                  >
+                    {filteredCustomers.map((c, idx) => (
                       <button
                         key={c.id}
+                        id={`customer-${idx}`}
+                        role="option"
+                        aria-selected={highlightedCustomer === idx}
                         type="button"
                         onClick={() => selectCustomer(c)}
-                        className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm hover:bg-accent transition-colors"
+                        className={`flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm transition-colors duration-150 ${
+                          highlightedCustomer === idx ? "bg-accent" : "hover:bg-accent"
+                        }`}
                       >
-                        <div className="flex size-8 items-center justify-center rounded-full bg-[#4F46E5]/10 text-xs font-semibold text-[#4F46E5]">
+                        <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
                           {c.name.split(" ").map((n) => n[0]).join("")}
                         </div>
-                        <div className="text-left">
-                          <p className="font-medium">{c.name}</p>
-                          <p className="text-xs text-muted-foreground">{c.phone}</p>
+                        <div className="text-left min-w-0">
+                          <p className="font-medium truncate">{c.name}</p>
+                          <p className="text-xs text-muted-foreground font-mono">{c.phone}</p>
                         </div>
                       </button>
                     ))}
@@ -211,51 +261,51 @@ export default function CreateOrderPage() {
 
               <Separator />
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label htmlFor="name" className="text-[13px] font-medium">Full Name *</Label>
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="name" className="text-[13px] font-medium mb-1.5 block">Full Name *</Label>
                   <Input
                     id="name"
                     placeholder="Customer name"
                     {...register("customerName", { required: true })}
                     aria-invalid={!!errors.customerName}
-                    className="h-10 rounded-lg border-[#E2E8F0]"
+                    className="h-10 rounded-lg transition-colors duration-150"
                   />
                   {errors.customerName && (
-                    <p className="text-xs text-destructive">{errors.customerName.message}</p>
+                    <p className="text-xs text-destructive mt-1">{errors.customerName.message}</p>
                   )}
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="phone" className="text-[13px] font-medium">Phone *</Label>
+                <div>
+                  <Label htmlFor="phone" className="text-[13px] font-medium mb-1.5 block">Phone *</Label>
                   <Input
                     id="phone"
                     placeholder="+880 1XXX-XXXXXX"
                     {...register("customerPhone", { required: true })}
                     aria-invalid={!!errors.customerPhone}
-                    className="h-10 rounded-lg border-[#E2E8F0]"
+                    className="h-10 rounded-lg transition-colors duration-150"
                   />
                   {errors.customerPhone && (
-                    <p className="text-xs text-destructive">{errors.customerPhone.message}</p>
+                    <p className="text-xs text-destructive mt-1">{errors.customerPhone.message}</p>
                   )}
                 </div>
-                <div className="space-y-1.5 sm:col-span-2">
-                  <Label htmlFor="address" className="text-[13px] font-medium">Address *</Label>
+                <div className="sm:col-span-2">
+                  <Label htmlFor="address" className="text-[13px] font-medium mb-1.5 block">Address *</Label>
                   <Input
                     id="address"
                     placeholder="Full delivery address"
                     {...register("customerAddress", { required: true })}
                     aria-invalid={!!errors.customerAddress}
-                    className="h-10 rounded-lg border-[#E2E8F0]"
+                    className="h-10 rounded-lg transition-colors duration-150"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="city" className="text-[13px] font-medium">City *</Label>
+                <div>
+                  <Label htmlFor="city" className="text-[13px] font-medium mb-1.5 block">City *</Label>
                   <Input
                     id="city"
                     placeholder="e.g. Dhaka"
                     {...register("customerCity", { required: true })}
                     aria-invalid={!!errors.customerCity}
-                    className="h-10 rounded-lg border-[#E2E8F0]"
+                    className="h-10 rounded-lg transition-colors duration-150"
                   />
                 </div>
               </div>
@@ -276,72 +326,87 @@ export default function CreateOrderPage() {
                 Products
               </h3>
             </CardHeader>
-            <CardContent className="p-6 pt-4 space-y-3">
-              {(fields.length > 0 ? fields : items).map((field, index) => (
-                <div
-                  key={"id" in field ? (field as { id: string }).id : index}
-                  className="flex flex-wrap items-end gap-3 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC]/30 p-4"
-                >
-                  <div className="flex-1 min-w-[180px] space-y-1.5">
-                    <Label className="text-[13px] font-medium">Product</Label>
-                    <Select
-                      value={items[index]?.productId ?? ""}
-                      onValueChange={(v) => v && selectProduct(index, v)}
-                    >
-                      <SelectTrigger className="h-10 w-full rounded-lg border-[#E2E8F0]">
-                        <SelectValue placeholder="Select product" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {mockProducts.map((p) => (
-                          <SelectItem key={p.id} value={p.id}>
-                            {p.name} — ৳{p.price.toLocaleString("en-BD")}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="w-20 space-y-1.5">
-                    <Label className="text-[13px] font-medium">Qty</Label>
-                    <Input
-                      type="number"
-                      min={1}
-                      {...register(`items.${index}.qty`, { valueAsNumber: true })}
-                      className="h-10 rounded-lg border-[#E2E8F0]"
-                    />
-                  </div>
-                  <div className="w-28 space-y-1.5">
-                    <Label className="text-[13px] font-medium">Price (৳)</Label>
-                    <Input
-                      type="number"
-                      min={0}
-                      {...register(`items.${index}.price`, { valueAsNumber: true })}
-                      className="h-10 rounded-lg border-[#E2E8F0]"
-                    />
-                  </div>
-                  <div className="w-24 text-right space-y-1.5">
-                    <Label className="text-[13px] font-medium">Total</Label>
-                    <p className="h-10 flex items-center justify-end font-semibold tabular-nums text-sm">
-                      ৳{((items[index]?.price || 0) * (items[index]?.qty || 0)).toLocaleString("en-BD")}
-                    </p>
-                  </div>
-                  {(fields.length > 0 ? fields : items).length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      onClick={() => remove(index)}
-                      className="text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
+            <CardContent className="p-6 pt-4 space-y-4">
+              <AnimatePresence initial={false}>
+                {(fields.length > 0 ? fields : items).map((field, index) => (
+                  <motion.div
+                    key={"id" in field ? (field as { id: string }).id : index}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex flex-wrap items-end gap-3 rounded-lg border bg-muted/20 p-4">
+                      <div className="flex-1 min-w-[180px]">
+                        <Label className="text-[13px] font-medium mb-1.5 block">Product</Label>
+                        <Select
+                          value={items[index]?.productId ?? ""}
+                          onValueChange={(v) => v && selectProduct(index, v)}
+                        >
+                          <SelectTrigger
+                            className="h-10 w-full rounded-lg transition-colors duration-150"
+                            aria-label="Select product"
+                          >
+                            <SelectValue placeholder="Select product" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {mockProducts.map((p) => (
+                              <SelectItem key={p.id} value={p.id}>
+                                {p.name} — ৳{p.price.toLocaleString("en-BD")}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="w-20">
+                        <Label className="text-[13px] font-medium mb-1.5 block">Qty</Label>
+                        <Input
+                          type="number"
+                          min={1}
+                          {...register(`items.${index}.qty`, { valueAsNumber: true })}
+                          className="h-10 rounded-lg transition-colors duration-150"
+                          aria-label="Quantity"
+                        />
+                      </div>
+                      <div className="w-28">
+                        <Label className="text-[13px] font-medium mb-1.5 block">Price (৳)</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          {...register(`items.${index}.price`, { valueAsNumber: true })}
+                          className="h-10 rounded-lg transition-colors duration-150"
+                          aria-label="Price"
+                        />
+                      </div>
+                      <div className="w-24 text-right">
+                        <Label className="text-[13px] font-medium mb-1.5 block">Total</Label>
+                        <p className="h-10 flex items-center justify-end font-medium tabular-nums text-sm">
+                          ৳{((items[index]?.price || 0) * (items[index]?.qty || 0)).toLocaleString("en-BD")}
+                        </p>
+                      </div>
+                      {(fields.length > 0 ? fields : items).length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => remove(index)}
+                          className="text-muted-foreground hover:text-destructive transition-colors duration-150 active:scale-[0.98]"
+                          aria-label="Remove product row"
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="gap-1.5"
+                className="gap-1.5 transition-colors duration-150 active:scale-[0.98]"
                 onClick={() =>
                   append({ productId: "", name: "", variant: "", qty: 1, price: 0 })
                 }
@@ -352,23 +417,25 @@ export default function CreateOrderPage() {
 
               <Separator />
 
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 pt-2">
-                <div className="space-y-1.5">
-                  <Label className="text-[13px] font-medium">Delivery Charge (৳)</Label>
+              <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 pt-2">
+                <div>
+                  <Label className="text-[13px] font-medium mb-1.5 block">Delivery Charge (৳)</Label>
                   <Input
                     type="number"
                     min={0}
                     {...register("deliveryCharge", { valueAsNumber: true })}
-                    className="h-10 rounded-lg border-[#E2E8F0]"
+                    className="h-10 rounded-lg transition-colors duration-150"
+                    aria-label="Delivery charge"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[13px] font-medium">Discount (৳)</Label>
+                <div>
+                  <Label className="text-[13px] font-medium mb-1.5 block">Discount (৳)</Label>
                   <Input
                     type="number"
                     min={0}
                     {...register("discount", { valueAsNumber: true })}
-                    className="h-10 rounded-lg border-[#E2E8F0]"
+                    className="h-10 rounded-lg transition-colors duration-150"
+                    aria-label="Discount"
                   />
                 </div>
               </div>
@@ -380,12 +447,12 @@ export default function CreateOrderPage() {
                 </div>
                 <div className="flex gap-8 text-sm">
                   <span className="text-muted-foreground">Delivery:</span>
-                  <span className="tabular-nums text-right w-24">৳{deliveryCharge.toLocaleString("en-BD")}</span>
+                  <span className="tabular-nums font-medium text-right w-24">৳{deliveryCharge.toLocaleString("en-BD")}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex gap-8 text-sm">
                     <span className="text-muted-foreground">Discount:</span>
-                    <span className="tabular-nums text-emerald-600 text-right w-24">-৳{discount.toLocaleString("en-BD")}</span>
+                    <span className="tabular-nums font-medium text-emerald-600 text-right w-24">-৳{discount.toLocaleString("en-BD")}</span>
                   </div>
                 )}
                 <Separator className="w-48 my-1" />
@@ -417,7 +484,10 @@ export default function CreateOrderPage() {
                   value={watch("courier")}
                   onValueChange={(v) => v && setValue("courier", v)}
                 >
-                  <SelectTrigger className="h-10 w-full rounded-lg border-[#E2E8F0]">
+                  <SelectTrigger
+                    className="h-10 w-full rounded-lg transition-colors duration-150"
+                    aria-label="Select courier"
+                  >
                     <SelectValue placeholder="Select courier" />
                   </SelectTrigger>
                   <SelectContent>
@@ -462,7 +532,10 @@ export default function CreateOrderPage() {
                   value={watch("paymentMethod")}
                   onValueChange={(v) => v && setValue("paymentMethod", v)}
                 >
-                  <SelectTrigger className="h-10 w-full rounded-lg border-[#E2E8F0]">
+                  <SelectTrigger
+                    className="h-10 w-full rounded-lg transition-colors duration-150"
+                    aria-label="Select payment method"
+                  >
                     <SelectValue placeholder="Select payment method" />
                   </SelectTrigger>
                   <SelectContent>
@@ -494,7 +567,8 @@ export default function CreateOrderPage() {
               <Textarea
                 placeholder="Add any notes about this order (delivery instructions, special requests, etc.)"
                 {...register("notes")}
-                className="min-h-[80px] rounded-lg border-[#E2E8F0]"
+                className="min-h-[80px] rounded-lg transition-colors duration-150"
+                aria-label="Order notes"
               />
             </CardContent>
           </Card>
@@ -505,12 +579,20 @@ export default function CreateOrderPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, delay: 0.15 }}
-          className="flex items-center justify-end gap-3 pb-6"
+          className="flex items-center justify-end gap-3 pb-6 md:pb-0 sticky bottom-0 md:static bg-background/80 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none py-4 md:py-0 -mx-4 px-4 md:mx-0 md:px-0 border-t md:border-0 mt-0"
         >
-          <Button type="button" variant="outline" render={<Link href="/orders" />}>
+          <Button
+            type="button"
+            variant="outline"
+            render={<Link href="/orders" />}
+            className="transition-colors duration-150 active:scale-[0.98]"
+          >
             Cancel
           </Button>
-          <Button type="submit" className="gap-1.5 min-w-[140px]">
+          <Button
+            type="submit"
+            className="gap-1.5 min-w-[140px] transition-colors duration-150 active:scale-[0.98]"
+          >
             <Plus className="size-4" />
             Create Order
           </Button>

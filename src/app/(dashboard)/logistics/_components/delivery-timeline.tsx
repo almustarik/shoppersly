@@ -17,9 +17,9 @@ function formatDate(iso: string) {
 
 export function DeliveryTimeline({ steps }: { steps: TimelineStep[] }) {
   return (
-    <div className="flex flex-col gap-0">
+    <ol className="flex flex-col gap-0" aria-label="Delivery timeline">
       {steps.map((step, i) => (
-        <motion.div
+        <motion.li
           key={step.label}
           className="flex gap-3"
           initial={{ opacity: 0, x: -10 }}
@@ -29,16 +29,23 @@ export function DeliveryTimeline({ steps }: { steps: TimelineStep[] }) {
           <div className="flex flex-col items-center">
             <div
               className={cn(
-                "flex size-7 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
+                "flex size-7 shrink-0 items-center justify-center rounded-full transition-all duration-200",
                 step.completed && step.current
-                  ? "border-[#4F46E5] bg-[#4F46E5] text-white"
+                  ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
                   : step.completed
-                    ? "border-[#10B981] bg-[#10B981] text-white"
-                    : "border-[#E2E8F0] bg-white text-muted-foreground/40"
+                    ? "bg-primary text-primary-foreground"
+                    : "border-2 border-border bg-card text-muted-foreground/40"
               )}
+              aria-label={
+                step.current
+                  ? "Current step"
+                  : step.completed
+                    ? "Completed"
+                    : "Upcoming"
+              }
             >
               {step.completed ? (
-                <Check className="size-3.5" />
+                <Check className="size-3.5" aria-hidden="true" />
               ) : (
                 <span className="size-2 rounded-full bg-current" />
               )}
@@ -46,11 +53,10 @@ export function DeliveryTimeline({ steps }: { steps: TimelineStep[] }) {
             {i < steps.length - 1 && (
               <div
                 className={cn(
-                  "w-0.5 flex-1 min-h-6",
-                  step.completed
-                    ? "bg-[#10B981]"
-                    : "bg-[#E2E8F0]"
+                  "w-0.5 flex-1 transition-colors duration-200",
+                  step.completed ? "bg-primary" : "bg-border"
                 )}
+                style={{ minHeight: 24 }}
               />
             )}
           </div>
@@ -60,7 +66,7 @@ export function DeliveryTimeline({ steps }: { steps: TimelineStep[] }) {
               className={cn(
                 "text-sm font-medium leading-7",
                 step.current
-                  ? "text-[#4F46E5] font-semibold"
+                  ? "font-semibold text-primary"
                   : step.completed
                     ? "text-foreground"
                     : "text-muted-foreground"
@@ -69,13 +75,13 @@ export function DeliveryTimeline({ steps }: { steps: TimelineStep[] }) {
               {step.label}
             </p>
             {step.date && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs tabular-nums text-muted-foreground">
                 {formatDate(step.date)}
               </p>
             )}
           </div>
-        </motion.div>
+        </motion.li>
       ))}
-    </div>
+    </ol>
   )
 }

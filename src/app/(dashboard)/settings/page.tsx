@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import {
   Store,
   Users,
@@ -32,6 +32,7 @@ type SectionId = (typeof sections)[number]["id"]
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState<SectionId>("store")
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col gap-6 p-6">
@@ -46,9 +47,9 @@ export default function SettingsPage() {
         </p>
       </motion.div>
 
-      <div className="flex flex-1 gap-6">
-        {/* Sidebar Nav */}
-        <nav className="hidden w-[200px] shrink-0 lg:block">
+      <div className="flex flex-1 flex-col gap-6 lg:flex-row">
+        {/* Desktop sidebar nav */}
+        <nav className="hidden w-[200px] shrink-0 lg:block" aria-label="Settings navigation">
           <div className="sticky top-6 space-y-0.5">
             {sections.map((section) => {
               if ("href" in section && section.href) {
@@ -56,7 +57,7 @@ export default function SettingsPage() {
                   <Link
                     key={section.id}
                     href={section.href}
-                    className="flex h-9 items-center gap-2 rounded-lg px-3 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    className="flex h-9 items-center gap-2 rounded-lg px-3 text-[13px] font-medium text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
                   >
                     <section.icon className="size-4" />
                     {section.label}
@@ -68,12 +69,13 @@ export default function SettingsPage() {
                 <button
                   key={section.id}
                   className={cn(
-                    "flex h-9 w-full items-center gap-2 rounded-lg px-3 text-[13px] font-medium transition-colors",
+                    "flex h-9 w-full items-center gap-2 rounded-lg px-3 text-[13px] font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
                     isActive
                       ? "bg-muted font-semibold text-foreground"
                       : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                   )}
                   onClick={() => setActiveSection(section.id)}
+                  aria-current={isActive ? "page" : undefined}
                 >
                   <section.icon className="size-4" />
                   {section.label}
@@ -83,15 +85,21 @@ export default function SettingsPage() {
           </div>
         </nav>
 
-        {/* Mobile selector */}
-        <div className="flex flex-wrap gap-2 lg:hidden">
+        {/* Mobile horizontal scroll tabs */}
+        <div
+          ref={scrollRef}
+          className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none lg:hidden"
+          role="tablist"
+          aria-label="Settings sections"
+        >
           {sections.map((section) => {
             if ("href" in section && section.href) {
               return (
                 <Link
                   key={section.id}
                   href={section.href}
-                  className="flex h-8 items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
+                  role="tab"
+                  className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-medium text-muted-foreground transition-colors duration-150 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
                 >
                   <section.icon className="size-3.5" />
                   {section.label}
@@ -102,8 +110,10 @@ export default function SettingsPage() {
             return (
               <button
                 key={section.id}
+                role="tab"
+                aria-selected={isActive}
                 className={cn(
-                  "flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-colors",
+                  "flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
                   isActive
                     ? "bg-primary text-primary-foreground"
                     : "border border-border text-muted-foreground hover:bg-muted"
@@ -117,15 +127,15 @@ export default function SettingsPage() {
           })}
         </div>
 
-        {/* Content */}
-        <div className="min-w-0 flex-1">
+        {/* Content area */}
+        <div className="min-w-0 flex-1" role="tabpanel">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSection}
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
             >
               {activeSection === "store" && <StoreSettings />}
               {activeSection === "billing" && <BillingSettings />}

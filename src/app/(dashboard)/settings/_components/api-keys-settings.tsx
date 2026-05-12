@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Copy, Eye, EyeOff, Key, Plus, Trash2, Save } from "lucide-react"
+import { useState, useCallback } from "react"
+import { Copy, Check, Eye, EyeOff, Key, Plus, Trash2, Save, Loader2 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -55,9 +55,11 @@ function maskKey(key: string) {
 export function ApiKeysSettings() {
   const [keys] = useState(initialKeys)
   const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set())
+  const [copiedKey, setCopiedKey] = useState<string | null>(null)
   const [webhookUrl, setWebhookUrl] = useState(
     "https://api.trendyfashionbd.com/webhooks/shoppersly"
   )
+  const [isSaving, setIsSaving] = useState(false)
 
   function toggleKeyVisibility(id: string) {
     setVisibleKeys((prev) => {
@@ -68,8 +70,21 @@ export function ApiKeysSettings() {
     })
   }
 
+  const handleCopy = useCallback(async (id: string, key: string) => {
+    await navigator.clipboard.writeText(key)
+    setCopiedKey(id)
+    setTimeout(() => setCopiedKey(null), 2000)
+  }, [])
+
+  async function handleSaveWebhook() {
+    setIsSaving(true)
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    console.log("Webhook saved:", webhookUrl)
+    setIsSaving(false)
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h2 className="text-lg font-semibold">API Keys</h2>
         <p className="text-sm text-muted-foreground">
@@ -89,8 +104,8 @@ export function ApiKeysSettings() {
             { value: "100,000", label: "Requests / day" },
             { value: "10 MB", label: "Max payload size" },
           ].map((item) => (
-            <div key={item.label} className="rounded-lg border border-border p-3 text-center">
-              <p className="text-2xl font-bold text-primary">{item.value}</p>
+            <div key={item.label} className="rounded-lg border border-border p-3 text-center transition-colors duration-150">
+              <p className="text-2xl font-bold tabular-nums text-primary">{item.value}</p>
               <p className="text-xs text-muted-foreground">{item.label}</p>
             </div>
           ))}
@@ -106,7 +121,10 @@ export function ApiKeysSettings() {
               Keep your keys safe — never share them publicly.
             </p>
           </div>
-          <Button size="sm" className="h-8 rounded-lg">
+          <Button
+            size="sm"
+            className="h-8 rounded-lg transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+          >
             <Plus className="size-3.5" data-icon="inline-start" />
             Generate New Key
           </Button>
@@ -124,7 +142,7 @@ export function ApiKeysSettings() {
             </TableHeader>
             <TableBody>
               {keys.map((apiKey) => (
-                <TableRow key={apiKey.id}>
+                <TableRow key={apiKey.id} className="transition-colors duration-150">
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Key className="size-3.5 text-muted-foreground" />
@@ -132,7 +150,7 @@ export function ApiKeysSettings() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
+                    <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[13px]">
                       {visibleKeys.has(apiKey.id)
                         ? apiKey.key
                         : maskKey(apiKey.key)}
@@ -154,6 +172,8 @@ export function ApiKeysSettings() {
                         variant="ghost"
                         size="icon-xs"
                         onClick={() => toggleKeyVisibility(apiKey.id)}
+                        className="transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+                        aria-label={visibleKeys.has(apiKey.id) ? `Hide ${apiKey.name}` : `Show ${apiKey.name}`}
                       >
                         {visibleKeys.has(apiKey.id) ? (
                           <EyeOff className="size-3.5" />
@@ -161,13 +181,24 @@ export function ApiKeysSettings() {
                           <Eye className="size-3.5" />
                         )}
                       </Button>
-                      <Button variant="ghost" size="icon-xs">
-                        <Copy className="size-3.5" />
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => handleCopy(apiKey.id, apiKey.key)}
+                        className="transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+                        aria-label={copiedKey === apiKey.id ? "Copied" : `Copy ${apiKey.name}`}
+                      >
+                        {copiedKey === apiKey.id ? (
+                          <Check className="size-3.5 text-emerald-500" />
+                        ) : (
+                          <Copy className="size-3.5" />
+                        )}
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon-xs"
-                        className="text-destructive hover:text-destructive"
+                        className="text-destructive transition-colors duration-150 hover:text-destructive focus-visible:ring-2 focus-visible:ring-primary/20"
+                        aria-label={`Revoke ${apiKey.name}`}
                       >
                         <Trash2 className="size-3.5" />
                       </Button>
@@ -188,21 +219,30 @@ export function ApiKeysSettings() {
             We&apos;ll send event payloads to this URL in real time.
           </p>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div className="space-y-1.5">
-            <Label htmlFor="webhookUrl" className="text-[13px]">Endpoint URL</Label>
+            <Label htmlFor="webhookUrl" className="text-[13px] font-medium">Endpoint URL</Label>
             <Input
               id="webhookUrl"
               value={webhookUrl}
               onChange={(e) => setWebhookUrl(e.target.value)}
               placeholder="https://your-domain.com/webhooks"
-              className="h-10 font-mono text-xs"
+              className="h-10 rounded-lg font-mono text-[13px] transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
             />
           </div>
           <div className="flex justify-end">
-            <Button size="sm" className="h-8 rounded-lg">
-              <Save className="size-3.5" data-icon="inline-start" />
-              Save Webhook
+            <Button
+              size="sm"
+              onClick={handleSaveWebhook}
+              disabled={isSaving}
+              className="h-8 rounded-lg transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+            >
+              {isSaving ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Save className="size-3.5" data-icon="inline-start" />
+              )}
+              {isSaving ? "Saving..." : "Save Webhook"}
             </Button>
           </div>
         </div>

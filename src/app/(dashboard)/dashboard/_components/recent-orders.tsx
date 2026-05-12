@@ -9,6 +9,7 @@ import {
   CardTitle,
   CardAction,
 } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { recentOrders, type OrderStatus } from "@/mock/dashboard-data";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,24 @@ const statusStyles: Record<OrderStatus, string> = {
 };
 
 export function RecentOrders() {
+  if (!recentOrders.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-[14px] font-semibold">
+            Recent Orders
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <EmptyState
+            title="No orders yet"
+            description="When customers place orders, they'll appear here."
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -32,32 +51,54 @@ export function RecentOrders() {
             Recent Orders
           </CardTitle>
           <CardAction>
-            <button className="flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80">
-              View All <ArrowRight className="size-4" />
-            </button>
+            <a
+              href="/orders"
+              className="inline-flex items-center gap-1 rounded-md text-sm font-medium text-primary transition-colors duration-150 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+            >
+              View All
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </a>
           </CardAction>
         </CardHeader>
         <CardContent className="px-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto rounded-b-xl">
+            <table className="w-full min-w-[600px]">
               <thead>
                 <tr className="bg-[#F8FAFC]">
-                  <th className="px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <th
+                    scope="col"
+                    className="px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground"
+                  >
                     Order ID
                   </th>
-                  <th className="px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <th
+                    scope="col"
+                    className="px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground"
+                  >
                     Customer
                   </th>
-                  <th className="hidden px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground md:table-cell">
+                  <th
+                    scope="col"
+                    className="hidden px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground md:table-cell"
+                  >
                     Products
                   </th>
-                  <th className="px-4 py-2.5 text-right text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <th
+                    scope="col"
+                    className="px-4 py-2.5 text-right text-[12px] font-semibold uppercase tracking-wider text-muted-foreground"
+                  >
                     Total
                   </th>
-                  <th className="px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <th
+                    scope="col"
+                    className="px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground"
+                  >
                     Status
                   </th>
-                  <th className="hidden px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground sm:table-cell">
+                  <th
+                    scope="col"
+                    className="hidden px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground sm:table-cell"
+                  >
                     Date
                   </th>
                 </tr>
@@ -66,7 +107,7 @@ export function RecentOrders() {
                 {recentOrders.map((order) => (
                   <tr
                     key={order.id}
-                    className="border-b border-[#F1F5F9] transition-colors last:border-b-0 hover:bg-slate-50/50"
+                    className="border-b border-[#F1F5F9] transition-colors duration-100 last:border-b-0 hover:bg-slate-50/50"
                   >
                     <td className="px-4 py-3 text-[14px] font-medium text-foreground">
                       {order.id}
@@ -89,6 +130,7 @@ export function RecentOrders() {
                     </td>
                     <td className="px-4 py-3">
                       <span
+                        title={order.status}
                         className={cn(
                           "inline-flex items-center rounded-full px-2 py-0.5 text-[12px] font-medium",
                           statusStyles[order.status]

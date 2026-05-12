@@ -53,19 +53,50 @@ export function UTMBuilder() {
     setParams((prev) => ({ ...prev, [key]: value }))
   }
 
-  const fields: { key: keyof UTMParams; label: string; placeholder: string }[] = [
-    { key: "url", label: "Website URL", placeholder: "https://your-shop.com/page" },
-    { key: "source", label: "Campaign Source", placeholder: "facebook, instagram, google..." },
-    { key: "medium", label: "Campaign Medium", placeholder: "cpc, social, email..." },
-    { key: "campaign", label: "Campaign Name", placeholder: "eid-sale-2026..." },
-    { key: "content", label: "Campaign Content", placeholder: "banner-ad, text-link..." },
-    { key: "term", label: "Campaign Term", placeholder: "fashion, electronics..." },
+  const fields: {
+    key: keyof UTMParams
+    label: string
+    placeholder: string
+  }[] = [
+    {
+      key: "url",
+      label: "Website URL",
+      placeholder: "https://your-shop.com/page",
+    },
+    {
+      key: "source",
+      label: "Campaign Source",
+      placeholder: "facebook, instagram, google...",
+    },
+    {
+      key: "medium",
+      label: "Campaign Medium",
+      placeholder: "cpc, social, email...",
+    },
+    {
+      key: "campaign",
+      label: "Campaign Name",
+      placeholder: "eid-sale-2026...",
+    },
+    {
+      key: "content",
+      label: "Campaign Content",
+      placeholder: "banner-ad, text-link...",
+    },
+    {
+      key: "term",
+      label: "Campaign Term",
+      placeholder: "fashion, electronics...",
+    },
   ]
 
   return (
-    <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+    <section
+      className="rounded-xl border border-border bg-card p-6"
+      aria-label="UTM link builder"
+    >
       <div className="mb-5 flex items-center gap-2">
-        <Link2 className="size-4 text-[#4F46E5]" />
+        <Link2 className="size-4 text-primary" aria-hidden="true" />
         <h3 className="text-[14px] font-semibold">UTM Builder</h3>
       </div>
 
@@ -75,7 +106,10 @@ export function UTMBuilder() {
             key={field.key}
             className={field.key === "url" ? "sm:col-span-2" : ""}
           >
-            <Label htmlFor={field.key} className="mb-1.5 text-xs font-medium text-muted-foreground">
+            <Label
+              htmlFor={field.key}
+              className="mb-1.5 block text-[13px] font-medium text-muted-foreground"
+            >
               {field.label}
             </Label>
             <Input
@@ -83,16 +117,19 @@ export function UTMBuilder() {
               value={params[field.key]}
               onChange={(e) => update(field.key, e.target.value)}
               placeholder={field.placeholder}
+              className="h-10 rounded-lg transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
             />
           </div>
         ))}
       </div>
 
       <div className="mt-5">
-        <Label className="mb-1.5 text-xs font-medium text-muted-foreground">Generated URL</Label>
+        <Label className="mb-1.5 block text-[13px] font-medium text-muted-foreground">
+          Generated URL
+        </Label>
         <div className="flex items-stretch gap-2">
-          <div className="flex-1 overflow-hidden rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5">
-            <p className="truncate font-mono text-xs text-muted-foreground">
+          <div className="min-w-0 flex-1 overflow-hidden rounded-lg bg-muted p-3">
+            <p className="truncate font-mono text-[13px] text-muted-foreground">
               {generatedUrl || "Enter a URL above to generate"}
             </p>
           </div>
@@ -101,16 +138,17 @@ export function UTMBuilder() {
             size="icon"
             onClick={handleCopy}
             disabled={!generatedUrl}
-            className="shrink-0"
+            className="shrink-0 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20"
+            aria-label={copied ? "URL copied" : "Copy URL to clipboard"}
           >
             {copied ? (
-              <Check className="size-4 text-[#10B981]" />
+              <Check className="size-4 text-emerald-500" aria-hidden="true" />
             ) : (
-              <Copy className="size-4" />
+              <Copy className="size-4" aria-hidden="true" />
             )}
           </Button>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

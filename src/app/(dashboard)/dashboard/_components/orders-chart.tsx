@@ -30,13 +30,17 @@ function CustomTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg bg-[#0F172A] p-3 shadow-lg">
+    <div className="rounded-lg border border-border/10 bg-[#0F172A] px-3.5 py-2.5 shadow-lg">
       <p className="mb-1.5 text-[11px] font-medium text-slate-400">{label}</p>
       {payload.map((entry) => (
-        <div key={entry.dataKey} className="flex items-center gap-2 text-[13px]">
+        <div
+          key={entry.dataKey}
+          className="flex items-center gap-2 text-[13px]"
+        >
           <span
             className="size-2 rounded-full"
             style={{ backgroundColor: entry.color }}
+            aria-hidden="true"
           />
           <span className="capitalize text-slate-300">{entry.dataKey}</span>
           <span className="ml-auto font-medium tabular-nums text-white">
@@ -62,8 +66,12 @@ export function OrdersChart() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
+          <div
+            className="min-h-[300px] w-full"
+            role="img"
+            aria-label="Orders chart showing completed, pending, and cancelled orders this week"
+          >
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 data={ordersData}
                 margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
@@ -99,16 +107,19 @@ export function OrdersChart() {
                   dataKey="completed"
                   fill="#10B981"
                   radius={[4, 4, 0, 0]}
+                  className="cursor-pointer"
                 />
                 <Bar
                   dataKey="pending"
                   fill="#F59E0B"
                   radius={[4, 4, 0, 0]}
+                  className="cursor-pointer"
                 />
                 <Bar
                   dataKey="cancelled"
                   fill="#F43F5E"
                   radius={[4, 4, 0, 0]}
+                  className="cursor-pointer"
                 />
               </BarChart>
             </ResponsiveContainer>

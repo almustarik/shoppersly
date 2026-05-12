@@ -62,6 +62,7 @@ export function Header() {
 
   const hasUnread = notifications.some((n) => !n.read)
   const breadcrumbs = useBreadcrumbs(pathname)
+  const isDark = resolvedTheme === "dark"
 
   const initials = user.name
     .split(" ")
@@ -71,34 +72,51 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b bg-card px-4">
-      <SidebarTrigger className="-ml-1 size-9 rounded-lg" />
+      <SidebarTrigger
+        className="-ml-1 size-9 rounded-lg transition-colors duration-150 active:scale-[0.98]"
+        aria-label="Toggle sidebar"
+      />
       <Separator orientation="vertical" className="mr-1 h-4" />
 
-      <nav className="flex items-center gap-1 text-sm">
-        {breadcrumbs.map((crumb, i) => (
-          <span key={crumb.href} className="flex items-center gap-1">
-            {i > 0 && (
-              <span className="text-muted-foreground/40 select-none">/</span>
-            )}
-            {crumb.current ? (
-              <span className="font-medium text-foreground">{crumb.label}</span>
-            ) : (
-              <Link
-                href={crumb.href}
-                className="text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {crumb.label}
-              </Link>
-            )}
-          </span>
-        ))}
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm">
+        {breadcrumbs.map((crumb, i) => {
+          const isHome = i === 0
+          return (
+            <span key={crumb.href} className="flex items-center gap-1">
+              {i > 0 && (
+                <span className="text-muted-foreground/40 select-none" aria-hidden="true">/</span>
+              )}
+              {crumb.current && !isHome ? (
+                <span className="font-medium text-foreground" aria-current="page">
+                  {crumb.label}
+                </span>
+              ) : (
+                <Link
+                  href={crumb.href}
+                  className={cn(
+                    "rounded-sm text-muted-foreground transition-colors duration-150 hover:text-foreground",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2"
+                  )}
+                >
+                  {crumb.label}
+                </Link>
+              )}
+            </span>
+          )
+        })}
       </nav>
 
       <div className="ml-auto flex items-center gap-1.5">
         <button
           type="button"
+          role="searchbox"
+          aria-label="Search orders, products, customers"
           onClick={() => setCommandPaletteOpen(true)}
-          className="hidden h-9 w-full max-w-[400px] items-center gap-2 rounded-lg border-0 bg-muted/50 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted md:flex"
+          className={cn(
+            "hidden h-9 w-full max-w-[400px] items-center gap-2 rounded-lg border-0 bg-muted/50 px-3 text-sm text-muted-foreground md:flex",
+            "transition-all duration-150 hover:bg-muted active:scale-[0.98]",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2"
+          )}
         >
           <Search className="size-4 shrink-0" strokeWidth={1.75} />
           <span className="flex-1 text-left text-[13px]">
@@ -112,7 +130,8 @@ export function Header() {
         <Button
           variant="ghost"
           size="icon-sm"
-          className="size-9 rounded-lg md:hidden"
+          aria-label="Search"
+          className="size-9 rounded-lg transition-colors duration-150 active:scale-[0.98] md:hidden"
           onClick={() => setCommandPaletteOpen(true)}
         >
           <Search className="size-[18px]" strokeWidth={1.75} />
@@ -121,13 +140,18 @@ export function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button variant="ghost" size="icon-sm" className="size-9 rounded-lg" />
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Notifications"
+                className="size-9 rounded-lg transition-colors duration-150 active:scale-[0.98]"
+              />
             }
           >
             <div className="relative">
               <Bell className="size-[18px]" strokeWidth={1.75} />
               {hasUnread && (
-                <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-destructive animate-pulse" />
+                <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-destructive ring-2 ring-card animate-pulse" />
               )}
             </div>
           </DropdownMenuTrigger>
@@ -164,8 +188,9 @@ export function Header() {
         <Button
           variant="ghost"
           size="icon-sm"
-          className="size-9 rounded-lg"
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          className="size-9 rounded-lg transition-colors duration-150 active:scale-[0.98]"
+          onClick={() => setTheme(isDark ? "light" : "dark")}
         >
           <Sun
             className="size-[18px] rotate-0 scale-100 transition-transform duration-300 dark:-rotate-90 dark:scale-0"
@@ -175,7 +200,6 @@ export function Header() {
             className="absolute size-[18px] rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100"
             strokeWidth={1.75}
           />
-          <span className="sr-only">Toggle theme</span>
         </Button>
 
         <Separator orientation="vertical" className="mx-1 h-4" />
@@ -186,7 +210,8 @@ export function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="gap-2 rounded-lg pl-1.5"
+                aria-label="User menu"
+                className="gap-2 rounded-lg pl-1.5 transition-colors duration-150 active:scale-[0.98]"
               />
             }
           >
@@ -197,7 +222,7 @@ export function Header() {
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <span className="absolute -bottom-px -right-px size-2.5 rounded-full border-2 border-card bg-success" />
+              <span className="absolute -bottom-px -right-px size-2.5 rounded-full bg-success ring-2 ring-card" />
             </div>
             <span className="hidden text-[13px] font-medium md:inline-block">
               {user.name}

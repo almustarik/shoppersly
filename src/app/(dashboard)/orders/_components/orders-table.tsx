@@ -51,6 +51,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { EmptyState } from "@/components/ui/empty-state"
 
 import type { Order } from "@/mock/orders-data"
 import { COURIER_LABELS } from "@/mock/orders-data"
@@ -60,29 +61,33 @@ export const columns: ColumnDef<Order>[] = [
   {
     id: "select",
     header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
+      <div className="flex items-center justify-center">
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      </div>
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
+      <div className="flex items-center justify-center">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      </div>
     ),
     enableSorting: false,
     enableHiding: false,
-    size: 40,
+    size: 44,
   },
   {
     accessorKey: "orderId",
     header: ({ column }) => (
       <button
-        className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+        className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 rounded-sm"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Order ID
@@ -92,11 +97,12 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => (
       <Link
         href={`/orders/${row.original.id}`}
-        className="font-mono text-[13px] font-medium text-[#4F46E5] hover:underline"
+        className="font-mono text-[13px] font-medium text-primary hover:underline transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 rounded-sm"
       >
         #{row.getValue("orderId")}
       </Link>
     ),
+    size: 100,
   },
   {
     id: "customer",
@@ -107,9 +113,9 @@ export const columns: ColumnDef<Order>[] = [
       </span>
     ),
     cell: ({ row }) => (
-      <div className="min-w-[140px]">
-        <p className="text-sm font-medium text-foreground">{row.original.customer.name}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">{row.original.customer.phone}</p>
+      <div className="max-w-[180px]">
+        <p className="truncate text-sm font-medium text-foreground">{row.original.customer.name}</p>
+        <p className="truncate text-[13px] text-muted-foreground mt-0.5">{row.original.customer.phone}</p>
       </div>
     ),
   },
@@ -122,7 +128,7 @@ export const columns: ColumnDef<Order>[] = [
       </span>
     ),
     cell: ({ row }) => (
-      <span className="text-sm text-muted-foreground">
+      <span className="truncate text-sm text-muted-foreground">
         {row.original.items.length} item{row.original.items.length > 1 ? "s" : ""}
       </span>
     ),
@@ -131,7 +137,7 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "total",
     header: ({ column }) => (
       <button
-        className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors ml-auto"
+        className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-150 ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 rounded-sm"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Total
@@ -139,7 +145,7 @@ export const columns: ColumnDef<Order>[] = [
       </button>
     ),
     cell: ({ row }) => (
-      <span className="block text-right font-semibold tabular-nums text-sm">
+      <span className="block text-right font-medium tabular-nums text-sm">
         ৳{(row.getValue("total") as number).toLocaleString("en-BD")}
       </span>
     ),
@@ -173,7 +179,7 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => {
       const courier = row.original.courier
       return courier ? (
-        <span className="text-sm">{COURIER_LABELS[courier]}</span>
+        <span className="truncate text-sm">{COURIER_LABELS[courier]}</span>
       ) : (
         <span className="text-sm text-muted-foreground">—</span>
       )
@@ -183,7 +189,7 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "createdAt",
     header: ({ column }) => (
       <button
-        className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+        className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 rounded-sm"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Date
@@ -191,7 +197,7 @@ export const columns: ColumnDef<Order>[] = [
       </button>
     ),
     cell: ({ row }) => (
-      <span className="text-sm text-muted-foreground">
+      <span className="truncate text-sm text-muted-foreground whitespace-nowrap">
         {format(new Date(row.getValue("createdAt")), "MMM d, yyyy")}
       </span>
     ),
@@ -199,14 +205,15 @@ export const columns: ColumnDef<Order>[] = [
   {
     id: "actions",
     enableHiding: false,
+    size: 60,
     cell: ({ row }) => (
-      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex justify-center opacity-0 group-hover/row:opacity-100 transition-opacity duration-150">
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="flex size-8 items-center justify-center rounded-md hover:bg-muted"
+            className="flex size-8 items-center justify-center rounded-md hover:bg-muted transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+            aria-label="Row actions"
           >
             <MoreHorizontal className="size-4" />
-            <span className="sr-only">Open menu</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem render={<Link href={`/orders/${row.original.id}`} />}>
@@ -276,65 +283,70 @@ export function OrdersTable({ data, rowSelection, onRowSelectionChange }: Orders
   })
 
   const totalRows = table.getFilteredRowModel().rows.length
-  const startRow = pageIndex * pageSize + 1
+  const startRow = totalRows === 0 ? 0 : pageIndex * pageSize + 1
   const endRow = Math.min((pageIndex + 1) * pageSize, totalRows)
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-[#E2E8F0] overflow-hidden">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                key={headerGroup.id}
-                className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]"
-              >
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-                    style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+      <div className="rounded-xl border overflow-hidden">
+        <div className="overflow-x-auto -mx-px">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="group border-b border-[#F1F5F9] hover:bg-[#F8FAFC]/50 transition-colors data-[state=selected]:bg-[#4F46E5]/5 data-[state=selected]:border-l-2 data-[state=selected]:border-l-[#4F46E5]"
+                  key={headerGroup.id}
+                  className="bg-[#F8FAFC] dark:bg-muted/30 hover:bg-[#F8FAFC] dark:hover:bg-muted/30 border-b"
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-3.5 px-4">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      key={header.id}
+                      scope="col"
+                      className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                      style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-32 text-center">
-                  <div className="flex flex-col items-center gap-1 text-muted-foreground">
-                    <p className="text-sm font-medium">No orders found</p>
-                    <p className="text-xs">Try adjusting your filters</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="group/row border-b border-border/50 hover:bg-[#F8FAFC]/50 dark:hover:bg-muted/10 transition-colors duration-100 data-[state=selected]:bg-primary/3"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="py-3 px-4">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-32 text-center p-0">
+                    <EmptyState
+                      title="No orders match your filters"
+                      description="Try adjusting your search or filter criteria"
+                      className="min-h-[200px] py-12"
+                    />
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          Showing {startRow}-{endRow} of {totalRows}
+      {/* Pagination */}
+      <div className="flex items-center justify-between h-10">
+        <p className="text-sm text-muted-foreground tabular-nums">
+          Showing {startRow}–{endRow} of {totalRows}
         </p>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -346,7 +358,11 @@ export function OrdersTable({ data, rowSelection, onRowSelectionChange }: Orders
                 setPageIndex(0)
               }}
             >
-              <SelectTrigger className="h-8 w-[70px] rounded-lg border-[#E2E8F0]" size="sm">
+              <SelectTrigger
+                className="h-8 w-[70px] rounded-lg transition-colors duration-150"
+                size="sm"
+                aria-label="Rows per page"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -360,18 +376,20 @@ export function OrdersTable({ data, rowSelection, onRowSelectionChange }: Orders
             <Button
               variant="outline"
               size="icon"
-              className="size-8 rounded-lg"
+              className="size-8 rounded-lg transition-colors duration-150 active:scale-[0.98]"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
+              aria-label="Previous page"
             >
               <ChevronLeft className="size-4" />
             </Button>
             <Button
               variant="outline"
               size="icon"
-              className="size-8 rounded-lg"
+              className="size-8 rounded-lg transition-colors duration-150 active:scale-[0.98]"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
+              aria-label="Next page"
             >
               <ChevronRight className="size-4" />
             </Button>

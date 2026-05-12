@@ -57,15 +57,15 @@ export function MessageInput({ onSend }: MessageInputProps) {
       <div className="flex items-end gap-2 p-3">
         <div className="flex flex-none items-center gap-0.5">
           <button
-            className="flex items-center justify-center size-9 rounded-xl text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
+            className="flex items-center justify-center size-9 rounded-xl text-muted-foreground hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
             aria-label="Attach file"
           >
             <Paperclip className="size-4" />
           </button>
 
           <button
-            className="flex items-center justify-center size-9 rounded-xl text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
-            aria-label="Emoji"
+            className="flex items-center justify-center size-9 rounded-xl text-muted-foreground hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+            aria-label="Insert emoji"
           >
             <Smile className="size-4" />
           </button>
@@ -73,12 +73,13 @@ export function MessageInput({ onSend }: MessageInputProps) {
           <button
             onClick={() => setShowQuickReplies(!showQuickReplies)}
             className={cn(
-              "flex items-center justify-center size-9 rounded-xl transition-colors",
+              "flex items-center justify-center size-9 rounded-xl transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
               showQuickReplies
                 ? "bg-[#F8FAFC] text-[#4F46E5]"
-                : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A]"
+                : "text-muted-foreground hover:bg-[#F8FAFC] hover:text-[#0F172A]"
             )}
             aria-label="Quick replies"
+            aria-expanded={showQuickReplies}
           >
             <Zap className="size-4" />
           </button>
@@ -92,9 +93,10 @@ export function MessageInput({ onSend }: MessageInputProps) {
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             rows={1}
+            aria-label="Message text"
             className={cn(
-              "w-full resize-none rounded-xl border border-[#E2E8F0] bg-[#FAFBFC] px-3.5 py-2.5 text-[14px] leading-relaxed text-[#0F172A] outline-none transition-colors min-h-[40px]",
-              "placeholder:text-[#64748B]",
+              "w-full resize-none rounded-xl border border-[#E2E8F0] bg-[#FAFBFC] px-3.5 py-2.5 text-sm leading-relaxed text-[#0F172A] outline-none transition-colors duration-150 min-h-[40px] max-h-[120px]",
+              "placeholder:text-muted-foreground",
               "focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/20 focus:bg-white"
             )}
           />
@@ -104,10 +106,10 @@ export function MessageInput({ onSend }: MessageInputProps) {
           onClick={handleSend}
           disabled={!message.trim()}
           className={cn(
-            "flex-none flex items-center justify-center size-9 rounded-xl transition-all",
+            "flex-none flex items-center justify-center size-9 rounded-xl transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
             message.trim()
               ? "bg-[#4F46E5] text-white hover:bg-[#4338CA]"
-              : "bg-[#F8FAFC] text-[#64748B] border border-[#E2E8F0]"
+              : "bg-[#F8FAFC] text-muted-foreground border border-[#E2E8F0] disabled:opacity-50"
           )}
           aria-label="Send message"
         >

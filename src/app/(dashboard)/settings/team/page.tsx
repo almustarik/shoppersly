@@ -38,7 +38,8 @@ export default function TeamPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/settings"
-            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+            aria-label="Back to settings"
           >
             <ArrowLeft className="size-4" />
           </Link>
@@ -50,7 +51,7 @@ export default function TeamPage() {
           </div>
         </div>
         <InviteMemberDialog>
-          <Button className="h-10 rounded-lg">
+          <Button className="h-10 rounded-lg transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20">
             <UserPlus className="size-4" data-icon="inline-start" />
             Invite Member
           </Button>
@@ -73,7 +74,7 @@ export default function TeamPage() {
                 </p>
               </div>
               <Select value={roleFilter} onValueChange={(v) => v && setRoleFilter(v)}>
-                <SelectTrigger className="h-9 w-44">
+                <SelectTrigger className="h-9 w-44 rounded-lg transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/20">
                   <SelectValue placeholder="Filter by role" />
                 </SelectTrigger>
                 <SelectContent>

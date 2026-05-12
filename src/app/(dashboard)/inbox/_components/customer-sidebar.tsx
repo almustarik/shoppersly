@@ -14,10 +14,9 @@ import {
   Plus,
   StickyNote,
 } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { Customer } from "@/mock/inbox-data"
 
@@ -66,12 +65,13 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
       className="flex h-full flex-col overflow-hidden border-l border-[#E2E8F0] bg-white"
     >
       <div className="flex flex-none items-center justify-between border-b border-[#E2E8F0] px-4 h-14">
-        <h3 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
+        <h3 className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">
           Customer Info
         </h3>
         <button
           onClick={onClose}
-          className="flex items-center justify-center size-7 rounded-lg text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
+          className="flex items-center justify-center size-7 rounded-lg text-muted-foreground hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+          aria-label="Close customer info"
         >
           <X className="size-4" />
         </button>
@@ -81,12 +81,12 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
         <div className="space-y-5 p-4">
           {/* Profile */}
           <div className="flex flex-col items-center gap-2 text-center">
-            <div className="flex items-center justify-center size-14 rounded-full bg-[#4F46E5]/10 text-[#4F46E5] text-[14px] font-bold">
+            <div className="flex items-center justify-center size-14 rounded-full bg-[#4F46E5]/10 text-[#4F46E5] text-sm font-bold ring-4 ring-muted">
               {getInitials(customer.name)}
             </div>
             <div>
-              <h4 className="text-[14px] font-semibold text-[#0F172A]">{customer.name}</h4>
-              <p className="text-[12px] text-[#64748B]">
+              <h4 className="text-sm font-semibold text-[#0F172A]">{customer.name}</h4>
+              <p className="text-xs text-muted-foreground">
                 {customer.isOnline ? (
                   <span className="text-[#10B981]">Online now</span>
                 ) : (
@@ -96,35 +96,35 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
             </div>
           </div>
 
-          <div className="h-px bg-[#F1F5F9]" />
+          <div className="h-px bg-[#F1F5F9]" aria-hidden="true" />
 
           {/* Contact Info */}
           <div className="space-y-2.5">
-            <h5 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
+            <h5 className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">
               Contact
             </h5>
             <div className="space-y-2">
               <div className="flex items-center gap-2.5 text-[13px]">
-                <Phone className="size-3.5 text-[#64748B]" />
+                <Phone className="size-3.5 text-muted-foreground shrink-0" aria-hidden="true" />
                 <span className="text-[#0F172A]/80">{customer.phone}</span>
               </div>
               <div className="flex items-center gap-2.5 text-[13px]">
-                <Mail className="size-3.5 text-[#64748B]" />
+                <Mail className="size-3.5 text-muted-foreground shrink-0" aria-hidden="true" />
                 <span className="truncate text-[#0F172A]/80">
                   {customer.email}
                 </span>
               </div>
               <div className="flex items-center gap-2.5 text-[13px]">
-                <MapPin className="size-3.5 text-[#64748B]" />
+                <MapPin className="size-3.5 text-muted-foreground shrink-0" aria-hidden="true" />
                 <span className="text-[#0F172A]/80">{customer.location}</span>
               </div>
               <div className="flex items-center gap-2.5 text-[13px]">
-                <ExternalLink className="size-3.5 text-[#64748B]" />
+                <ExternalLink className="size-3.5 text-muted-foreground shrink-0" aria-hidden="true" />
                 <a
                   href={customer.profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="truncate text-[#4F46E5] hover:underline"
+                  className="truncate text-[#4F46E5] hover:underline transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 rounded-sm"
                 >
                   {customer.channel === "facebook"
                     ? "Facebook Profile"
@@ -134,54 +134,54 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
             </div>
           </div>
 
-          <div className="h-px bg-[#F1F5F9]" />
+          <div className="h-px bg-[#F1F5F9]" aria-hidden="true" />
 
-          {/* Stats - 2x2 grid */}
+          {/* Stats */}
           <div className="space-y-2.5">
-            <h5 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
+            <h5 className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">
               Statistics
             </h5>
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-xl border border-[#E2E8F0] p-2.5 text-center">
                 <ShoppingBag className="mx-auto size-4 text-[#4F46E5]" />
-                <p className="mt-1 text-[16px] font-bold tabular-nums text-[#0F172A]">
+                <p className="mt-1 text-base font-bold tabular-nums text-[#0F172A]">
                   {customer.totalOrders}
                 </p>
-                <p className="text-[10px] text-[#64748B]">Orders</p>
+                <p className="text-[10px] text-muted-foreground">Orders</p>
               </div>
               <div className="rounded-xl border border-[#E2E8F0] p-2.5 text-center">
                 <DollarSign className="mx-auto size-4 text-[#10B981]" />
-                <p className="mt-1 text-[16px] font-bold tabular-nums text-[#0F172A]">
+                <p className="mt-1 text-base font-bold tabular-nums text-[#0F172A]">
                   {(customer.totalSpent / 1000).toFixed(1)}k
                 </p>
-                <p className="text-[10px] text-[#64748B]">Spent</p>
+                <p className="text-[10px] text-muted-foreground">Spent</p>
               </div>
               <div className="rounded-xl border border-[#E2E8F0] p-2.5 text-center">
                 <TrendingUp className="mx-auto size-4 text-[#F59E0B]" />
-                <p className="mt-1 text-[16px] font-bold tabular-nums text-[#0F172A]">
+                <p className="mt-1 text-base font-bold tabular-nums text-[#0F172A]">
                   {(customer.avgOrderValue / 1000).toFixed(1)}k
                 </p>
-                <p className="text-[10px] text-[#64748B]">Avg</p>
+                <p className="text-[10px] text-muted-foreground">Avg</p>
               </div>
               <div className="rounded-xl border border-[#E2E8F0] p-2.5 text-center">
                 <ShoppingBag className="mx-auto size-4 text-sky-500" />
-                <p className="mt-1 text-[16px] font-bold tabular-nums text-[#0F172A]">
+                <p className="mt-1 text-base font-bold tabular-nums text-[#0F172A]">
                   {customer.recentOrders.length}
                 </p>
-                <p className="text-[10px] text-[#64748B]">Recent</p>
+                <p className="text-[10px] text-muted-foreground">Recent</p>
               </div>
             </div>
           </div>
 
-          <div className="h-px bg-[#F1F5F9]" />
+          <div className="h-px bg-[#F1F5F9]" aria-hidden="true" />
 
           {/* Recent Orders */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <h5 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
+              <h5 className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">
                 Recent Orders
               </h5>
-              <span className="text-[10px] text-[#64748B]">
+              <span className="text-[10px] text-muted-foreground">
                 Last 3
               </span>
             </div>
@@ -192,7 +192,7 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
                   className="rounded-xl border border-[#E2E8F0] bg-[#FAFBFC] p-2.5"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[12px] font-semibold text-[#0F172A]">
+                    <span className="text-xs font-semibold text-[#0F172A]">
                       {order.id}
                     </span>
                     <span
@@ -204,17 +204,17 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
                       {order.status}
                     </span>
                   </div>
-                  <p className="mt-1 truncate text-[12px] text-[#64748B]">
+                  <p className="mt-1 truncate text-xs text-muted-foreground">
                     {order.items}
                   </p>
                   <div className="mt-1 flex items-center justify-between">
-                    <span className="text-[10px] text-[#64748B]">
+                    <span className="text-[10px] text-muted-foreground tabular-nums">
                       {new Date(order.date).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                       })}
                     </span>
-                    <span className="text-[12px] font-semibold text-[#0F172A] tabular-nums">
+                    <span className="text-xs font-semibold text-[#0F172A] tabular-nums">
                       ৳{order.amount.toLocaleString()}
                     </span>
                   </div>
@@ -223,54 +223,64 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
             </div>
           </div>
 
-          <div className="h-px bg-[#F1F5F9]" />
+          <div className="h-px bg-[#F1F5F9]" aria-hidden="true" />
 
           {/* Tags */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <h5 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
+              <h5 className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">
                 Tags
               </h5>
-              <button className="flex items-center justify-center size-6 rounded-md text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">
+              <button
+                className="flex items-center justify-center size-6 rounded-md text-muted-foreground hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                aria-label="Add tag"
+              >
                 <Plus className="size-3.5" />
               </button>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {tags.length === 0 ? (
-                <p className="text-[12px] text-[#64748B]">No tags yet</p>
+                <p className="text-xs text-muted-foreground">No tags yet</p>
               ) : (
-                tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] pl-2 pr-1 py-0.5 text-[11px] font-medium text-[#64748B]"
-                  >
-                    <Tag className="size-2.5" />
-                    {tag}
-                    <button
-                      onClick={() => removeTag(tag)}
-                      className="ml-0.5 rounded-full p-0.5 hover:bg-[#E2E8F0] transition-colors"
-                      aria-label={`Remove ${tag}`}
+                <AnimatePresence mode="popLayout">
+                  {tags.map((tag) => (
+                    <motion.span
+                      key={tag}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.15 }}
+                      layout
+                      className="inline-flex items-center gap-1 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] pl-2 pr-1 py-0.5 text-[11px] font-medium text-muted-foreground"
                     >
-                      <X className="size-2.5" />
-                    </button>
-                  </span>
-                ))
+                      <Tag className="size-2.5" aria-hidden="true" />
+                      {tag}
+                      <button
+                        onClick={() => removeTag(tag)}
+                        className="ml-0.5 rounded-full p-0.5 hover:bg-[#E2E8F0] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                        aria-label={`Remove tag ${tag}`}
+                      >
+                        <X className="size-2.5" />
+                      </button>
+                    </motion.span>
+                  ))}
+                </AnimatePresence>
               )}
             </div>
           </div>
 
-          <div className="h-px bg-[#F1F5F9]" />
+          <div className="h-px bg-[#F1F5F9]" aria-hidden="true" />
 
           {/* Notes */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <h5 className="flex items-center gap-1.5 text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
-                <StickyNote className="size-3" />
+              <h5 className="flex items-center gap-1.5 text-xs uppercase tracking-wider font-semibold text-muted-foreground">
+                <StickyNote className="size-3" aria-hidden="true" />
                 Notes
               </h5>
               <button
                 onClick={() => setIsEditingNotes(!isEditingNotes)}
-                className="text-[10px] font-medium text-[#4F46E5] hover:text-[#4338CA] transition-colors"
+                className="text-[10px] font-medium text-[#4F46E5] hover:text-[#4338CA] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 rounded-sm px-1"
               >
                 {isEditingNotes ? "Save" : "Edit"}
               </button>
@@ -279,12 +289,13 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full resize-none rounded-xl border border-[#E2E8F0] bg-[#FAFBFC] p-2.5 text-[12px] leading-relaxed text-[#0F172A] outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/20"
+                aria-label="Customer notes"
+                className="w-full resize-none rounded-xl border border-[#E2E8F0] bg-[#FAFBFC] p-2.5 text-xs leading-relaxed text-[#0F172A] outline-none transition-colors duration-150 focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/20 focus:bg-white"
                 rows={3}
                 placeholder="Add a note about this customer..."
               />
             ) : (
-              <p className="text-[12px] leading-relaxed text-[#64748B]">
+              <p className="text-xs leading-relaxed text-muted-foreground">
                 {notes || "No notes yet. Click Edit to add one."}
               </p>
             )}
