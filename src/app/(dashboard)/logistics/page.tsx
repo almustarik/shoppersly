@@ -7,9 +7,10 @@ import {
   Clock,
   RotateCcw,
   Plus,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { CourierCards } from "./_components/courier-cards"
 import { ShipmentsTable } from "./_components/shipments-table"
 import {
@@ -23,80 +24,94 @@ const summaryCards = [
     label: "In Transit",
     value: logisticsSummary.inTransit,
     icon: Truck,
-    color: "text-indigo-600 dark:text-indigo-400",
-    bg: "bg-indigo-100 dark:bg-indigo-900/30",
+    trend: "+5",
+    trendUp: true,
+    iconBg: "bg-[#EEF2FF]",
+    iconColor: "text-[#4F46E5]",
   },
   {
     label: "Pending Pickup",
     value: logisticsSummary.pendingPickup,
     icon: Clock,
-    color: "text-amber-600 dark:text-amber-400",
-    bg: "bg-amber-100 dark:bg-amber-900/30",
+    trend: "-2",
+    trendUp: false,
+    iconBg: "bg-[#FFFBEB]",
+    iconColor: "text-[#F59E0B]",
   },
   {
     label: "Delivered Today",
     value: logisticsSummary.deliveredToday,
     icon: PackageCheck,
-    color: "text-emerald-600 dark:text-emerald-400",
-    bg: "bg-emerald-100 dark:bg-emerald-900/30",
+    trend: "+8",
+    trendUp: true,
+    iconBg: "bg-[#ECFDF5]",
+    iconColor: "text-[#10B981]",
   },
   {
     label: "Returns",
     value: logisticsSummary.returns,
     icon: RotateCcw,
-    color: "text-red-600 dark:text-red-400",
-    bg: "bg-red-100 dark:bg-red-900/30",
+    trend: "-1",
+    trendUp: false,
+    iconBg: "bg-[#FFF1F2]",
+    iconColor: "text-[#F43F5E]",
   },
 ]
 
 export default function LogisticsPage() {
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-6">
-      {/* Header */}
+    <div className="flex flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Logistics</h1>
+          <h1 className="text-[28px] font-bold tracking-tight">Logistics</h1>
           <p className="text-sm text-muted-foreground">
             Track shipments and manage courier integrations
           </p>
         </div>
-        <Button size="lg">
+        <Button className="gap-2">
           <Plus className="size-4" />
           Request Pickup
         </Button>
       </div>
 
-      {/* Summary cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {summaryCards.map((card, i) => (
           <motion.div
             key={card.label}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: i * 0.06 }}
+            transition={{ duration: 0.25, delay: i * 0.03 }}
           >
-            <Card>
-              <CardContent className="flex items-center gap-4">
-                <div className={`flex size-11 items-center justify-center rounded-lg ${card.bg}`}>
-                  <card.icon className={`size-5 ${card.color}`} />
+            <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+              <div className="flex items-center gap-4">
+                <div className={`flex size-10 items-center justify-center rounded-xl ${card.iconBg}`}>
+                  <card.icon className={`size-5 ${card.iconColor}`} />
                 </div>
-                <div>
+                <div className="flex-1">
                   <p className="text-sm text-muted-foreground">{card.label}</p>
-                  <p className="text-2xl font-bold">{card.value}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-[28px] font-bold tabular-nums">{card.value}</p>
+                    <span className={`inline-flex items-center gap-0.5 rounded-full border px-2 py-0.5 text-xs font-medium ${
+                      card.trendUp
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                        : "border-rose-200 bg-rose-50 text-rose-700"
+                    }`}>
+                      {card.trendUp ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
+                      {card.trend}
+                    </span>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Courier integration cards */}
       <div>
         <h2 className="mb-3 text-lg font-semibold">Courier Integrations</h2>
         <CourierCards couriers={couriers} />
       </div>
 
-      {/* Shipments table */}
       <div>
         <h2 className="mb-3 text-lg font-semibold">Shipments</h2>
         <ShipmentsTable shipments={shipments} />

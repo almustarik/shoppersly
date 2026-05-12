@@ -1,21 +1,6 @@
 "use client"
 
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Check, Minus } from "lucide-react"
 
 type Role = "staff" | "agent" | "admin" | "merchant"
 
@@ -92,50 +77,47 @@ const roles: { key: Role; label: string }[] = [
 
 export function RolesPermissions() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Roles & Permissions</CardTitle>
-        <CardDescription>
+    <div className="rounded-xl border border-border bg-card">
+      <div className="p-6 pb-4">
+        <h3 className="text-sm font-semibold">Roles & Permissions</h3>
+        <p className="text-xs text-muted-foreground">
           Configure what each role can access across your store.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="min-w-[180px] sticky left-0 z-10 bg-card">
-                  Permission
-                </TableHead>
-                {roles.map((role) => (
-                  <TableHead key={role.key} className="text-center min-w-[120px]">
-                    {role.label}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {permissions.map((perm) => (
-                <TableRow key={perm.id}>
-                  <TableCell className="font-medium sticky left-0 z-10 bg-card">
-                    {perm.label}
-                  </TableCell>
-                  {roles.map((role) => (
-                    <TableCell key={role.key} className="text-center">
-                      <div className="flex justify-center">
-                        <Checkbox
-                          checked={perm.allowed[role.key]}
-                          disabled
-                        />
-                      </div>
-                    </TableCell>
-                  ))}
-                </TableRow>
+        </p>
+      </div>
+      <div className="overflow-x-auto px-6 pb-6">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b">
+              <th className="sticky left-0 z-10 bg-card py-3 pr-4 text-left text-xs font-medium text-muted-foreground min-w-[180px]">
+                Permission
+              </th>
+              {roles.map((role) => (
+                <th key={role.key} className="min-w-[120px] py-3 text-center text-xs font-medium text-muted-foreground">
+                  {role.label}
+                </th>
               ))}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+            </tr>
+          </thead>
+          <tbody>
+            {permissions.map((perm) => (
+              <tr key={perm.id} className="border-b last:border-0">
+                <td className="sticky left-0 z-10 bg-card py-3 pr-4 font-medium">
+                  {perm.label}
+                </td>
+                {roles.map((role) => (
+                  <td key={role.key} className="py-3 text-center">
+                    {perm.allowed[role.key] ? (
+                      <Check className="mx-auto size-4 text-emerald-500" />
+                    ) : (
+                      <Minus className="mx-auto size-4 text-muted-foreground/30" />
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   )
 }

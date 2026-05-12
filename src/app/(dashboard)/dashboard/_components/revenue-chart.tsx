@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   AreaChart,
@@ -15,9 +16,20 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
+  CardAction,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { revenueData } from "@/mock/dashboard-data";
+import { cn } from "@/lib/utils";
+
+const timeRanges = ["7D", "30D", "90D"] as const;
+type TimeRange = (typeof timeRanges)[number];
+
+function getFilteredData(range: TimeRange) {
+  if (range === "7D") return revenueData.slice(-7);
+  if (range === "90D") return revenueData;
+  return revenueData;
+}
 
 function formatBDT(value: number) {
   if (value >= 100000) return `৳${(value / 100000).toFixed(1)}L`;
@@ -36,9 +48,9 @@ function CustomTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border bg-card px-3 py-2 shadow-lg">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="text-sm font-semibold text-foreground">
+    <div className="rounded-lg bg-[#0F172A] p-3 shadow-lg">
+      <p className="text-[11px] text-slate-400">{label}</p>
+      <p className="mt-0.5 text-sm font-semibold text-white">
         ৳{payload[0].value.toLocaleString("en-IN")}
       </p>
     </div>
@@ -46,22 +58,44 @@ function CustomTooltip({
 }
 
 export function RevenueChart() {
+  const [range, setRange] = useState<TimeRange>("30D");
+  const data = getFilteredData(range);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
+      transition={{ duration: 0.25, delay: 0.18 }}
     >
       <Card>
         <CardHeader>
-          <CardTitle>Revenue Trend</CardTitle>
-          <CardDescription>Daily revenue for the last 30 days</CardDescription>
+          <CardTitle className="text-[14px] font-semibold">
+            Revenue Overview
+          </CardTitle>
+          <CardAction>
+            <div className="flex items-center gap-0.5">
+              {timeRanges.map((r) => (
+                <Button
+                  key={r}
+                  variant={range === r ? "secondary" : "ghost"}
+                  size="xs"
+                  className={cn(
+                    "text-xs",
+                    range === r && "font-semibold"
+                  )}
+                  onClick={() => setRange(r)}
+                >
+                  {r}
+                </Button>
+              ))}
+            </div>
+          </CardAction>
         </CardHeader>
         <CardContent>
-          <div className="h-[320px] w-full">
+          <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
-                data={revenueData}
+                data={data}
                 margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
               >
                 <defs>
@@ -72,34 +106,37 @@ export function RevenueChart() {
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="0%" stopColor="#6366f1" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.02} />
+                    <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.15} />
+                    <stop offset="100%" stopColor="#4F46E5" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#e5e7eb"
+                  stroke="#F1F5F9"
                 />
                 <XAxis
                   dataKey="date"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 12, fill: "#9ca3af" }}
-                  interval={4}
+                  tick={{ fontSize: 11, fill: "#64748B" }}
+                  interval={range === "7D" ? 0 : 4}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 12, fill: "#9ca3af" }}
+                  tick={{ fontSize: 11, fill: "#64748B" }}
                   tickFormatter={formatBDT}
                   width={55}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip
+                  content={<CustomTooltip />}
+                  cursor={{ stroke: "#E2E8F0", strokeDasharray: "4 4" }}
+                />
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#6366f1"
+                  stroke="#4F46E5"
                   strokeWidth={2}
                   fill="url(#revenueGradient)"
                 />

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -31,14 +31,12 @@ const resetSchema = z
 
 type ResetValues = z.infer<typeof resetSchema>
 
-const ease = [0.22, 1, 0.36, 1] as const
-
 const fadeIn: Variants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 8 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.4, ease },
+    transition: { delay: i * 0.06, duration: 0.2, ease: "easeOut" },
   }),
 }
 
@@ -49,6 +47,13 @@ const requirements = [
   { label: "One number", test: (p: string) => /[0-9]/.test(p) },
   { label: "One special character", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
 ]
+
+function getStrength(password: string): number {
+  if (!password) return 0
+  return requirements.filter((r) => r.test(password)).length
+}
+
+const strengthColors = ["bg-muted", "bg-red-500", "bg-orange-500", "bg-amber-500", "bg-emerald-500", "bg-emerald-500"]
 
 export default function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -66,6 +71,7 @@ export default function ResetPasswordPage() {
   })
 
   const password = watch("password")
+  const strength = useMemo(() => getStrength(password || ""), [password])
 
   async function onSubmit(data: ResetValues) {
     setIsLoading(true)
@@ -80,7 +86,6 @@ export default function ResetPasswordPage() {
       animate="visible"
       className="flex flex-col gap-8"
     >
-      {/* Back link */}
       <motion.div custom={0} variants={fadeIn}>
         <Link
           href="/login"
@@ -91,12 +96,11 @@ export default function ResetPasswordPage() {
         </Link>
       </motion.div>
 
-      {/* Header */}
       <motion.div className="flex flex-col gap-2" custom={1} variants={fadeIn}>
         <div className="mb-2 flex size-12 items-center justify-center rounded-xl bg-primary/10">
           <KeyRound className="size-6 text-primary" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <h1 className="text-[28px] font-bold tracking-tight text-foreground">
           Set new password
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -104,18 +108,16 @@ export default function ResetPasswordPage() {
         </p>
       </motion.div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-        {/* New Password */}
         <motion.div className="flex flex-col gap-1.5" custom={2} variants={fadeIn}>
-          <Label htmlFor="password">New password</Label>
+          <Label htmlFor="password" className="text-[13px]">New password</Label>
           <div className="relative">
             <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Enter new password"
-              className={cn("h-11 pr-10 pl-10", errors.password && "border-destructive ring-destructive/20 ring-3")}
+              className={cn("h-10 pr-10 pl-10", errors.password && "border-destructive ring-destructive/20 ring-2")}
               {...register("password")}
               aria-invalid={!!errors.password}
             />
@@ -128,12 +130,20 @@ export default function ResetPasswordPage() {
               {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </button>
           </div>
+          {/* Strength bar */}
+          {password && (
+            <div className="flex h-1.5 gap-1 overflow-hidden rounded-full bg-muted">
+              <div
+                className={cn("h-full rounded-full transition-all duration-300", strengthColors[strength])}
+                style={{ width: `${(strength / 5) * 100}%` }}
+              />
+            </div>
+          )}
           {errors.password && (
             <p className="text-xs text-destructive">{errors.password.message}</p>
           )}
         </motion.div>
 
-        {/* Requirements list */}
         <motion.div className="flex flex-col gap-1.5" custom={3} variants={fadeIn}>
           <span className="text-xs font-medium text-muted-foreground">Password requirements</span>
           <div className="flex flex-col gap-1 rounded-lg border border-border bg-muted/30 p-3">
@@ -164,16 +174,15 @@ export default function ResetPasswordPage() {
           </div>
         </motion.div>
 
-        {/* Confirm Password */}
         <motion.div className="flex flex-col gap-1.5" custom={4} variants={fadeIn}>
-          <Label htmlFor="confirmPassword">Confirm new password</Label>
+          <Label htmlFor="confirmPassword" className="text-[13px]">Confirm new password</Label>
           <div className="relative">
             <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="confirmPassword"
               type={showConfirm ? "text" : "password"}
               placeholder="Confirm new password"
-              className={cn("h-11 pr-10 pl-10", errors.confirmPassword && "border-destructive ring-destructive/20 ring-3")}
+              className={cn("h-10 pr-10 pl-10", errors.confirmPassword && "border-destructive ring-destructive/20 ring-2")}
               {...register("confirmPassword")}
               aria-invalid={!!errors.confirmPassword}
             />
@@ -194,15 +203,11 @@ export default function ResetPasswordPage() {
         <motion.div custom={5} variants={fadeIn}>
           <Button
             type="submit"
-            size="lg"
             disabled={isLoading}
-            className="h-11 w-full text-sm font-semibold"
+            className="h-[44px] w-full rounded-lg text-sm font-medium"
           >
             {isLoading ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Resetting password...
-              </>
+              <Loader2 className="size-4 animate-spin" />
             ) : (
               "Reset password"
             )}

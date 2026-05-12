@@ -4,14 +4,6 @@ import { useState } from "react"
 import { Save } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 
 interface NotificationChannel {
@@ -23,6 +15,7 @@ interface NotificationChannel {
 interface NotificationPreference {
   event: string
   description: string
+  group: string
   channels: NotificationChannel
 }
 
@@ -30,26 +23,31 @@ const defaultPreferences: NotificationPreference[] = [
   {
     event: "New Order",
     description: "When a new order is placed from any channel.",
+    group: "ORDERS",
     channels: { email: true, push: true, sms: true },
   },
   {
     event: "Payment Received",
     description: "When a payment is confirmed via bKash, Nagad, or bank.",
+    group: "ORDERS",
     channels: { email: true, push: true, sms: false },
   },
   {
     event: "Delivery Update",
     description: "Shipment picked up, in transit, or delivered.",
+    group: "SHIPPING",
     channels: { email: false, push: true, sms: true },
   },
   {
     event: "Low Stock Alert",
     description: "When a product drops below its stock threshold.",
+    group: "INVENTORY",
     channels: { email: true, push: false, sms: false },
   },
   {
     event: "New Message",
     description: "Incoming messages from Facebook or Instagram DMs.",
+    group: "COMMUNICATION",
     channels: { email: false, push: true, sms: false },
   },
 ]
@@ -78,6 +76,8 @@ export function NotificationSettings() {
     )
   }
 
+  const groups = Array.from(new Set(preferences.map((p) => p.group)))
+
   return (
     <div className="space-y-6">
       <div>
@@ -87,60 +87,65 @@ export function NotificationSettings() {
         </p>
       </div>
 
-      <Separator />
+      <div className="rounded-xl border border-border bg-card">
+        <div className="p-6 pb-4">
+          <h3 className="text-sm font-semibold">Notification Preferences</h3>
+          <p className="text-xs text-muted-foreground">Toggle channels for each event type.</p>
+        </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Notification Preferences</CardTitle>
-          <CardDescription>
-            Toggle channels for each event type.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* Header row */}
-          <div className="mb-2 grid grid-cols-[1fr_repeat(3,_64px)] items-center gap-2 px-1">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Event
+        {/* Header row */}
+        <div className="mx-6 mb-2 grid grid-cols-[1fr_repeat(3,_64px)] items-center gap-2">
+          <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            Event
+          </span>
+          {channelLabels.map((ch) => (
+            <span
+              key={ch}
+              className="text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground"
+            >
+              {ch}
             </span>
-            {channelLabels.map((ch) => (
-              <span
-                key={ch}
-                className="text-center text-xs font-medium text-muted-foreground uppercase tracking-wide"
-              >
-                {ch}
-              </span>
-            ))}
-          </div>
+          ))}
+        </div>
 
-          <Separator className="mb-3" />
-
-          <div className="space-y-1">
-            {preferences.map((pref, eventIndex) => (
-              <div
-                key={pref.event}
-                className="grid grid-cols-[1fr_repeat(3,_64px)] items-center gap-2 rounded-lg px-1 py-3 transition-colors hover:bg-muted/50"
-              >
-                <div>
-                  <p className="text-sm font-medium">{pref.event}</p>
-                  <p className="text-xs text-muted-foreground">{pref.description}</p>
-                </div>
-                {channelLabels.map((ch) => (
-                  <div key={ch} className="flex justify-center">
-                    <Switch
-                      size="sm"
-                      checked={pref.channels[ch]}
-                      onCheckedChange={() => toggleChannel(eventIndex, ch)}
-                    />
+        <div className="border-t">
+          {groups.map((group) => (
+            <div key={group}>
+              <div className="bg-muted/30 px-6 py-2">
+                <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                  {group}
+                </span>
+              </div>
+              {preferences
+                .map((pref, idx) => ({ pref, idx }))
+                .filter(({ pref }) => pref.group === group)
+                .map(({ pref, idx }) => (
+                  <div
+                    key={pref.event}
+                    className="grid grid-cols-[1fr_repeat(3,_64px)] items-center gap-2 border-b px-6 py-3 last:border-0"
+                  >
+                    <div>
+                      <p className="text-sm font-medium">{pref.event}</p>
+                      <p className="text-xs text-muted-foreground">{pref.description}</p>
+                    </div>
+                    {channelLabels.map((ch) => (
+                      <div key={ch} className="flex justify-center">
+                        <Switch
+                          size="sm"
+                          checked={pref.channels[ch]}
+                          onCheckedChange={() => toggleChannel(idx, ch)}
+                        />
+                      </div>
+                    ))}
                   </div>
                 ))}
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="flex justify-end">
-        <Button>
+        <Button className="h-10 rounded-lg">
           <Save className="size-3.5" data-icon="inline-start" />
           Save Preferences
         </Button>

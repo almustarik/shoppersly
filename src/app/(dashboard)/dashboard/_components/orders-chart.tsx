@@ -16,7 +16,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { ordersData } from "@/mock/dashboard-data";
 
@@ -31,18 +30,16 @@ function CustomTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border bg-card px-3 py-2 shadow-lg">
-      <p className="mb-1 text-xs font-medium text-muted-foreground">{label}</p>
+    <div className="rounded-lg bg-[#0F172A] p-3 shadow-lg">
+      <p className="mb-1.5 text-[11px] font-medium text-slate-400">{label}</p>
       {payload.map((entry) => (
-        <div key={entry.dataKey} className="flex items-center gap-2 text-sm">
+        <div key={entry.dataKey} className="flex items-center gap-2 text-[13px]">
           <span
             className="size-2 rounded-full"
             style={{ backgroundColor: entry.color }}
           />
-          <span className="capitalize text-muted-foreground">
-            {entry.dataKey}
-          </span>
-          <span className="ml-auto font-medium text-foreground">
+          <span className="capitalize text-slate-300">{entry.dataKey}</span>
+          <span className="ml-auto font-medium tabular-nums text-white">
             {entry.value}
           </span>
         </div>
@@ -54,40 +51,45 @@ function CustomTooltip({
 export function OrdersChart() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
+      transition={{ duration: 0.25, delay: 0.21 }}
     >
       <Card>
         <CardHeader>
-          <CardTitle>Orders Overview</CardTitle>
-          <CardDescription>Order breakdown for the past 7 days</CardDescription>
+          <CardTitle className="text-[14px] font-semibold">
+            Orders Overview
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[320px] w-full">
+          <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={ordersData}
                 margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+                barGap={4}
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#e5e7eb"
+                  stroke="#F1F5F9"
                 />
                 <XAxis
                   dataKey="day"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 12, fill: "#9ca3af" }}
+                  tick={{ fontSize: 11, fill: "#64748B" }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 12, fill: "#9ca3af" }}
+                  tick={{ fontSize: 11, fill: "#64748B" }}
                   width={35}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip
+                  content={<CustomTooltip />}
+                  cursor={{ fill: "#F8FAFC" }}
+                />
                 <Legend
                   iconType="circle"
                   iconSize={8}
@@ -95,20 +97,17 @@ export function OrdersChart() {
                 />
                 <Bar
                   dataKey="completed"
-                  stackId="orders"
-                  fill="#6366f1"
-                  radius={[0, 0, 0, 0]}
+                  fill="#10B981"
+                  radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   dataKey="pending"
-                  stackId="orders"
-                  fill="#f59e0b"
-                  radius={[0, 0, 0, 0]}
+                  fill="#F59E0B"
+                  radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   dataKey="cancelled"
-                  stackId="orders"
-                  fill="#ef4444"
+                  fill="#F43F5E"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>

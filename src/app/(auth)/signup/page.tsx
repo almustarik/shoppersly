@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod/v4"
-import { motion, type Variants } from "framer-motion"
+import { motion, AnimatePresence, type Variants } from "framer-motion"
 import { Eye, EyeOff, Loader2, Mail, Lock, User, Check, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -35,14 +35,12 @@ const signupSchema = z
 
 type SignupValues = z.infer<typeof signupSchema>
 
-const ease = [0.22, 1, 0.36, 1] as const
-
 const fadeIn: Variants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 8 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.06, duration: 0.4, ease },
+    transition: { delay: i * 0.05, duration: 0.2, ease: "easeOut" },
   }),
 }
 
@@ -78,35 +76,24 @@ function getStrength(password: string): number {
   return passwordRules.filter((r) => r.test(password)).length
 }
 
+const strengthColors = ["bg-muted", "bg-red-500", "bg-orange-500", "bg-amber-500", "bg-emerald-500", "bg-emerald-500"]
+
 function PasswordStrengthBar({ strength }: { strength: number }) {
   const labels = ["", "Weak", "Fair", "Good", "Strong", "Excellent"]
-  const colors = [
-    "bg-muted",
-    "bg-red-500",
-    "bg-orange-500",
-    "bg-yellow-500",
-    "bg-emerald-500",
-    "bg-emerald-500",
-  ]
 
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex gap-1">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div
-            key={i}
-            className={cn(
-              "h-1 flex-1 rounded-full transition-all duration-300",
-              i < strength ? colors[strength] : "bg-muted"
-            )}
-          />
-        ))}
+      <div className="flex h-1.5 gap-1 overflow-hidden rounded-full bg-muted">
+        <div
+          className={cn("h-full rounded-full transition-all duration-300", strengthColors[strength])}
+          style={{ width: `${(strength / 5) * 100}%` }}
+        />
       </div>
       {strength > 0 && (
         <span
           className={cn(
             "text-xs font-medium transition-colors",
-            strength <= 2 ? "text-red-500" : strength <= 3 ? "text-yellow-600" : "text-emerald-600"
+            strength <= 2 ? "text-red-500" : strength <= 3 ? "text-amber-600" : "text-emerald-600"
           )}
         >
           {labels[strength]}
@@ -146,7 +133,7 @@ export default function SignupPage() {
     <motion.div initial="hidden" animate="visible" className="flex flex-col gap-6">
       {/* Header */}
       <motion.div className="flex flex-col gap-2" custom={0} variants={fadeIn}>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <h1 className="text-[28px] font-bold tracking-tight text-foreground">
           Create your account
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -156,11 +143,11 @@ export default function SignupPage() {
 
       {/* Social buttons */}
       <motion.div className="flex gap-3" custom={1} variants={fadeIn}>
-        <Button variant="outline" size="lg" className="h-11 flex-1 gap-2 text-sm font-medium">
+        <Button variant="outline" className="h-10 flex-1 gap-2 rounded-lg text-sm font-medium">
           <GoogleIcon className="size-4" />
           Google
         </Button>
-        <Button variant="outline" size="lg" className="h-11 flex-1 gap-2 text-sm font-medium">
+        <Button variant="outline" className="h-10 flex-1 gap-2 rounded-lg text-sm font-medium">
           <FacebookIcon className="size-4" />
           Facebook
         </Button>
@@ -169,21 +156,20 @@ export default function SignupPage() {
       {/* Divider */}
       <motion.div className="flex items-center gap-3" custom={2} variants={fadeIn}>
         <div className="h-px flex-1 bg-border" />
-        <span className="text-xs font-medium text-muted-foreground uppercase">or</span>
+        <span className="text-xs font-medium text-muted-foreground uppercase">OR</span>
         <div className="h-px flex-1 bg-border" />
       </motion.div>
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        {/* Full Name */}
         <motion.div className="flex flex-col gap-1.5" custom={3} variants={fadeIn}>
-          <Label htmlFor="name">Full name</Label>
+          <Label htmlFor="name" className="text-[13px]">Full name</Label>
           <div className="relative">
             <User className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="name"
               placeholder="John Doe"
-              className={cn("h-11 pl-10", errors.name && "border-destructive ring-destructive/20 ring-3")}
+              className={cn("h-10 pl-10", errors.name && "border-destructive ring-destructive/20 ring-2")}
               {...register("name")}
               aria-invalid={!!errors.name}
             />
@@ -191,16 +177,15 @@ export default function SignupPage() {
           {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
         </motion.div>
 
-        {/* Email */}
         <motion.div className="flex flex-col gap-1.5" custom={4} variants={fadeIn}>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email" className="text-[13px]">Email</Label>
           <div className="relative">
             <Mail className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="email"
               type="email"
               placeholder="you@example.com"
-              className={cn("h-11 pl-10", errors.email && "border-destructive ring-destructive/20 ring-3")}
+              className={cn("h-10 pl-10", errors.email && "border-destructive ring-destructive/20 ring-2")}
               {...register("email")}
               aria-invalid={!!errors.email}
             />
@@ -208,16 +193,15 @@ export default function SignupPage() {
           {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
         </motion.div>
 
-        {/* Password */}
         <motion.div className="flex flex-col gap-1.5" custom={5} variants={fadeIn}>
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password" className="text-[13px]">Password</Label>
           <div className="relative">
             <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Create a strong password"
-              className={cn("h-11 pr-10 pl-10", errors.password && "border-destructive ring-destructive/20 ring-3")}
+              className={cn("h-10 pr-10 pl-10", errors.password && "border-destructive ring-destructive/20 ring-2")}
               {...register("password")}
               aria-invalid={!!errors.password}
             />
@@ -234,47 +218,55 @@ export default function SignupPage() {
           {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
         </motion.div>
 
-        {/* Password requirements */}
-        {password && (
-          <motion.div
-            className="flex flex-col gap-1"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            transition={{ duration: 0.2 }}
-          >
-            {passwordRules.map((rule) => {
-              const passed = rule.test(password)
-              return (
-                <div key={rule.label} className="flex items-center gap-2">
-                  {passed ? (
-                    <Check className="size-3 text-emerald-500" />
-                  ) : (
-                    <X className="size-3 text-muted-foreground/50" />
-                  )}
-                  <span
-                    className={cn(
-                      "text-xs transition-colors",
-                      passed ? "text-emerald-600" : "text-muted-foreground/70"
-                    )}
+        {/* Password requirements - staggered reveal */}
+        <AnimatePresence>
+          {password && (
+            <motion.div
+              className="flex flex-col gap-1"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {passwordRules.map((rule, i) => {
+                const passed = rule.test(password)
+                return (
+                  <motion.div
+                    key={rule.label}
+                    className="flex items-center gap-2"
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05, duration: 0.15 }}
                   >
-                    {rule.label}
-                  </span>
-                </div>
-              )
-            })}
-          </motion.div>
-        )}
+                    {passed ? (
+                      <Check className="size-3 text-emerald-500" />
+                    ) : (
+                      <X className="size-3 text-muted-foreground/50" />
+                    )}
+                    <span
+                      className={cn(
+                        "text-xs transition-colors",
+                        passed ? "text-emerald-600" : "text-muted-foreground/70"
+                      )}
+                    >
+                      {rule.label}
+                    </span>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Confirm Password */}
         <motion.div className="flex flex-col gap-1.5" custom={6} variants={fadeIn}>
-          <Label htmlFor="confirmPassword">Confirm password</Label>
+          <Label htmlFor="confirmPassword" className="text-[13px]">Confirm password</Label>
           <div className="relative">
             <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="confirmPassword"
               type={showConfirm ? "text" : "password"}
               placeholder="Confirm your password"
-              className={cn("h-11 pr-10 pl-10", errors.confirmPassword && "border-destructive ring-destructive/20 ring-3")}
+              className={cn("h-10 pr-10 pl-10", errors.confirmPassword && "border-destructive ring-destructive/20 ring-2")}
               {...register("confirmPassword")}
               aria-invalid={!!errors.confirmPassword}
             />
@@ -292,7 +284,6 @@ export default function SignupPage() {
           )}
         </motion.div>
 
-        {/* Terms */}
         <motion.div className="flex flex-col gap-1" custom={7} variants={fadeIn}>
           <div className="flex items-start gap-2">
             <Checkbox
@@ -317,15 +308,11 @@ export default function SignupPage() {
         <motion.div custom={8} variants={fadeIn}>
           <Button
             type="submit"
-            size="lg"
             disabled={isLoading}
-            className="h-11 w-full text-sm font-semibold"
+            className="h-[44px] w-full rounded-lg text-sm font-medium"
           >
             {isLoading ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Creating account...
-              </>
+              <Loader2 className="size-4 animate-spin" />
             ) : (
               "Create account"
             )}

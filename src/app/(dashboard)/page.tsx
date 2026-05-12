@@ -24,20 +24,17 @@ function formatDate() {
 
 export default function DashboardPage() {
   return (
-    <div className="mx-auto w-full max-w-[1440px] space-y-6 px-4 py-8 sm:px-6 lg:px-8">
-      {/* Header */}
+    <div className="mx-auto w-full max-w-[1440px] space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <h1 className="text-[28px] font-bold tracking-tight text-foreground">
           {getGreeting()}, Rahim
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">{formatDate()}</p>
+        <p className="mt-1 text-[14px] text-muted-foreground">{formatDate()}</p>
       </div>
 
-      {/* Stats Row */}
       <StatsCards />
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-7">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-7">
         <div className="lg:col-span-4">
           <RevenueChart />
         </div>
@@ -46,11 +43,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Orders Table */}
       <RecentOrders />
 
-      {/* Bottom Row */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <TopProducts />
         <ActivityFeed />
         <CourierStatus />

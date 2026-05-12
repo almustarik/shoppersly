@@ -9,84 +9,102 @@ import {
   CardTitle,
   CardAction,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { recentOrders, type OrderStatus } from "@/mock/dashboard-data";
 import { cn } from "@/lib/utils";
 
 const statusStyles: Record<OrderStatus, string> = {
-  Pending: "bg-amber-100 text-amber-700",
-  Confirmed: "bg-blue-100 text-blue-700",
-  Shipped: "bg-violet-100 text-violet-700",
-  Delivered: "bg-emerald-100 text-emerald-700",
+  Pending: "bg-amber-50 text-amber-700 border border-amber-200",
+  Confirmed: "bg-sky-50 text-sky-700 border border-sky-200",
+  Shipped: "bg-indigo-50 text-indigo-700 border border-indigo-200",
+  Delivered: "bg-emerald-50 text-emerald-700 border border-emerald-200",
 };
 
 export function RecentOrders() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.5 }}
+      transition={{ duration: 0.25, delay: 0.24 }}
     >
       <Card>
         <CardHeader>
-          <CardTitle>Recent Orders</CardTitle>
+          <CardTitle className="text-[14px] font-semibold">
+            Recent Orders
+          </CardTitle>
           <CardAction>
-            <button className="flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700">
+            <button className="flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80">
               View All <ArrowRight className="size-4" />
             </button>
           </CardAction>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Order ID</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead className="hidden md:table-cell">
-                  Products
-                </TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="hidden sm:table-cell">Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentOrders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell className="font-medium text-foreground">
-                    {order.id}
-                  </TableCell>
-                  <TableCell>{order.customer}</TableCell>
-                  <TableCell className="hidden max-w-[200px] truncate md:table-cell">
-                    {order.products}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {order.formattedTotal}
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      className={cn(
-                        "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
-                        statusStyles[order.status]
-                      )}
-                    >
-                      {order.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="hidden text-muted-foreground sm:table-cell">
-                    {order.date}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardContent className="px-0">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-[#F8FAFC]">
+                  <th className="px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Order ID
+                  </th>
+                  <th className="px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Customer
+                  </th>
+                  <th className="hidden px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground md:table-cell">
+                    Products
+                  </th>
+                  <th className="px-4 py-2.5 text-right text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Total
+                  </th>
+                  <th className="px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Status
+                  </th>
+                  <th className="hidden px-4 py-2.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground sm:table-cell">
+                    Date
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentOrders.map((order) => (
+                  <tr
+                    key={order.id}
+                    className="border-b border-[#F1F5F9] transition-colors last:border-b-0 hover:bg-slate-50/50"
+                  >
+                    <td className="px-4 py-3 text-[14px] font-medium text-foreground">
+                      {order.id}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div>
+                        <p className="text-[14px] font-medium text-foreground">
+                          {order.customer}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {order.phone}
+                        </p>
+                      </div>
+                    </td>
+                    <td className="hidden max-w-[200px] truncate px-4 py-3 text-[14px] text-muted-foreground md:table-cell">
+                      {order.products}
+                    </td>
+                    <td className="px-4 py-3 text-right text-[14px] font-medium tabular-nums text-foreground">
+                      {order.formattedTotal}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={cn(
+                          "inline-flex items-center rounded-full px-2 py-0.5 text-[12px] font-medium",
+                          statusStyles[order.status]
+                        )}
+                      >
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="hidden px-4 py-3 text-[14px] text-muted-foreground sm:table-cell">
+                      {order.date}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
     </motion.div>

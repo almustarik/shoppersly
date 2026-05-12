@@ -12,8 +12,8 @@ const fadeInLeft: Variants = {
 }
 
 const fadeInUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease } },
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" } },
 }
 
 const stagger: Variants = {
@@ -42,16 +42,21 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="flex min-h-screen">
       {/* Left panel - branding */}
       <div className="relative hidden w-1/2 overflow-hidden lg:flex lg:flex-col lg:justify-between">
-        {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-violet-600 to-indigo-800" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(167,139,250,0.3)_0%,_transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(52,211,153,0.15)_0%,_transparent_50%)]" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #4F46E5 100%)",
+          }}
+        />
 
-        {/* Noise texture overlay */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")" }} />
-
-        {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)", backgroundSize: "64px 64px" }} />
+        {/* Grid pattern overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 64px)",
+          }}
+        />
 
         <motion.div
           className="relative z-10 flex h-full flex-col justify-between p-10 xl:p-14"
@@ -84,33 +89,32 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               </p>
             </motion.div>
 
-            {/* Stats row */}
-            <motion.div className="flex gap-8" variants={fadeInUp}>
+            {/* Stats row - glass morphism pills */}
+            <motion.div className="flex gap-3" variants={fadeInUp}>
               {[
                 { icon: Users, label: "Active Sellers", value: "50K+" },
                 { icon: TrendingUp, label: "GMV Processed", value: "$2B+" },
                 { icon: Star, label: "Avg. Rating", value: "4.9" },
               ].map((stat) => (
-                <div key={stat.label} className="flex flex-col gap-1">
-                  <div className="flex items-center gap-1.5 text-indigo-200/70">
-                    <stat.icon className="size-3.5" />
-                    <span className="text-xs font-medium">{stat.label}</span>
-                  </div>
-                  <span className="text-2xl font-bold text-white">{stat.value}</span>
+                <div
+                  key={stat.label}
+                  className="flex items-center gap-2.5 rounded-full border border-white/10 bg-white/10 px-4 py-2 backdrop-blur-md"
+                >
+                  <stat.icon className="size-3.5 text-white/70" />
+                  <span className="text-sm font-semibold text-white">{stat.value}</span>
+                  <span className="text-xs text-indigo-200/70">{stat.label}</span>
                 </div>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* Floating testimonial cards */}
+          {/* Testimonial card - glass background */}
           <motion.div className="flex flex-col gap-3" variants={stagger}>
             {testimonials.map((t, i) => (
               <motion.div
                 key={t.name}
                 variants={fadeInUp}
-                animate={{ y: [0, -8, 0], transition: { duration: 4, repeat: Infinity, ease: "easeInOut" as const } }}
-                style={{ animationDelay: `${i * 1.5}s` }}
-                className="flex max-w-sm items-start gap-3 rounded-xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur-md"
+                className="flex max-w-sm items-start gap-3 rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-md"
               >
                 <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-400 to-indigo-400 text-xs font-bold text-white">
                   {t.avatar}
@@ -134,9 +138,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       {/* Right panel - form area */}
-      <div className="relative flex w-full flex-col lg:w-1/2">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-50/80 via-white to-indigo-50/30 dark:from-gray-950 dark:via-gray-950 dark:to-indigo-950/20" />
-        <div className="relative z-10 flex flex-1 flex-col">
+      <div className="relative flex w-full flex-col bg-background lg:w-1/2">
+        <div className="flex flex-1 flex-col">
           {/* Mobile logo */}
           <div className="flex items-center justify-center p-6 lg:hidden">
             <Link href="/" className="flex items-center gap-2.5">
@@ -148,12 +151,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </div>
 
           {/* Form container */}
-          <div className="flex flex-1 items-center justify-center px-6 py-8 sm:px-12 lg:px-16">
+          <div className="flex flex-1 items-center justify-center px-8 py-8">
             <motion.div
               className="w-full max-w-[420px]"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
             >
               {children}
             </motion.div>

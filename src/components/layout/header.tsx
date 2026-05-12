@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import { Bell, Moon, Search, Sun } from "lucide-react"
@@ -7,7 +8,6 @@ import { Bell, Moon, Search, Sun } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAppStore } from "@/store/app-store"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -21,18 +21,38 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 
-const breadcrumbMap: Record<string, string> = {
-  "/": "Dashboard",
-  "/orders": "Orders",
-  "/products": "Products",
-  "/customers": "Customers",
-  "/inbox": "Inbox",
-  "/campaigns": "Campaigns",
-  "/payments": "Payments",
-  "/analytics": "Analytics",
-  "/logistics": "Logistics",
-  "/settings": "Settings",
-  "/team": "Team",
+const segmentLabels: Record<string, string> = {
+  orders: "Orders",
+  products: "Products",
+  customers: "Customers",
+  inbox: "Inbox",
+  campaigns: "Campaigns",
+  payments: "Payments",
+  analytics: "Analytics",
+  logistics: "Logistics",
+  settings: "Settings",
+  team: "Team",
+}
+
+function useBreadcrumbs(pathname: string) {
+  if (pathname === "/") return [{ label: "Home", href: "/", current: true }]
+
+  const segments = pathname.split("/").filter(Boolean)
+  const crumbs: { label: string; href: string; current: boolean }[] = [
+    { label: "Home", href: "/", current: false },
+  ]
+
+  let path = ""
+  segments.forEach((segment, i) => {
+    path += `/${segment}`
+    crumbs.push({
+      label: segmentLabels[segment] ?? segment.charAt(0).toUpperCase() + segment.slice(1),
+      href: path,
+      current: i === segments.length - 1,
+    })
+  })
+
+  return crumbs
 }
 
 export function Header() {
@@ -40,7 +60,8 @@ export function Header() {
   const { setTheme, resolvedTheme } = useTheme()
   const { user, notifications, setCommandPaletteOpen } = useAppStore()
 
-  const unreadCount = notifications.filter((n) => !n.read).length
+  const hasUnread = notifications.some((n) => !n.read)
+  const breadcrumbs = useBreadcrumbs(pathname)
 
   const initials = user.name
     .split(" ")
@@ -48,46 +69,65 @@ export function Header() {
     .join("")
     .toUpperCase()
 
-  const pageTitle = breadcrumbMap[pathname] ?? "Dashboard"
-
   return (
-    <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur-sm">
-      <SidebarTrigger className="-ml-1" />
-      <Separator orientation="vertical" className="mr-2 h-4" />
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b bg-card px-4">
+      <SidebarTrigger className="-ml-1 size-9 rounded-lg" />
+      <Separator orientation="vertical" className="mr-1 h-4" />
 
-      <h1 className="text-sm font-medium">{pageTitle}</h1>
+      <nav className="flex items-center gap-1 text-sm">
+        {breadcrumbs.map((crumb, i) => (
+          <span key={crumb.href} className="flex items-center gap-1">
+            {i > 0 && (
+              <span className="text-muted-foreground/40 select-none">/</span>
+            )}
+            {crumb.current ? (
+              <span className="font-medium text-foreground">{crumb.label}</span>
+            ) : (
+              <Link
+                href={crumb.href}
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {crumb.label}
+              </Link>
+            )}
+          </span>
+        ))}
+      </nav>
 
-      <div className="ml-auto flex items-center gap-1">
-        <Button
-          variant="outline"
-          size="sm"
-          className="hidden h-8 w-64 justify-start gap-2 text-muted-foreground md:flex"
+      <div className="ml-auto flex items-center gap-1.5">
+        <button
+          type="button"
           onClick={() => setCommandPaletteOpen(true)}
+          className="hidden h-9 w-full max-w-[400px] items-center gap-2 rounded-lg border-0 bg-muted/50 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted md:flex"
         >
-          <Search className="size-3.5" />
-          <span className="text-xs">Search...</span>
-          <kbd className="pointer-events-none ml-auto inline-flex h-5 items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-            <span className="text-xs">&#8984;</span>K
+          <Search className="size-4 shrink-0" strokeWidth={1.75} />
+          <span className="flex-1 text-left text-[13px]">
+            Search orders, products, customers...
+          </span>
+          <kbd className="pointer-events-none ml-2 inline-flex h-5 items-center gap-0.5 rounded border bg-background px-1.5 font-mono text-[11px] font-medium text-muted-foreground">
+            <span className="text-xs">⌘</span>K
           </kbd>
-        </Button>
+        </button>
 
         <Button
           variant="ghost"
           size="icon-sm"
-          className="md:hidden"
+          className="size-9 rounded-lg md:hidden"
           onClick={() => setCommandPaletteOpen(true)}
         >
-          <Search className="size-4" />
+          <Search className="size-[18px]" strokeWidth={1.75} />
         </Button>
 
         <DropdownMenu>
-          <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
+          <DropdownMenuTrigger
+            render={
+              <Button variant="ghost" size="icon-sm" className="size-9 rounded-lg" />
+            }
+          >
             <div className="relative">
-              <Bell className="size-4" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
-                  {unreadCount}
-                </span>
+              <Bell className="size-[18px]" strokeWidth={1.75} />
+              {hasUnread && (
+                <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-destructive animate-pulse" />
               )}
             </div>
           </DropdownMenuTrigger>
@@ -100,13 +140,16 @@ export function Header() {
               </div>
             ) : (
               notifications.slice(0, 5).map((notification) => (
-                <DropdownMenuItem key={notification.id} className="flex-col items-start gap-1 p-3">
+                <DropdownMenuItem
+                  key={notification.id}
+                  className="flex-col items-start gap-1 p-3"
+                >
                   <div className="flex w-full items-center gap-2">
-                    <span className="text-sm font-medium">{notification.title}</span>
+                    <span className="text-sm font-medium">
+                      {notification.title}
+                    </span>
                     {!notification.read && (
-                      <Badge variant="default" className="ml-auto h-4 px-1 text-[10px]">
-                        New
-                      </Badge>
+                      <span className="ml-auto size-1.5 rounded-full bg-primary" />
                     )}
                   </div>
                   <span className="text-xs text-muted-foreground">
@@ -121,10 +164,17 @@ export function Header() {
         <Button
           variant="ghost"
           size="icon-sm"
+          className="size-9 rounded-lg"
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
         >
-          <Sun className="size-4 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute size-4 rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100" />
+          <Sun
+            className="size-[18px] rotate-0 scale-100 transition-transform duration-300 dark:-rotate-90 dark:scale-0"
+            strokeWidth={1.75}
+          />
+          <Moon
+            className="absolute size-[18px] rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100"
+            strokeWidth={1.75}
+          />
           <span className="sr-only">Toggle theme</span>
         </Button>
 
@@ -136,17 +186,20 @@ export function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="gap-2 pl-1.5"
+                className="gap-2 rounded-lg pl-1.5"
               />
             }
           >
-            <Avatar size="sm">
-              <AvatarImage src={user.avatar} />
-              <AvatarFallback className="bg-primary/10 text-[10px] font-medium text-primary">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <span className="hidden text-sm font-medium md:inline-block">
+            <div className="relative">
+              <Avatar>
+                <AvatarImage src={user.avatar} />
+                <AvatarFallback className="bg-primary/10 text-[10px] font-medium text-primary">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <span className="absolute -bottom-px -right-px size-2.5 rounded-full border-2 border-card bg-success" />
+            </div>
+            <span className="hidden text-[13px] font-medium md:inline-block">
               {user.name}
             </span>
           </DropdownMenuTrigger>

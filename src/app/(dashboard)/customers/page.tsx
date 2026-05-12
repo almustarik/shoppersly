@@ -12,15 +12,9 @@ import {
   Pencil,
   Trash2,
   ArrowUpDown,
-  Crown,
-  UserCheck,
-  UserPlus,
-  AlertCircle,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -42,27 +36,23 @@ import type { CustomerSegment } from "@/types"
 
 const segmentConfig: Record<
   CustomerSegment,
-  { label: string; icon: typeof Crown; className: string }
+  { label: string; className: string }
 > = {
   vip: {
     label: "VIP",
-    icon: Crown,
-    className: "bg-amber-500/10 text-amber-700 ring-amber-500/20 dark:text-amber-400",
+    className: "bg-violet-50 text-violet-700 border-violet-200",
   },
   regular: {
     label: "Regular",
-    icon: UserCheck,
-    className: "bg-blue-500/10 text-blue-700 ring-blue-500/20 dark:text-blue-400",
+    className: "bg-sky-50 text-sky-700 border-sky-200",
   },
   new: {
     label: "New",
-    icon: UserPlus,
-    className: "bg-emerald-500/10 text-emerald-700 ring-emerald-500/20 dark:text-emerald-400",
+    className: "bg-emerald-50 text-emerald-700 border-emerald-200",
   },
   "at-risk": {
     label: "At-risk",
-    icon: AlertCircle,
-    className: "bg-red-500/10 text-red-700 ring-red-500/20 dark:text-red-400",
+    className: "bg-rose-50 text-rose-700 border-rose-200",
   },
 }
 
@@ -138,21 +128,31 @@ export default function CustomersPage() {
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Customers</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {customers.length} customers across all segments
-          </p>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div className="flex items-center gap-3">
+          <h1 className="text-[28px] font-bold tracking-tight text-[#0F172A]">Customers</h1>
+          <span className="inline-flex items-center rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-2.5 py-0.5 text-[12px] font-medium text-[#64748B] tabular-nums">
+            {customers.length}
+          </span>
         </div>
-        <Button>
+        <Button className="bg-[#4F46E5] hover:bg-[#4338CA] text-white">
           <Plus className="size-4 mr-1.5" />
           Add Customer
         </Button>
-      </div>
+      </motion.div>
 
-      {/* Segment Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+      {/* Segment Tabs - Underline Style */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.03 }}
+        className="flex items-center gap-6 border-b border-[#E2E8F0] overflow-x-auto"
+      >
         {customerSegments.map((seg) => {
           const isActive = selectedSegment === seg.value
           const count = segmentCounts[seg.value] || 0
@@ -160,174 +160,165 @@ export default function CustomersPage() {
             <button
               key={seg.value}
               onClick={() => setSelectedSegment(seg.value)}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap ${
+              className={`relative inline-flex items-center gap-2 pb-3 text-[14px] font-semibold whitespace-nowrap transition-colors ${
                 isActive
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                  ? "text-[#4F46E5]"
+                  : "text-[#64748B] hover:text-[#0F172A]"
               }`}
             >
               {seg.label}
-              <span
-                className={`inline-flex items-center justify-center rounded-full px-1.5 min-w-[20px] text-[10px] font-semibold ${
-                  isActive
-                    ? "bg-primary-foreground/20 text-primary-foreground"
-                    : "bg-background text-muted-foreground"
-                }`}
-              >
+              <span className={`text-[12px] tabular-nums ${isActive ? "text-[#4F46E5]" : "text-[#64748B]"}`}>
                 {count}
               </span>
+              {isActive && (
+                <motion.div
+                  layoutId="segment-underline"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#4F46E5] rounded-full"
+                />
+              )}
             </button>
           )
         })}
-      </div>
+      </motion.div>
 
       {/* Search */}
-      <div className="relative max-w-sm">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.06 }}
+        className="relative max-w-sm"
+      >
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#64748B]" />
         <Input
           placeholder="Search by name, phone, or email..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9"
+          className="pl-9 h-10 rounded-lg bg-[#F8FAFC]/50 border-[#E2E8F0]"
         />
-      </div>
+      </motion.div>
 
       {/* Table */}
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Customer</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead className="hidden md:table-cell">Email</TableHead>
-              <TableHead>
-                <button
-                  className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
-                  onClick={() => toggleSort("totalOrders")}
-                >
-                  Orders
-                  <ArrowUpDown className="size-3" />
-                </button>
-              </TableHead>
-              <TableHead>
-                <button
-                  className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
-                  onClick={() => toggleSort("totalSpent")}
-                >
-                  Total Spent
-                  <ArrowUpDown className="size-3" />
-                </button>
-              </TableHead>
-              <TableHead className="hidden lg:table-cell">
-                <button
-                  className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
-                  onClick={() => toggleSort("lastOrderDate")}
-                >
-                  Last Order
-                  <ArrowUpDown className="size-3" />
-                </button>
-              </TableHead>
-              <TableHead>Segment</TableHead>
-              <TableHead className="w-10"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredCustomers.map((customer, i) => {
-              const seg = segmentConfig[customer.segment]
-              const SegIcon = seg.icon
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.09 }}
+      >
+        <div className="rounded-xl border border-[#E2E8F0] bg-white overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-[#F8FAFC] border-b border-[#E2E8F0] hover:bg-[#F8FAFC]">
+                <TableHead className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Customer</TableHead>
+                <TableHead className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Email</TableHead>
+                <TableHead className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
+                  <button
+                    className="inline-flex items-center gap-1 hover:text-[#0F172A] transition-colors"
+                    onClick={() => toggleSort("totalOrders")}
+                  >
+                    Orders
+                    <ArrowUpDown className="size-3" />
+                  </button>
+                </TableHead>
+                <TableHead className="text-right text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
+                  <button
+                    className="inline-flex items-center gap-1 hover:text-[#0F172A] transition-colors ml-auto"
+                    onClick={() => toggleSort("totalSpent")}
+                  >
+                    Total Spent
+                    <ArrowUpDown className="size-3" />
+                  </button>
+                </TableHead>
+                <TableHead className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Segment</TableHead>
+                <TableHead className="w-10"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCustomers.map((customer, i) => {
+                const seg = segmentConfig[customer.segment]
 
-              return (
-                <motion.tr
-                  key={customer.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2, delay: i * 0.02 }}
-                  className="border-b transition-colors hover:bg-muted/50"
-                >
-                  <TableCell>
-                    <Link
-                      href={`/customers/${customer.id}`}
-                      className="flex items-center gap-3 group"
-                    >
-                      <Avatar size="default">
-                        <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                return (
+                  <motion.tr
+                    key={customer.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, delay: i * 0.03 }}
+                    className="border-b border-[#F1F5F9] transition-colors hover:bg-[#F8FAFC]/50"
+                  >
+                    <TableCell>
+                      <Link
+                        href={`/customers/${customer.id}`}
+                        className="flex items-center gap-3 group"
+                      >
+                        <div className="flex items-center justify-center size-8 rounded-full bg-[#4F46E5]/10 text-[#4F46E5] text-[11px] font-semibold shrink-0">
                           {getInitials(customer.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium text-sm group-hover:text-primary transition-colors">
-                          {customer.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {customer.city}
-                        </p>
-                      </div>
-                    </Link>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {customer.phone}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                    {customer.email}
-                  </TableCell>
-                  <TableCell className="font-medium">{customer.totalOrders}</TableCell>
-                  <TableCell className="font-medium">
-                    {formatPrice(customer.totalSpent)}
-                  </TableCell>
-                  <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
-                    {formatDate(customer.lastOrderDate)}
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${seg.className}`}
-                    >
-                      <SegIcon className="size-3" />
-                      {seg.label}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button variant="ghost" size="icon-xs">
-                            <MoreHorizontal className="size-4" />
-                          </Button>
-                        }
-                      />
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem render={<Link href={`/customers/${customer.id}`} />}>
-                          <Eye className="size-4" />
-                          View Profile
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Pencil className="size-4" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem variant="destructive">
-                          <Trash2 className="size-4" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </motion.tr>
-              )
-            })}
-          </TableBody>
-        </Table>
-        {filteredCustomers.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Users className="size-10 text-muted-foreground/40 mb-3" />
-            <p className="text-sm font-medium text-muted-foreground">
-              No customers found
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Try adjusting your search or filter
-            </p>
-          </div>
-        )}
-      </Card>
+                        </div>
+                        <div>
+                          <p className="font-medium text-[14px] text-[#0F172A] group-hover:text-[#4F46E5] transition-colors">
+                            {customer.name}
+                          </p>
+                          <p className="text-[13px] text-[#64748B]">
+                            {customer.phone}
+                          </p>
+                        </div>
+                      </Link>
+                    </TableCell>
+                    <TableCell className="text-[13px] text-[#64748B]">
+                      {customer.email}
+                    </TableCell>
+                    <TableCell className="font-medium text-[14px] text-[#0F172A] tabular-nums">
+                      {customer.totalOrders}
+                    </TableCell>
+                    <TableCell className="text-right font-semibold text-[14px] text-[#0F172A] tabular-nums">
+                      {formatPrice(customer.totalSpent)}
+                    </TableCell>
+                    <TableCell>
+                      <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${seg.className}`}>
+                        {seg.label}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          render={
+                            <Button variant="ghost" size="icon-xs">
+                              <MoreHorizontal className="size-4 text-[#64748B]" />
+                            </Button>
+                          }
+                        />
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem render={<Link href={`/customers/${customer.id}`} />}>
+                            <Eye className="size-4" />
+                            View Profile
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Pencil className="size-4" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem variant="destructive">
+                            <Trash2 className="size-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </motion.tr>
+                )
+              })}
+            </TableBody>
+          </Table>
+          {filteredCustomers.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <Users className="size-10 text-[#64748B]/30 mb-3" />
+              <p className="text-[14px] font-medium text-[#64748B]">
+                No customers found
+              </p>
+              <p className="text-[13px] text-[#64748B] mt-1">
+                Try adjusting your search or filter
+              </p>
+            </div>
+          )}
+        </div>
+      </motion.div>
     </div>
   )
 }

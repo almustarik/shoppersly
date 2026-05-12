@@ -2,17 +2,12 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ChevronRight, Sparkles } from "lucide-react"
+import { Sparkles } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { navigation, roleLabels } from "@/lib/constants"
 import { useAppStore } from "@/store/app-store"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,71 +49,71 @@ export function AppSidebar() {
     .toUpperCase()
 
   return (
-    <Sidebar collapsible="icon" className="border-r-0">
-      <SidebarHeader>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="h-[60px] justify-center px-3">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<Link href="/" />} tooltip="Shoppersly">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Sparkles className="size-4" />
+            <SidebarMenuButton
+              size="lg"
+              render={<Link href="/" />}
+              tooltip="Shoppersly"
+              className="h-10 gap-2.5 hover:bg-transparent active:bg-transparent"
+            >
+              <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <Sparkles className="size-4" strokeWidth={1.75} />
               </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">Shoppersly</span>
-                <span className="truncate text-xs text-muted-foreground">
-                  Social Commerce OS
-                </span>
-              </div>
+              <span className="truncate text-[15px] font-semibold text-foreground">
+                Shoppersly
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="gap-2 px-2">
         {navigation.map((group) => (
-          <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
-            <SidebarMenu>
-              {group.items.length === 1 ? (
-                group.items.map((item) => {
-                  const isActive = pathname === item.href
-                  return (
-                    <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton
-                        render={<Link href={item.href} />}
-                        isActive={isActive}
-                        tooltip={item.title}
-                        className={cn(
-                          isActive &&
-                            "bg-primary/10 text-primary font-medium hover:bg-primary/15 hover:text-primary"
-                        )}
-                      >
-                        <item.icon className={cn("size-4", isActive && "text-primary")} />
-                        <span>{item.title}</span>
-                      </SidebarMenuButton>
-                      {item.badge != null && (
-                        <SidebarMenuBadge
-                          className={cn(
-                            "rounded-full bg-primary/10 px-1.5 text-[10px] font-semibold text-primary"
-                          )}
-                        >
-                          {item.badge}
-                        </SidebarMenuBadge>
+          <SidebarGroup key={group.label} className="p-0">
+            <SidebarGroupLabel className="mb-0.5 h-7 px-3 text-[11px] uppercase tracking-widest text-muted-foreground/60">
+              {group.label}
+            </SidebarGroupLabel>
+            <SidebarMenu className="gap-0.5">
+              {group.items.map((item) => {
+                const isActive = pathname === item.href
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      render={<Link href={item.href} />}
+                      isActive={isActive}
+                      tooltip={item.title}
+                      className={cn(
+                        "h-9 gap-2.5 rounded-lg px-2 text-[13.5px] font-medium text-sidebar-foreground transition-colors",
+                        "hover:bg-muted/50 hover:text-sidebar-foreground",
+                        isActive && [
+                          "bg-sidebar-accent text-sidebar-accent-foreground",
+                          "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                        ]
                       )}
-                    </SidebarMenuItem>
-                  )
-                })
-              ) : (
-                <CollapsibleNavGroup
-                  items={group.items}
-                  pathname={pathname}
-                />
-              )}
+                    >
+                      {isActive && (
+                        <div className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-primary" />
+                      )}
+                      <item.icon className="size-[18px] shrink-0 [stroke-width:1.75]" />
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                    {item.badge != null && (
+                      <SidebarMenuBadge className="min-w-[18px] rounded-full bg-primary px-1 text-center text-[11px] font-medium text-primary-foreground">
+                        {item.badge}
+                      </SidebarMenuBadge>
+                    )}
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroup>
         ))}
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-sidebar-border p-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
@@ -126,23 +121,25 @@ export function AppSidebar() {
                 render={
                   <SidebarMenuButton
                     size="lg"
-                    className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
+                    className="h-12 gap-2.5 rounded-lg px-2 data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
                   />
                 }
               >
-                <Avatar size="sm" className="rounded-lg">
+                <Avatar className="size-9 rounded-lg">
                   <AvatarImage src={user.avatar} />
                   <AvatarFallback className="rounded-lg bg-primary/10 text-xs font-medium text-primary">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
-                  <span className="truncate text-xs text-muted-foreground">
+                <div className="grid flex-1 text-left leading-tight">
+                  <span className="truncate text-[13.5px] font-semibold text-foreground">
+                    {user.name}
+                  </span>
+                  <span className="truncate text-[11px] text-muted-foreground">
                     {roleLabels[user.role]}
                   </span>
                 </div>
-                <ChevronsUpDown className="ml-auto size-4" />
+                <ChevronsUpDown className="ml-auto size-4 text-muted-foreground/60" strokeWidth={1.75} />
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="w-[--anchor-width] min-w-56"
@@ -152,7 +149,7 @@ export function AppSidebar() {
               >
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar size="sm" className="rounded-lg">
+                    <Avatar className="size-9 rounded-lg">
                       <AvatarImage src={user.avatar} />
                       <AvatarFallback className="rounded-lg bg-primary/10 text-xs font-medium text-primary">
                         {initials}
@@ -194,48 +191,5 @@ export function AppSidebar() {
 
       <SidebarRail />
     </Sidebar>
-  )
-}
-
-function CollapsibleNavGroup({
-  items,
-  pathname,
-}: {
-  items: typeof navigation[number]["items"]
-  pathname: string
-}) {
-  const hasActive = items.some((item) => pathname === item.href)
-
-  return (
-    <Collapsible defaultOpen={hasActive}>
-      {items.map((item) => {
-        const isActive = pathname === item.href
-        return (
-          <SidebarMenuItem key={item.href}>
-            <SidebarMenuButton
-              render={<Link href={item.href} />}
-              isActive={isActive}
-              tooltip={item.title}
-              className={cn(
-                isActive &&
-                  "bg-primary/10 text-primary font-medium hover:bg-primary/15 hover:text-primary"
-              )}
-            >
-              <item.icon className={cn("size-4", isActive && "text-primary")} />
-              <span>{item.title}</span>
-            </SidebarMenuButton>
-            {item.badge != null && (
-              <SidebarMenuBadge
-                className={cn(
-                  "rounded-full bg-primary/10 px-1.5 text-[10px] font-semibold text-primary"
-                )}
-              >
-                {item.badge}
-              </SidebarMenuBadge>
-            )}
-          </SidebarMenuItem>
-        )
-      })}
-    </Collapsible>
   )
 }

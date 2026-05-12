@@ -10,9 +10,9 @@ import {
   KeyRound,
 } from "lucide-react"
 import Link from "next/link"
+import { motion, AnimatePresence } from "framer-motion"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { StoreSettings } from "./_components/store-settings"
 import { BillingSettings } from "./_components/billing-settings"
 import { IntegrationsSettings } from "./_components/integrations-settings"
@@ -35,49 +35,49 @@ export default function SettingsPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col gap-6 p-6">
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground">
           Manage your store configuration, integrations, and preferences.
         </p>
-      </div>
+      </motion.div>
 
       <div className="flex flex-1 gap-6">
         {/* Sidebar Nav */}
-        <nav className="hidden w-52 shrink-0 lg:block">
-          <div className="sticky top-6 space-y-1">
+        <nav className="hidden w-[200px] shrink-0 lg:block">
+          <div className="sticky top-6 space-y-0.5">
             {sections.map((section) => {
               if ("href" in section && section.href) {
                 return (
-                  <Button
+                  <Link
                     key={section.id}
-                    variant="ghost"
-                    className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-                    render={<Link href={section.href} />}
+                    href={section.href}
+                    className="flex h-9 items-center gap-2 rounded-lg px-3 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
                     <section.icon className="size-4" />
                     {section.label}
-                  </Button>
+                  </Link>
                 )
               }
               const isActive = activeSection === section.id
               return (
-                <Button
+                <button
                   key={section.id}
-                  variant="ghost"
                   className={cn(
-                    "w-full justify-start gap-2",
+                    "flex h-9 w-full items-center gap-2 rounded-lg px-3 text-[13px] font-medium transition-colors",
                     isActive
-                      ? "bg-primary/10 text-primary font-medium hover:bg-primary/15 hover:text-primary"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-muted font-semibold text-foreground"
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                   )}
                   onClick={() => setActiveSection(section.id)}
                 >
-                  <section.icon
-                    className={cn("size-4", isActive && "text-primary")}
-                  />
+                  <section.icon className="size-4" />
                   {section.label}
-                </Button>
+                </button>
               )
             })}
           </div>
@@ -88,41 +88,52 @@ export default function SettingsPage() {
           {sections.map((section) => {
             if ("href" in section && section.href) {
               return (
-                <Button
+                <Link
                   key={section.id}
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5"
-                  render={<Link href={section.href} />}
+                  href={section.href}
+                  className="flex h-8 items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
                 >
                   <section.icon className="size-3.5" />
                   {section.label}
-                </Button>
+                </Link>
               )
             }
             const isActive = activeSection === section.id
             return (
-              <Button
+              <button
                 key={section.id}
-                variant={isActive ? "default" : "outline"}
-                size="sm"
-                className="gap-1.5"
+                className={cn(
+                  "flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-colors",
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border text-muted-foreground hover:bg-muted"
+                )}
                 onClick={() => setActiveSection(section.id)}
               >
                 <section.icon className="size-3.5" />
                 {section.label}
-              </Button>
+              </button>
             )
           })}
         </div>
 
         {/* Content */}
         <div className="min-w-0 flex-1">
-          {activeSection === "store" && <StoreSettings />}
-          {activeSection === "billing" && <BillingSettings />}
-          {activeSection === "integrations" && <IntegrationsSettings />}
-          {activeSection === "notifications" && <NotificationSettings />}
-          {activeSection === "api-keys" && <ApiKeysSettings />}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              {activeSection === "store" && <StoreSettings />}
+              {activeSection === "billing" && <BillingSettings />}
+              {activeSection === "integrations" && <IntegrationsSettings />}
+              {activeSection === "notifications" && <NotificationSettings />}
+              {activeSection === "api-keys" && <ApiKeysSettings />}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>

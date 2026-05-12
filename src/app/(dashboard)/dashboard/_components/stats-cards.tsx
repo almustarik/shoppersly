@@ -3,9 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { statsCards, type StatCard } from "@/mock/dashboard-data";
 import { cn } from "@/lib/utils";
+
+const iconTints: Record<string, { bg: string; fg: string }> = {
+  revenue: { bg: "bg-emerald-500/10", fg: "text-emerald-600" },
+  orders: { bg: "bg-indigo-500/10", fg: "text-indigo-600" },
+  deliveries: { bg: "bg-violet-500/10", fg: "text-violet-600" },
+  conversations: { bg: "bg-sky-500/10", fg: "text-sky-600" },
+  conversion: { bg: "bg-amber-500/10", fg: "text-amber-600" },
+};
 
 function useAnimatedCounter(end: number, duration = 1200) {
   const [count, setCount] = useState(0);
@@ -36,8 +43,7 @@ function formatAnimatedValue(card: StatCard, animatedValue: number) {
     return `${animatedValue.toFixed(1)}%`;
   }
   if (card.id === "revenue") {
-    const rounded = Math.round(animatedValue);
-    return `৳${rounded.toLocaleString("en-IN")}`;
+    return `৳${Math.round(animatedValue).toLocaleString("en-IN")}`;
   }
   return Math.round(animatedValue).toString();
 }
@@ -50,6 +56,7 @@ function AnimatedStatCard({
   index: number;
 }) {
   const animatedValue = useAnimatedCounter(card.value);
+  const tint = iconTints[card.id] ?? { bg: "bg-slate-500/10", fg: "text-slate-600" };
 
   const TrendIcon =
     card.trendDirection === "up"
@@ -58,45 +65,55 @@ function AnimatedStatCard({
         ? ArrowDownRight
         : Minus;
 
-  const trendColor =
+  const trendClasses =
     card.trendDirection === "up"
-      ? "text-emerald-600 bg-emerald-50"
+      ? "bg-emerald-50 text-emerald-700"
       : card.trendDirection === "down"
-        ? "text-red-600 bg-red-50"
-        : "text-gray-500 bg-gray-100";
+        ? "bg-rose-50 text-rose-700"
+        : "bg-slate-100 text-slate-600";
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.08, ease: "easeOut" }}
+      transition={{ duration: 0.25, delay: index * 0.03, ease: "easeOut" }}
     >
-      <Card className="relative overflow-hidden">
-        <CardContent className="pt-1">
-          <div className="flex items-center justify-between">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-              <card.icon className="size-5" />
-            </div>
-            <div
-              className={cn(
-                "flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
-                trendColor
-              )}
-            >
-              <TrendIcon className="size-3" />
-              {card.trendDirection !== "neutral" && (
-                <span>{Math.abs(card.trend)}%</span>
-              )}
-            </div>
+      <div className="rounded-xl border border-border bg-white p-6">
+        <div className="flex items-center justify-between">
+          <span className="text-[13px] font-medium text-muted-foreground">
+            {card.title}
+          </span>
+          <div
+            className={cn(
+              "flex size-10 items-center justify-center rounded-xl",
+              tint.bg,
+              tint.fg
+            )}
+          >
+            <card.icon className="size-5" />
           </div>
-          <div className="mt-3">
-            <p className="text-sm text-muted-foreground">{card.title}</p>
-            <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-              {formatAnimatedValue(card, animatedValue)}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        <p className="mt-4 text-[28px] font-bold tabular-nums tracking-tight text-foreground">
+          {formatAnimatedValue(card, animatedValue)}
+        </p>
+
+        <div className="mt-3">
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-medium",
+              trendClasses
+            )}
+          >
+            <TrendIcon className="size-3" />
+            {card.trendDirection !== "neutral" ? (
+              <span>{Math.abs(card.trend)}% vs last week</span>
+            ) : (
+              <span>No change</span>
+            )}
+          </span>
+        </div>
+      </div>
     </motion.div>
   );
 }

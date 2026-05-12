@@ -19,8 +19,6 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
 import { products } from "@/mock/products-data"
 
 function formatPrice(price: number) {
@@ -33,15 +31,9 @@ function formatNumber(n: number) {
 }
 
 const statusConfig = {
-  active: { label: "Active", className: "bg-emerald-500/10 text-emerald-700 ring-emerald-500/20" },
-  draft: { label: "Draft", className: "bg-amber-500/10 text-amber-700 ring-amber-500/20" },
-  archived: { label: "Archived", className: "bg-zinc-500/10 text-zinc-600 ring-zinc-500/20" },
-}
-
-const fadeUp = {
-  initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.35 },
+  active: { label: "Active", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  draft: { label: "Draft", className: "bg-amber-50 text-amber-700 border-amber-200" },
+  archived: { label: "Archived", className: "bg-zinc-50 text-zinc-600 border-zinc-200" },
 }
 
 export default function ProductDetailPage({
@@ -55,13 +47,13 @@ export default function ProductDetailPage({
   if (!product) {
     return (
       <div className="flex flex-col items-center justify-center py-24">
-        <Package className="size-12 text-muted-foreground/40 mb-4" />
-        <h2 className="text-lg font-semibold">Product not found</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <Package className="size-12 text-[#64748B]/30 mb-4" />
+        <h2 className="text-lg font-semibold text-[#0F172A]">Product not found</h2>
+        <p className="text-[14px] text-[#64748B] mt-1">
           The product you&apos;re looking for doesn&apos;t exist.
         </p>
         <Link href="/products" className="mt-4">
-          <Button variant="outline">
+          <Button variant="outline" className="border-[#E2E8F0]">
             <ArrowLeft className="size-4 mr-1.5" />
             Back to Products
           </Button>
@@ -79,273 +71,297 @@ export default function ProductDetailPage({
 
   return (
     <div className="flex flex-col gap-6 p-6">
-      {/* Breadcrumb & Actions */}
-      <motion.div {...fadeUp} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      >
         <div className="flex items-center gap-3">
           <Link href="/products">
-            <Button variant="ghost" size="icon-sm">
+            <button className="flex items-center justify-center size-9 rounded-lg border border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors">
               <ArrowLeft className="size-4" />
-            </Button>
+            </button>
           </Link>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold tracking-tight">{product.name}</h1>
-              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${status.className}`}>
+            <div className="flex items-center gap-3">
+              <h1 className="text-[28px] font-bold tracking-tight text-[#0F172A]">{product.name}</h1>
+              <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${status.className}`}>
                 {status.label}
               </span>
             </div>
-            <p className="text-sm text-muted-foreground mt-0.5">
+            <p className="text-[13px] text-[#64748B] mt-0.5">
               SKU: {product.sku} &middot; {product.category}
             </p>
           </div>
         </div>
-        <Button>
+        <Button className="bg-[#4F46E5] hover:bg-[#4338CA] text-white">
           <Pencil className="size-4 mr-1.5" />
           Edit Product
         </Button>
       </motion.div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Left Column: Image + Info */}
+        {/* Left Column */}
         <div className="lg:col-span-2 flex flex-col gap-6">
           {/* Image Gallery */}
-          <motion.div {...fadeUp} transition={{ delay: 0.05 }}>
-            <Card>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-4 gap-3">
-                  <div className="col-span-4 sm:col-span-3">
-                    <div className="flex items-center justify-center rounded-xl bg-muted aspect-[4/3]">
-                      <Package className="size-16 text-muted-foreground/30" />
-                    </div>
-                  </div>
-                  <div className="col-span-4 sm:col-span-1 flex sm:flex-col gap-3">
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="flex flex-1 items-center justify-center rounded-lg bg-muted aspect-square border-2 border-transparent hover:border-primary/30 transition-colors cursor-pointer"
-                      >
-                        <Package className="size-6 text-muted-foreground/20" />
-                      </div>
-                    ))}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.03 }}
+          >
+            <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+              <div className="grid grid-cols-4 gap-3">
+                <div className="col-span-4 sm:col-span-3">
+                  <div className="flex items-center justify-center rounded-xl bg-[#F8FAFC] aspect-4/3">
+                    <Package className="size-16 text-[#64748B]/20" />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="col-span-4 sm:col-span-1 flex sm:flex-col gap-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="flex flex-1 items-center justify-center rounded-xl bg-[#F8FAFC] aspect-square border border-[#E2E8F0] hover:border-[#4F46E5]/30 transition-colors cursor-pointer"
+                    >
+                      <Package className="size-6 text-[#64748B]/20" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </motion.div>
 
           {/* Description */}
-          <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Description</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {product.description}
-                </p>
-              </CardContent>
-            </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.06 }}
+          >
+            <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+              <h3 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B] mb-3">
+                Description
+              </h3>
+              <p className="text-[14px] text-[#0F172A]/80 leading-relaxed">
+                {product.description}
+              </p>
+            </div>
           </motion.div>
 
           {/* Variants */}
           {product.variants.length > 0 && (
-            <motion.div {...fadeUp} transition={{ delay: 0.15 }}>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Layers className="size-4" />
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: 0.09 }}
+            >
+              <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Layers className="size-4 text-[#64748B]" />
+                  <h3 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
                     Variants
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {product.variants.map((variant) => (
-                      <div key={variant.id}>
-                        <div className="flex items-center gap-2 mb-2">
-                          {variant.type === "color" ? (
-                            <Palette className="size-4 text-muted-foreground" />
-                          ) : (
-                            <Ruler className="size-4 text-muted-foreground" />
-                          )}
-                          <span className="text-sm font-medium">{variant.name}</span>
-                          <Badge variant="secondary" className="text-xs">
-                            {variant.values.length} options
-                          </Badge>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {variant.values.map((value) => (
-                            <span
-                              key={value}
-                              className="inline-flex items-center rounded-md bg-muted px-2.5 py-1 text-xs font-medium"
-                            >
-                              {value}
-                            </span>
-                          ))}
-                        </div>
+                  </h3>
+                </div>
+                <div className="space-y-4">
+                  {product.variants.map((variant) => (
+                    <div key={variant.id}>
+                      <div className="flex items-center gap-2 mb-2">
+                        {variant.type === "color" ? (
+                          <Palette className="size-4 text-[#64748B]" />
+                        ) : (
+                          <Ruler className="size-4 text-[#64748B]" />
+                        )}
+                        <span className="text-[14px] font-medium text-[#0F172A]">{variant.name}</span>
+                        <span className="text-[12px] text-[#64748B]">
+                          ({variant.values.length} options)
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      <div className="flex flex-wrap gap-2">
+                        {variant.values.map((value) => (
+                          <span
+                            key={value}
+                            className="inline-flex items-center rounded-full bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-1 text-[13px] font-medium text-[#0F172A]"
+                          >
+                            {value}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </motion.div>
           )}
 
           {/* Performance */}
-          <motion.div {...fadeUp} transition={{ delay: 0.2 }}>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <BarChart3 className="size-4" />
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.12 }}
+          >
+            <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart3 className="size-4 text-[#64748B]" />
+                <h3 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
                   Performance
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="rounded-xl bg-muted/60 p-4 text-center">
-                    <ShoppingCart className="size-5 text-primary mx-auto mb-2" />
-                    <p className="text-2xl font-bold">{formatNumber(product.totalSold)}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Total Sold</p>
-                  </div>
-                  <div className="rounded-xl bg-muted/60 p-4 text-center">
-                    <TrendingUp className="size-5 text-emerald-600 mx-auto mb-2" />
-                    <p className="text-2xl font-bold">{formatPrice(product.revenue)}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Revenue</p>
-                  </div>
-                  <div className="rounded-xl bg-muted/60 p-4 text-center">
-                    <Eye className="size-5 text-blue-600 mx-auto mb-2" />
-                    <p className="text-2xl font-bold">{formatNumber(product.views)}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Views</p>
-                  </div>
+                </h3>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="rounded-xl border border-[#E2E8F0] p-4 text-center">
+                  <ShoppingCart className="size-5 text-[#4F46E5] mx-auto mb-2" />
+                  <p className="text-[22px] font-bold text-[#0F172A] tabular-nums">{formatNumber(product.totalSold)}</p>
+                  <p className="text-[12px] text-[#64748B] mt-0.5">Total Sold</p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="rounded-xl border border-[#E2E8F0] p-4 text-center">
+                  <TrendingUp className="size-5 text-[#10B981] mx-auto mb-2" />
+                  <p className="text-[22px] font-bold text-[#0F172A] tabular-nums">{formatPrice(product.revenue)}</p>
+                  <p className="text-[12px] text-[#64748B] mt-0.5">Revenue</p>
+                </div>
+                <div className="rounded-xl border border-[#E2E8F0] p-4 text-center">
+                  <Eye className="size-5 text-[#4F46E5] mx-auto mb-2" />
+                  <p className="text-[22px] font-bold text-[#0F172A] tabular-nums">{formatNumber(product.views)}</p>
+                  <p className="text-[12px] text-[#64748B] mt-0.5">Views</p>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
 
-        {/* Right Column: Pricing + Inventory */}
+        {/* Right Column */}
         <div className="flex flex-col gap-6">
           {/* Pricing */}
-          <motion.div {...fadeUp} transition={{ delay: 0.08 }}>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Tag className="size-4" />
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.06 }}
+          >
+            <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Tag className="size-4 text-[#64748B]" />
+                <h3 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
                   Pricing
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </h3>
+              </div>
+              <div className="space-y-4">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-sm text-muted-foreground">Selling Price</span>
-                  <span className="text-2xl font-bold">{formatPrice(product.price)}</span>
+                  <span className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Selling Price</span>
+                  <span className="text-[22px] font-bold text-[#0F172A] tabular-nums">{formatPrice(product.price)}</span>
                 </div>
                 {product.compareAtPrice && (
                   <>
-                    <Separator />
+                    <div className="h-px bg-[#F1F5F9]" />
                     <div className="flex items-baseline justify-between">
-                      <span className="text-sm text-muted-foreground">Compare at Price</span>
-                      <span className="text-sm line-through text-muted-foreground">
+                      <span className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Compare at</span>
+                      <span className="text-[14px] line-through text-[#64748B]">
                         {formatPrice(product.compareAtPrice)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Discount</span>
-                      <Badge className="bg-emerald-500/10 text-emerald-700">
+                      <span className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Discount</span>
+                      <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
                         {Math.round(
                           ((product.compareAtPrice - product.price) / product.compareAtPrice) * 100
-                        )}
-                        % off
-                      </Badge>
+                        )}% off
+                      </span>
                     </div>
                   </>
                 )}
                 {product.costPrice && (
                   <>
-                    <Separator />
+                    <div className="h-px bg-[#F1F5F9]" />
                     <div className="flex items-baseline justify-between">
-                      <span className="text-sm text-muted-foreground">Cost Price</span>
-                      <span className="text-sm font-medium">{formatPrice(product.costPrice)}</span>
+                      <span className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Cost Price</span>
+                      <span className="text-[14px] font-medium text-[#0F172A]">{formatPrice(product.costPrice)}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Profit Margin</span>
-                      <span className="text-sm font-semibold text-emerald-700">{profitMargin}%</span>
+                      <span className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Margin</span>
+                      <span className="text-[14px] font-semibold text-[#10B981]">{profitMargin}%</span>
                     </div>
                   </>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </motion.div>
 
           {/* Inventory */}
-          <motion.div {...fadeUp} transition={{ delay: 0.12 }}>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Package className="size-4" />
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.09 }}
+          >
+            <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Package className="size-4 text-[#64748B]" />
+                <h3 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
                   Inventory
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </h3>
+              </div>
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Stock</span>
-                  <span className={`text-lg font-bold ${isOutOfStock ? "text-red-600" : isLowStock ? "text-amber-600" : ""}`}>
+                  <span className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Stock</span>
+                  <span className={`text-[18px] font-bold tabular-nums ${isOutOfStock ? "text-rose-600" : isLowStock ? "text-amber-600" : "text-[#0F172A]"}`}>
                     {product.stock} units
                   </span>
                 </div>
                 {(isLowStock || isOutOfStock) && (
                   <div
-                    className={`flex items-center gap-2 rounded-lg p-3 ${
+                    className={`flex items-center gap-2 rounded-xl p-3 ${
                       isOutOfStock
-                        ? "bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400"
-                        : "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400"
+                        ? "bg-rose-50 text-rose-700 border border-rose-200"
+                        : "bg-amber-50 text-amber-700 border border-amber-200"
                     }`}
                   >
                     <AlertTriangle className="size-4 shrink-0" />
-                    <span className="text-xs font-medium">
+                    <span className="text-[12px] font-medium">
                       {isOutOfStock
                         ? "This product is out of stock"
                         : `Low stock alert — only ${product.stock} units remaining`}
                     </span>
                   </div>
                 )}
-                <Separator />
+                <div className="h-px bg-[#F1F5F9]" />
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Low Stock Threshold</span>
-                  <span className="text-sm font-medium">{product.lowStockThreshold} units</span>
+                  <span className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Threshold</span>
+                  <span className="text-[14px] font-medium text-[#0F172A]">{product.lowStockThreshold} units</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Category</span>
-                  <Badge variant="secondary">{product.category}</Badge>
+                  <span className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Category</span>
+                  <span className="inline-flex items-center rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-2.5 py-0.5 text-[12px] font-medium text-[#64748B]">
+                    {product.category}
+                  </span>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </motion.div>
 
           {/* Dates */}
-          <motion.div {...fadeUp} transition={{ delay: 0.16 }}>
-            <Card>
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Created</span>
-                  <span className="text-xs font-medium">
-                    {new Date(product.createdAt).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Last Updated</span>
-                  <span className="text-xs font-medium">
-                    {new Date(product.updatedAt).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.12 }}
+          >
+            <div className="rounded-xl border border-[#E2E8F0] bg-white p-6 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Created</span>
+                <span className="text-[13px] font-medium text-[#0F172A]">
+                  {new Date(product.createdAt).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Updated</span>
+                <span className="text-[13px] font-medium text-[#0F172A]">
+                  {new Date(product.updatedAt).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>

@@ -13,7 +13,6 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { mockOrders, type OrderStatus } from "@/mock/orders-data"
@@ -21,7 +20,7 @@ import { OrderFilters } from "./_components/order-filters"
 import { OrdersTable } from "./_components/orders-table"
 import type { Courier, PaymentStatus } from "@/mock/orders-data"
 
-const statusTabs: { value: string; label: string; count?: number }[] = [
+const statusTabs: { value: string; label: string }[] = [
   { value: "all", label: "All" },
   { value: "pending", label: "Pending" },
   { value: "confirmed", label: "Confirmed" },
@@ -92,19 +91,19 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 max-w-[1400px] mx-auto w-full">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 max-w-[1400px] mx-auto w-full"
+    >
       {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Orders</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              Manage and track your customer orders
-            </p>
-          </div>
-          <Badge variant="secondary" className="ml-1 tabular-nums">
+          <h1 className="text-[28px] font-bold tracking-tight">Orders</h1>
+          <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-sm font-medium text-muted-foreground">
             {mockOrders.length}
-          </Badge>
+          </span>
         </div>
         <Button render={<Link href="/orders/create" />} className="gap-1.5">
           <Plus className="size-4" />
@@ -159,9 +158,10 @@ export default function OrdersPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2"
+            className="fixed inset-x-0 bottom-0 z-50 flex justify-center pb-6"
           >
-            <div className="flex items-center gap-2 rounded-xl border bg-card px-4 py-2.5 shadow-lg ring-1 ring-foreground/10">
+            <div className="absolute inset-0 bg-linear-to-t from-background/80 to-transparent pointer-events-none" />
+            <div className="relative flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-card px-4 py-2.5 shadow-lg">
               <span className="text-sm font-medium mr-1">
                 {selectedCount} selected
               </span>
@@ -186,6 +186,6 @@ export default function OrdersPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   )
 }

@@ -24,18 +24,17 @@ export function DeliveryTimeline({ steps }: { steps: TimelineStep[] }) {
           className="flex gap-3"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.25, delay: i * 0.06 }}
+          transition={{ duration: 0.25, delay: i * 0.03 }}
         >
-          {/* Connector line + dot */}
           <div className="flex flex-col items-center">
             <div
               className={cn(
                 "flex size-7 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
                 step.completed && step.current
-                  ? "border-primary bg-primary text-primary-foreground"
+                  ? "border-[#4F46E5] bg-[#4F46E5] text-white"
                   : step.completed
-                    ? "border-emerald-500 bg-emerald-500 text-white"
-                    : "border-muted-foreground/30 bg-background text-muted-foreground/40"
+                    ? "border-[#10B981] bg-[#10B981] text-white"
+                    : "border-[#E2E8F0] bg-white text-muted-foreground/40"
               )}
             >
               {step.completed ? (
@@ -49,20 +48,19 @@ export function DeliveryTimeline({ steps }: { steps: TimelineStep[] }) {
                 className={cn(
                   "w-0.5 flex-1 min-h-6",
                   step.completed
-                    ? "bg-emerald-500"
-                    : "bg-muted-foreground/20"
+                    ? "bg-[#10B981]"
+                    : "bg-[#E2E8F0]"
                 )}
               />
             )}
           </div>
 
-          {/* Content */}
           <div className="pb-6">
             <p
               className={cn(
                 "text-sm font-medium leading-7",
                 step.current
-                  ? "text-primary font-semibold"
+                  ? "text-[#4F46E5] font-semibold"
                   : step.completed
                     ? "text-foreground"
                     : "text-muted-foreground"

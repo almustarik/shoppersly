@@ -8,14 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import {
   Table,
   TableBody,
   TableCell,
@@ -85,51 +77,41 @@ export function ApiKeysSettings() {
         </p>
       </div>
 
-      <Separator />
-
       {/* Rate Limit Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle>API Rate Limits</CardTitle>
-          <CardDescription>
-            Current limits for your Pro plan.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-lg border p-3 text-center">
-              <p className="text-2xl font-bold text-primary">1,000</p>
-              <p className="text-xs text-muted-foreground">Requests / minute</p>
+      <div className="rounded-xl border border-border bg-card p-6">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold">API Rate Limits</h3>
+          <p className="text-xs text-muted-foreground">Current limits for your Pro plan.</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {[
+            { value: "1,000", label: "Requests / minute" },
+            { value: "100,000", label: "Requests / day" },
+            { value: "10 MB", label: "Max payload size" },
+          ].map((item) => (
+            <div key={item.label} className="rounded-lg border border-border p-3 text-center">
+              <p className="text-2xl font-bold text-primary">{item.value}</p>
+              <p className="text-xs text-muted-foreground">{item.label}</p>
             </div>
-            <div className="rounded-lg border p-3 text-center">
-              <p className="text-2xl font-bold text-primary">100,000</p>
-              <p className="text-xs text-muted-foreground">Requests / day</p>
-            </div>
-            <div className="rounded-lg border p-3 text-center">
-              <p className="text-2xl font-bold text-primary">10 MB</p>
-              <p className="text-xs text-muted-foreground">Max payload size</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          ))}
+        </div>
+      </div>
 
       {/* API Keys Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Your API Keys</CardTitle>
-              <CardDescription>
-                Keep your keys safe — never share them publicly.
-              </CardDescription>
-            </div>
-            <Button size="sm">
-              <Plus className="size-3.5" data-icon="inline-start" />
-              Generate New Key
-            </Button>
+      <div className="rounded-xl border border-border bg-card">
+        <div className="flex items-center justify-between p-6 pb-4">
+          <div>
+            <h3 className="text-sm font-semibold">Your API Keys</h3>
+            <p className="text-xs text-muted-foreground">
+              Keep your keys safe — never share them publicly.
+            </p>
           </div>
-        </CardHeader>
-        <CardContent>
+          <Button size="sm" className="h-8 rounded-lg">
+            <Plus className="size-3.5" data-icon="inline-start" />
+            Generate New Key
+          </Button>
+        </div>
+        <div className="px-6 pb-6">
           <Table>
             <TableHeader>
               <TableRow>
@@ -195,35 +177,36 @@ export function ApiKeysSettings() {
               ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Webhook */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Webhook URL</CardTitle>
-          <CardDescription>
+      <div className="rounded-xl border border-border bg-card p-6">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold">Webhook URL</h3>
+          <p className="text-xs text-muted-foreground">
             We&apos;ll send event payloads to this URL in real time.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="webhookUrl">Endpoint URL</Label>
+          </p>
+        </div>
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="webhookUrl" className="text-[13px]">Endpoint URL</Label>
             <Input
               id="webhookUrl"
               value={webhookUrl}
               onChange={(e) => setWebhookUrl(e.target.value)}
               placeholder="https://your-domain.com/webhooks"
+              className="h-10 font-mono text-xs"
             />
           </div>
           <div className="flex justify-end">
-            <Button size="sm">
+            <Button size="sm" className="h-8 rounded-lg">
               <Save className="size-3.5" data-icon="inline-start" />
               Save Webhook
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

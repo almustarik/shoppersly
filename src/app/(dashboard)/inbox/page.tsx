@@ -51,8 +51,8 @@ export default function InboxPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden rounded-lg border border-border bg-card shadow-sm">
-      {/* Left Panel - Conversations */}
+    <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden rounded-xl border border-[#E2E8F0] bg-white">
+      {/* Left Panel - Conversations (320px) */}
       <div className="w-80 flex-none">
         <ConversationsList
           conversations={conversations}
@@ -69,7 +69,7 @@ export default function InboxPage() {
         onSendMessage={handleSendMessage}
       />
 
-      {/* Right Panel - Customer Sidebar */}
+      {/* Right Panel - Customer Sidebar (280px) */}
       <AnimatePresence>
         {sidebarOpen && activeConversation && (
           <CustomerSidebar

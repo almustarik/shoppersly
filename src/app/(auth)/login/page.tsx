@@ -21,14 +21,12 @@ const loginSchema = z.object({
 
 type LoginValues = z.infer<typeof loginSchema>
 
-const ease = [0.22, 1, 0.36, 1] as const
-
 const fadeIn: Variants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 8 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.4, ease },
+    transition: { delay: i * 0.06, duration: 0.2, ease: "easeOut" },
   }),
 }
 
@@ -66,7 +64,6 @@ export default function LoginPage() {
 
   async function onSubmit(data: LoginValues) {
     setIsLoading(true)
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000))
     console.log("Login:", data)
     setIsLoading(false)
@@ -76,44 +73,25 @@ export default function LoginPage() {
     <motion.div initial="hidden" animate="visible" className="flex flex-col gap-8">
       {/* Header */}
       <motion.div className="flex flex-col gap-2" custom={0} variants={fadeIn}>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <h1 className="text-[28px] font-bold tracking-tight text-foreground">
           Welcome back
         </h1>
         <p className="text-sm text-muted-foreground">
-          Sign in to your account to continue
+          Sign in to your Shoppersly account
         </p>
-      </motion.div>
-
-      {/* Social buttons */}
-      <motion.div className="flex flex-col gap-3" custom={1} variants={fadeIn}>
-        <Button variant="outline" size="lg" className="h-11 w-full gap-2.5 text-sm font-medium">
-          <GoogleIcon className="size-4" />
-          Continue with Google
-        </Button>
-        <Button variant="outline" size="lg" className="h-11 w-full gap-2.5 text-sm font-medium">
-          <FacebookIcon className="size-4" />
-          Continue with Facebook
-        </Button>
-      </motion.div>
-
-      {/* Divider */}
-      <motion.div className="flex items-center gap-3" custom={2} variants={fadeIn}>
-        <div className="h-px flex-1 bg-border" />
-        <span className="text-xs font-medium text-muted-foreground uppercase">or continue with email</span>
-        <div className="h-px flex-1 bg-border" />
       </motion.div>
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-        <motion.div className="flex flex-col gap-1.5" custom={3} variants={fadeIn}>
-          <Label htmlFor="email">Email</Label>
+        <motion.div className="flex flex-col gap-1.5" custom={1} variants={fadeIn}>
+          <Label htmlFor="email" className="text-[13px]">Email</Label>
           <div className="relative">
             <Mail className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="email"
               type="email"
               placeholder="you@example.com"
-              className={cn("h-11 pl-10", errors.email && "border-destructive ring-destructive/20 ring-3")}
+              className={cn("h-10 pl-10", errors.email && "border-destructive ring-destructive/20 ring-2")}
               {...register("email")}
               aria-invalid={!!errors.email}
             />
@@ -123,23 +101,15 @@ export default function LoginPage() {
           )}
         </motion.div>
 
-        <motion.div className="flex flex-col gap-1.5" custom={4} variants={fadeIn}>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
-            <Link
-              href="/forgot-password"
-              className="text-xs font-medium text-primary hover:text-primary/80 transition-colors"
-            >
-              Forgot password?
-            </Link>
-          </div>
+        <motion.div className="flex flex-col gap-1.5" custom={2} variants={fadeIn}>
+          <Label htmlFor="password" className="text-[13px]">Password</Label>
           <div className="relative">
             <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              className={cn("h-11 pr-10 pl-10", errors.password && "border-destructive ring-destructive/20 ring-3")}
+              className={cn("h-10 pr-10 pl-10", errors.password && "border-destructive ring-destructive/20 ring-2")}
               {...register("password")}
               aria-invalid={!!errors.password}
             />
@@ -157,31 +127,54 @@ export default function LoginPage() {
           )}
         </motion.div>
 
-        <motion.div className="flex items-center gap-2" custom={5} variants={fadeIn}>
-          <Checkbox id="remember" />
-          <Label htmlFor="remember" className="text-sm font-normal text-muted-foreground cursor-pointer">
-            Remember me for 30 days
-          </Label>
+        <motion.div className="flex items-center justify-between" custom={3} variants={fadeIn}>
+          <div className="flex items-center gap-2">
+            <Checkbox id="remember" />
+            <Label htmlFor="remember" className="text-sm font-normal text-muted-foreground cursor-pointer">
+              Remember me
+            </Label>
+          </div>
+          <Link
+            href="/forgot-password"
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+          >
+            Forgot password?
+          </Link>
         </motion.div>
 
-        <motion.div custom={6} variants={fadeIn}>
+        <motion.div custom={4} variants={fadeIn}>
           <Button
             type="submit"
-            size="lg"
             disabled={isLoading}
-            className="h-11 w-full text-sm font-semibold"
+            className="h-[44px] w-full rounded-lg text-sm font-medium"
           >
             {isLoading ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Signing in...
-              </>
+              <Loader2 className="size-4 animate-spin" />
             ) : (
               "Sign in"
             )}
           </Button>
         </motion.div>
       </form>
+
+      {/* Social divider */}
+      <motion.div className="flex items-center gap-3" custom={5} variants={fadeIn}>
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs font-medium text-muted-foreground uppercase">OR</span>
+        <div className="h-px flex-1 bg-border" />
+      </motion.div>
+
+      {/* Social buttons */}
+      <motion.div className="flex flex-col gap-3" custom={6} variants={fadeIn}>
+        <Button variant="outline" className="h-10 w-full gap-2.5 rounded-lg text-sm font-medium">
+          <GoogleIcon className="size-4" />
+          Continue with Google
+        </Button>
+        <Button variant="outline" className="h-10 w-full gap-2.5 rounded-lg text-sm font-medium">
+          <FacebookIcon className="size-4" />
+          Continue with Facebook
+        </Button>
+      </motion.div>
 
       {/* Footer */}
       <motion.p

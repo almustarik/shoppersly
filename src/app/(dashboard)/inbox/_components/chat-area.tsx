@@ -5,7 +5,6 @@ import {
   Phone,
   Video,
   MoreHorizontal,
-  ChevronDown,
   Check,
   CheckCheck,
   ArrowDown,
@@ -14,10 +13,7 @@ import { motion, AnimatePresence } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
 import type { Conversation, Message } from "@/mock/inbox-data"
 import { MessageInput } from "./message-input"
 
@@ -66,11 +62,11 @@ function shouldShowDateSeparator(
 function TypingIndicator() {
   return (
     <div className="flex items-end gap-2 px-4">
-      <div className="flex items-center gap-1 rounded-2xl rounded-bl-sm bg-muted px-4 py-2.5">
+      <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-sm bg-[#F8FAFC] border border-[#E2E8F0] px-4 py-2.5">
         {[0, 1, 2].map((i) => (
           <motion.span
             key={i}
-            className="size-1.5 rounded-full bg-muted-foreground/60"
+            className="size-1.5 rounded-full bg-[#64748B]/60"
             animate={{ y: [0, -4, 0] }}
             transition={{
               duration: 0.6,
@@ -118,10 +114,10 @@ export function ChatArea({
 
   if (!conversation) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-background">
-        <div className="rounded-2xl bg-muted p-6">
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-[#FAFBFC]">
+        <div className="rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] p-6">
           <svg
-            className="size-12 text-muted-foreground/40"
+            className="size-12 text-[#64748B]/30"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -130,10 +126,10 @@ export function ChatArea({
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
           </svg>
         </div>
-        <h3 className="text-lg font-medium text-foreground/70">
+        <h3 className="text-[16px] font-medium text-[#0F172A]/70">
           Select a conversation
         </h3>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-[13px] text-[#64748B]">
           Choose a conversation from the sidebar to start messaging
         </p>
       </div>
@@ -143,40 +139,37 @@ export function ChatArea({
   const { customer, messages, isTyping } = conversation
 
   return (
-    <div className="flex flex-1 flex-col bg-background">
-      {/* Header */}
-      <div className="flex flex-none items-center justify-between border-b border-border bg-card px-4 py-2.5">
+    <div className="flex flex-1 flex-col bg-[#FAFBFC]">
+      {/* Header - 56px */}
+      <div className="flex flex-none items-center justify-between border-b border-[#E2E8F0] bg-white px-4 h-14">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Avatar>
-              <AvatarFallback className="bg-primary/10 text-xs font-medium text-primary">
-                {getInitials(customer.name)}
-              </AvatarFallback>
-            </Avatar>
+            <div className="flex items-center justify-center size-9 rounded-full bg-[#4F46E5]/10 text-[#4F46E5] text-[11px] font-semibold">
+              {getInitials(customer.name)}
+            </div>
             {customer.isOnline && (
-              <span className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-card bg-emerald-500" />
+              <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-white bg-[#10B981]" />
             )}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-foreground">
+              <h3 className="text-[14px] font-semibold text-[#0F172A]">
                 {customer.name}
               </h3>
-              <Badge
-                variant="secondary"
+              <span
                 className={cn(
-                  "h-4 rounded-full px-1.5 text-[10px] font-medium text-white",
+                  "inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-semibold text-white",
                   customer.channel === "facebook"
                     ? "bg-blue-500"
                     : "bg-linear-to-r from-purple-500 via-pink-500 to-orange-400"
                 )}
               >
-                {customer.channel === "facebook" ? "Facebook" : "Instagram"}
-              </Badge>
+                {customer.channel === "facebook" ? "FB" : "IG"}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[12px] text-[#64748B]">
               {customer.isOnline ? (
-                <span className="text-emerald-600">Online</span>
+                <span className="text-[#10B981]">Online</span>
               ) : (
                 "Offline"
               )}
@@ -185,21 +178,24 @@ export function ChatArea({
         </div>
 
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon-sm" aria-label="Phone call">
+          <button className="flex items-center justify-center size-9 rounded-lg text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">
             <Phone className="size-4" />
-          </Button>
-          <Button variant="ghost" size="icon-sm" aria-label="Video call">
+          </button>
+          <button className="flex items-center justify-center size-9 rounded-lg text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">
             <Video className="size-4" />
-          </Button>
-          <Separator orientation="vertical" className="mx-1 h-5" />
-          <Button
-            variant={sidebarOpen ? "secondary" : "ghost"}
-            size="icon-sm"
+          </button>
+          <div className="w-px h-5 bg-[#E2E8F0] mx-1" />
+          <button
             onClick={onToggleSidebar}
-            aria-label="Customer info"
+            className={cn(
+              "flex items-center justify-center size-9 rounded-lg transition-colors",
+              sidebarOpen
+                ? "bg-[#F8FAFC] text-[#0F172A]"
+                : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A]"
+            )}
           >
             <MoreHorizontal className="size-4" />
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -214,29 +210,29 @@ export function ChatArea({
             <React.Fragment key={message.id}>
               {shouldShowDateSeparator(messages, index) && (
                 <div className="flex items-center gap-3 py-4">
-                  <div className="h-px flex-1 bg-border" />
-                  <span className="text-[11px] font-medium text-muted-foreground">
+                  <div className="h-px flex-1 bg-[#E2E8F0]" />
+                  <span className="text-[11px] font-medium text-[#64748B]">
                     {formatDateSeparator(message.timestamp)}
                   </span>
-                  <div className="h-px flex-1 bg-border" />
+                  <div className="h-px flex-1 bg-[#E2E8F0]" />
                 </div>
               )}
 
               <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.2, delay: index * 0.03 }}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: index * 0.03 }}
                 className={cn(
-                  "flex max-w-[75%] flex-col",
-                  message.sender === "agent" ? "ml-auto items-end" : "items-start"
+                  "flex flex-col",
+                  message.sender === "agent" ? "ml-auto items-end max-w-[70%]" : "items-start max-w-[70%]"
                 )}
               >
                 <div
                   className={cn(
-                    "relative rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
+                    "relative rounded-2xl px-3.5 py-2.5 text-[14px] leading-relaxed",
                     message.sender === "agent"
-                      ? "rounded-br-sm bg-primary text-primary-foreground"
-                      : "rounded-bl-sm bg-muted text-foreground"
+                      ? "rounded-br-md bg-[#4F46E5] text-white"
+                      : "rounded-bl-md bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A]"
                   )}
                 >
                   {message.content}
@@ -247,13 +243,13 @@ export function ChatArea({
                     message.sender === "agent" ? "flex-row-reverse" : ""
                   )}
                 >
-                  <span className="text-[10px] text-muted-foreground/70">
+                  <span className="text-[10px] text-[#64748B]/70">
                     {formatMessageTime(message.timestamp)}
                   </span>
                   {message.sender === "agent" && (
-                    <span className="text-muted-foreground/60">
+                    <span className="text-[#64748B]/60">
                       {message.seen ? (
-                        <CheckCheck className="size-3 text-primary" />
+                        <CheckCheck className="size-3 text-[#4F46E5]" />
                       ) : (
                         <Check className="size-3" />
                       )}
@@ -284,14 +280,12 @@ export function ChatArea({
               exit={{ opacity: 0, scale: 0.8 }}
               className="absolute bottom-4 left-1/2 -translate-x-1/2"
             >
-              <Button
-                variant="secondary"
-                size="icon-sm"
+              <button
                 onClick={scrollToBottom}
-                className="rounded-full shadow-md"
+                className="flex items-center justify-center size-9 rounded-full bg-white border border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] transition-colors"
               >
                 <ArrowDown className="size-4" />
-              </Button>
+              </button>
             </motion.div>
           )}
         </AnimatePresence>

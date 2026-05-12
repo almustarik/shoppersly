@@ -74,23 +74,19 @@ const roleConfig: Record<
 > = {
   owner: {
     label: "Merchant / Owner",
-    className:
-      "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
+    className: "bg-indigo-50 text-indigo-700 border border-indigo-200",
   },
   admin: {
     label: "Admin",
-    className:
-      "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
+    className: "bg-violet-50 text-violet-700 border border-violet-200",
   },
   agent: {
     label: "Support Agent",
-    className:
-      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+    className: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   },
   staff: {
     label: "Staff",
-    className:
-      "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400",
+    className: "bg-slate-100 text-slate-600 border border-slate-200",
   },
 }
 

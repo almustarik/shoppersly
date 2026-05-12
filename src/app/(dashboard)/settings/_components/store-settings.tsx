@@ -10,20 +10,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
 
 const storeSettingsSchema = z.object({
   storeName: z.string().min(2, "Store name must be at least 2 characters"),
@@ -78,56 +70,53 @@ export function StoreSettings() {
         </p>
       </div>
 
-      <Separator />
-
       {/* Logo */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Store Logo</CardTitle>
-          <CardDescription>
-            Upload your store logo. Recommended size: 512×512px.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-6">
-            <div className="flex size-20 items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/25 bg-muted/50">
-              <Store className="size-8 text-muted-foreground/50" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Button type="button" variant="outline" size="sm">
-                <Upload className="size-3.5" data-icon="inline-start" />
-                Upload Image
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                PNG, JPG or SVG. Max 2MB.
-              </p>
-            </div>
+      <div className="rounded-xl border border-border bg-card p-6">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold">Store Logo</h3>
+          <p className="text-xs text-muted-foreground">
+            Upload your store logo. Recommended size: 512x512px.
+          </p>
+        </div>
+        <div className="flex items-center gap-6">
+          <div className="flex size-20 items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/25 bg-muted/50">
+            <Store className="size-8 text-muted-foreground/50" />
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex flex-col gap-2">
+            <Button type="button" variant="outline" size="sm" className="h-9 rounded-lg">
+              <Upload className="size-3.5" data-icon="inline-start" />
+              Upload Image
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              PNG, JPG or SVG. Max 2MB.
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Basic Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
-          <CardDescription>
+      <div className="rounded-xl border border-border bg-card p-6">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold">Basic Information</h3>
+          <p className="text-xs text-muted-foreground">
             Your store name and description as shown to customers.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="storeName">Store Name</Label>
+          </p>
+        </div>
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="storeName" className="text-[13px]">Store Name</Label>
             <Input
               id="storeName"
               placeholder="Your store name"
+              className="h-10"
               {...register("storeName")}
             />
             {errors.storeName && (
               <p className="text-xs text-destructive">{errors.storeName.message}</p>
             )}
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="description" className="text-[13px]">Description</Label>
             <Textarea
               id="description"
               placeholder="Tell customers about your store..."
@@ -138,155 +127,143 @@ export function StoreSettings() {
               <p className="text-xs text-destructive">{errors.description.message}</p>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Contact */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Contact Information</CardTitle>
-          <CardDescription>
+      <div className="rounded-xl border border-border bg-card p-6">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold">Contact Information</h3>
+          <p className="text-xs text-muted-foreground">
             How customers and delivery partners can reach you.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="contactEmail">Email</Label>
-              <Input
-                id="contactEmail"
-                type="email"
-                placeholder="store@example.com"
-                {...register("contactEmail")}
-              />
-              {errors.contactEmail && (
-                <p className="text-xs text-destructive">{errors.contactEmail.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="contactPhone">Phone</Label>
-              <Input
-                id="contactPhone"
-                type="tel"
-                placeholder="+880 1XXX-XXXXXX"
-                {...register("contactPhone")}
-              />
-              {errors.contactPhone && (
-                <p className="text-xs text-destructive">{errors.contactPhone.message}</p>
-              )}
-            </div>
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="contactEmail" className="text-[13px]">Email</Label>
+            <Input
+              id="contactEmail"
+              type="email"
+              placeholder="store@example.com"
+              className="h-10"
+              {...register("contactEmail")}
+            />
+            {errors.contactEmail && (
+              <p className="text-xs text-destructive">{errors.contactEmail.message}</p>
+            )}
           </div>
-        </CardContent>
-      </Card>
+          <div className="space-y-1.5">
+            <Label htmlFor="contactPhone" className="text-[13px]">Phone</Label>
+            <Input
+              id="contactPhone"
+              type="tel"
+              placeholder="+880 1XXX-XXXXXX"
+              className="h-10"
+              {...register("contactPhone")}
+            />
+            {errors.contactPhone && (
+              <p className="text-xs text-destructive">{errors.contactPhone.message}</p>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Address */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Store Address</CardTitle>
-          <CardDescription>
+      <div className="rounded-xl border border-border bg-card p-6">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold">Store Address</h3>
+          <p className="text-xs text-muted-foreground">
             Used for delivery calculations and invoices.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="addressLine1">Address Line 1</Label>
+          </p>
+        </div>
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="addressLine1" className="text-[13px]">Address Line 1</Label>
             <Input
               id="addressLine1"
               placeholder="House, Road, Area"
+              className="h-10"
               {...register("addressLine1")}
             />
             {errors.addressLine1 && (
               <p className="text-xs text-destructive">{errors.addressLine1.message}</p>
             )}
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="addressLine2">Address Line 2</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="addressLine2" className="text-[13px]">Address Line 2</Label>
             <Input
               id="addressLine2"
               placeholder="Block, Sector (optional)"
+              className="h-10"
               {...register("addressLine2")}
             />
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
-              <Input
-                id="city"
-                placeholder="City"
-                {...register("city")}
-              />
+            <div className="space-y-1.5">
+              <Label htmlFor="city" className="text-[13px]">City</Label>
+              <Input id="city" placeholder="City" className="h-10" {...register("city")} />
               {errors.city && (
                 <p className="text-xs text-destructive">{errors.city.message}</p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="district">District</Label>
-              <Input
-                id="district"
-                placeholder="District"
-                {...register("district")}
-              />
+            <div className="space-y-1.5">
+              <Label htmlFor="district" className="text-[13px]">District</Label>
+              <Input id="district" placeholder="District" className="h-10" {...register("district")} />
               {errors.district && (
                 <p className="text-xs text-destructive">{errors.district.message}</p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="postalCode">Postal Code</Label>
-              <Input
-                id="postalCode"
-                placeholder="1000"
-                {...register("postalCode")}
-              />
+            <div className="space-y-1.5">
+              <Label htmlFor="postalCode" className="text-[13px]">Postal Code</Label>
+              <Input id="postalCode" placeholder="1000" className="h-10" {...register("postalCode")} />
               {errors.postalCode && (
                 <p className="text-xs text-destructive">{errors.postalCode.message}</p>
               )}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Regional */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Regional Settings</CardTitle>
-          <CardDescription>
+      <div className="rounded-xl border border-border bg-card p-6">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold">Regional Settings</h3>
+          <p className="text-xs text-muted-foreground">
             Currency and timezone for your store.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Currency</Label>
-              <Select defaultValue="BDT">
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select currency" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="BDT">৳ BDT — Bangladeshi Taka</SelectItem>
-                  <SelectItem value="USD">$ USD — US Dollar</SelectItem>
-                  <SelectItem value="INR">₹ INR — Indian Rupee</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Timezone</Label>
-              <Select defaultValue="Asia/Dhaka">
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select timezone" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Asia/Dhaka">Asia/Dhaka (GMT+6)</SelectItem>
-                  <SelectItem value="Asia/Kolkata">Asia/Kolkata (GMT+5:30)</SelectItem>
-                  <SelectItem value="UTC">UTC (GMT+0)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label className="text-[13px]">Currency</Label>
+            <Select defaultValue="BDT">
+              <SelectTrigger className="h-10 w-full">
+                <SelectValue placeholder="Select currency" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="BDT">BDT — Bangladeshi Taka</SelectItem>
+                <SelectItem value="USD">USD — US Dollar</SelectItem>
+                <SelectItem value="INR">INR — Indian Rupee</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </CardContent>
-      </Card>
+          <div className="space-y-1.5">
+            <Label className="text-[13px]">Timezone</Label>
+            <Select defaultValue="Asia/Dhaka">
+              <SelectTrigger className="h-10 w-full">
+                <SelectValue placeholder="Select timezone" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Asia/Dhaka">Asia/Dhaka (GMT+6)</SelectItem>
+                <SelectItem value="Asia/Kolkata">Asia/Kolkata (GMT+5:30)</SelectItem>
+                <SelectItem value="UTC">UTC (GMT+0)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={!isDirty}>
+        <Button type="submit" disabled={!isDirty} className="h-10 rounded-lg">
           <Save className="size-3.5" data-icon="inline-start" />
           Save Changes
         </Button>

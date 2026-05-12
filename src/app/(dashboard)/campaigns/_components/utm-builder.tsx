@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react"
 import { Copy, Check, Link2 } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -64,57 +63,54 @@ export function UTMBuilder() {
   ]
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Link2 className="size-4" />
-          UTM Builder
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-5">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {fields.map((field) => (
-            <div
-              key={field.key}
-              className={field.key === "url" ? "sm:col-span-2" : ""}
-            >
-              <Label htmlFor={field.key} className="mb-1.5 text-xs">
-                {field.label}
-              </Label>
-              <Input
-                id={field.key}
-                value={params[field.key]}
-                onChange={(e) => update(field.key, e.target.value)}
-                placeholder={field.placeholder}
-              />
-            </div>
-          ))}
-        </div>
+    <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+      <div className="mb-5 flex items-center gap-2">
+        <Link2 className="size-4 text-[#4F46E5]" />
+        <h3 className="text-[14px] font-semibold">UTM Builder</h3>
+      </div>
 
-        {/* Generated URL */}
-        <div>
-          <Label className="mb-1.5 text-xs">Generated URL</Label>
-          <div className="flex items-stretch gap-2">
-            <div className="flex-1 overflow-hidden rounded-lg border bg-muted/50 px-3 py-2">
-              <p className="truncate font-mono text-xs text-muted-foreground">
-                {generatedUrl || "Enter a URL above to generate"}
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleCopy}
-              disabled={!generatedUrl}
-            >
-              {copied ? (
-                <Check className="size-4 text-emerald-500" />
-              ) : (
-                <Copy className="size-4" />
-              )}
-            </Button>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {fields.map((field) => (
+          <div
+            key={field.key}
+            className={field.key === "url" ? "sm:col-span-2" : ""}
+          >
+            <Label htmlFor={field.key} className="mb-1.5 text-xs font-medium text-muted-foreground">
+              {field.label}
+            </Label>
+            <Input
+              id={field.key}
+              value={params[field.key]}
+              onChange={(e) => update(field.key, e.target.value)}
+              placeholder={field.placeholder}
+            />
           </div>
+        ))}
+      </div>
+
+      <div className="mt-5">
+        <Label className="mb-1.5 text-xs font-medium text-muted-foreground">Generated URL</Label>
+        <div className="flex items-stretch gap-2">
+          <div className="flex-1 overflow-hidden rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5">
+            <p className="truncate font-mono text-xs text-muted-foreground">
+              {generatedUrl || "Enter a URL above to generate"}
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleCopy}
+            disabled={!generatedUrl}
+            className="shrink-0"
+          >
+            {copied ? (
+              <Check className="size-4 text-[#10B981]" />
+            ) : (
+              <Copy className="size-4" />
+            )}
+          </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

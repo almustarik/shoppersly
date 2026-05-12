@@ -71,21 +71,22 @@ export function InviteMemberDialog({ children }: { children: React.ReactNode }) 
         </DialogHeader>
 
         <div className="space-y-4 py-2">
-          <div className="space-y-2">
-            <Label htmlFor="invite-email">Email Address</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="invite-email" className="text-[13px]">Email Address</Label>
             <Input
               id="invite-email"
               type="email"
               placeholder="member@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="h-10"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label>Role</Label>
+          <div className="space-y-1.5">
+            <Label className="text-[13px]">Role</Label>
             <Select value={role} onValueChange={(v) => v && setRole(v)}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="h-10 w-full">
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
               <SelectContent>
@@ -96,13 +97,12 @@ export function InviteMemberDialog({ children }: { children: React.ReactNode }) 
             </Select>
           </div>
 
-          {/* Permissions Preview */}
-          <div className="space-y-2">
-            <Label className="flex items-center gap-1.5">
+          <div className="space-y-1.5">
+            <Label className="flex items-center gap-1.5 text-[13px]">
               <Shield className="size-3.5 text-muted-foreground" />
               Permissions Preview
             </Label>
-            <div className="rounded-lg border bg-muted/30 p-3">
+            <div className="rounded-lg border border-border bg-muted/30 p-3">
               <div className="flex flex-wrap gap-1.5">
                 {currentPermissions.map((perm) => (
                   <span
@@ -118,7 +118,7 @@ export function InviteMemberDialog({ children }: { children: React.ReactNode }) 
         </div>
 
         <DialogFooter>
-          <Button onClick={handleInvite} disabled={!email} className="w-full sm:w-auto">
+          <Button onClick={handleInvite} disabled={!email} className="h-10 rounded-lg w-full sm:w-auto">
             <Send className="size-3.5" data-icon="inline-start" />
             Send Invite
           </Button>

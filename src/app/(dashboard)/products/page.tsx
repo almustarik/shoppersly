@@ -13,7 +13,6 @@ import {
   Eye,
   Pencil,
   Trash2,
-  AlertTriangle,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -46,87 +45,81 @@ import { products, productCategories } from "@/mock/products-data"
 type ViewMode = "grid" | "table"
 
 const statusConfig = {
-  active: { label: "Active", variant: "default" as const, className: "bg-emerald-500/10 text-emerald-700 ring-emerald-500/20" },
-  draft: { label: "Draft", variant: "secondary" as const, className: "bg-amber-500/10 text-amber-700 ring-amber-500/20" },
-  archived: { label: "Archived", variant: "outline" as const, className: "bg-zinc-500/10 text-zinc-600 ring-zinc-500/20" },
+  active: { label: "Active", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  draft: { label: "Draft", className: "bg-amber-50 text-amber-700 border-amber-200" },
+  archived: { label: "Archived", className: "bg-zinc-50 text-zinc-600 border-zinc-200" },
 }
 
 function formatPrice(price: number) {
   return `৳${price.toLocaleString("en-BD")}`
 }
 
-function ProductImagePlaceholder() {
+function StockIndicator({ stock, threshold }: { stock: number; threshold: number }) {
+  if (stock === 0) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-[13px] text-rose-600">
+        <span className="size-1.5 rounded-full bg-rose-500" />
+        Out of stock
+      </span>
+    )
+  }
+  if (stock <= threshold) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-[13px] text-amber-600">
+        <span className="size-1.5 rounded-full bg-amber-500" />
+        Low: {stock} left
+      </span>
+    )
+  }
   return (
-    <div className="flex items-center justify-center bg-muted rounded-lg aspect-square">
-      <Package className="size-8 text-muted-foreground/40" />
-    </div>
+    <span className="text-[13px] text-[#64748B]">{stock} in stock</span>
   )
 }
 
 function ProductCard({ product, index }: { product: typeof products[0]; index: number }) {
   const status = statusConfig[product.status]
-  const isLowStock = product.stock > 0 && product.stock <= product.lowStockThreshold
-  const isOutOfStock = product.stock === 0
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
+      transition={{ duration: 0.25, delay: index * 0.03 }}
     >
       <Link href={`/products/${product.id}`}>
-        <Card className="group cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-primary/20 hover:shadow-md">
-          <CardContent className="p-0">
-            <div className="relative">
-              <ProductImagePlaceholder />
-              <div className="absolute top-2 right-2">
-                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${status.className}`}>
-                  {status.label}
+        <div className="group cursor-pointer rounded-xl border border-[#E2E8F0] bg-white p-0 transition-all duration-200 hover:border-[#4F46E5]/20">
+          <div className="relative">
+            <div className="flex items-center justify-center rounded-t-xl bg-[#F8FAFC] aspect-4/3">
+              <Package className="size-12 text-[#64748B]/30" />
+            </div>
+            <div className="absolute top-3 right-3">
+              <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${status.className}`}>
+                {status.label}
+              </span>
+            </div>
+          </div>
+          <div className="p-4 space-y-2">
+            <h3 className="font-medium text-[14px] leading-snug line-clamp-2 text-[#0F172A] group-hover:text-[#4F46E5] transition-colors">
+              {product.name}
+            </h3>
+            <p className="text-[13px] text-[#64748B]">{product.category}</p>
+            <div className="flex items-center justify-between pt-1">
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-semibold text-[15px] tabular-nums text-[#0F172A]">
+                  {formatPrice(product.price)}
                 </span>
-              </div>
-              {isOutOfStock && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-t-lg">
-                  <span className="rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white">
-                    Out of Stock
+                {product.compareAtPrice && (
+                  <span className="text-[12px] text-[#64748B] line-through">
+                    {formatPrice(product.compareAtPrice)}
                   </span>
-                </div>
-              )}
-            </div>
-            <div className="p-4 space-y-2">
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="font-medium text-sm leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-                  {product.name}
-                </h3>
-              </div>
-              <p className="text-xs text-muted-foreground">{product.category}</p>
-              <div className="flex items-center justify-between pt-1">
-                <div className="flex items-baseline gap-1.5">
-                  <span className="font-semibold text-base">{formatPrice(product.price)}</span>
-                  {product.compareAtPrice && (
-                    <span className="text-xs text-muted-foreground line-through">
-                      {formatPrice(product.compareAtPrice)}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center justify-between pt-1">
-                <div className="flex items-center gap-1.5">
-                  {isLowStock ? (
-                    <span className="flex items-center gap-1 text-xs text-amber-600">
-                      <AlertTriangle className="size-3" />
-                      Low: {product.stock} left
-                    </span>
-                  ) : isOutOfStock ? (
-                    <span className="text-xs text-red-600 font-medium">Out of stock</span>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">{product.stock} in stock</span>
-                  )}
-                </div>
-                <span className="text-xs text-muted-foreground">{product.totalSold} sold</span>
+                )}
               </div>
             </div>
-          </CardContent>
-        </Card>
+            <div className="flex items-center justify-between pt-1">
+              <StockIndicator stock={product.stock} threshold={product.lowStockThreshold} />
+              <span className="text-[12px] text-[#64748B]">{product.totalSold} sold</span>
+            </div>
+          </div>
+        </div>
       </Link>
     </motion.div>
   )
@@ -153,35 +146,45 @@ export default function ProductsPage() {
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Products</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {products.length} products &middot; {activeCount} active
-          </p>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div className="flex items-center gap-3">
+          <h1 className="text-[28px] font-bold tracking-tight text-[#0F172A]">Products</h1>
+          <span className="inline-flex items-center rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-2.5 py-0.5 text-[12px] font-medium text-[#64748B] tabular-nums">
+            {products.length} total &middot; {activeCount} active
+          </span>
         </div>
         <Link href="/products/create">
-          <Button>
+          <Button className="bg-[#4F46E5] hover:bg-[#4338CA] text-white">
             <Plus className="size-4 mr-1.5" />
             Add Product
           </Button>
         </Link>
-      </div>
+      </motion.div>
 
       {/* Filters & View Toggle */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.03 }}
+        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+      >
         <div className="flex flex-1 items-center gap-3">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#64748B]" />
             <Input
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-9 h-10 rounded-lg bg-[#F8FAFC]/50 border-[#E2E8F0]"
             />
           </div>
           <Select value={selectedCategory} onValueChange={(v) => v && setSelectedCategory(v)}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-[160px] h-10 border-[#E2E8F0]">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -194,23 +197,29 @@ export default function ProductsPage() {
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center gap-1 rounded-lg border p-0.5">
-          <Button
-            variant={viewMode === "grid" ? "secondary" : "ghost"}
-            size="icon-sm"
+        <div className="flex items-center gap-1 rounded-lg border border-[#E2E8F0] p-1">
+          <button
             onClick={() => setViewMode("grid")}
+            className={`flex items-center justify-center size-8 rounded-md transition-colors ${
+              viewMode === "grid"
+                ? "bg-[#F8FAFC] text-[#0F172A]"
+                : "text-[#64748B] hover:text-[#0F172A]"
+            }`}
           >
             <LayoutGrid className="size-4" />
-          </Button>
-          <Button
-            variant={viewMode === "table" ? "secondary" : "ghost"}
-            size="icon-sm"
+          </button>
+          <button
             onClick={() => setViewMode("table")}
+            className={`flex items-center justify-center size-8 rounded-md transition-colors ${
+              viewMode === "table"
+                ? "bg-[#F8FAFC] text-[#0F172A]"
+                : "text-[#64748B] hover:text-[#0F172A]"
+            }`}
           >
             <List className="size-4" />
-          </Button>
+          </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Content */}
       <AnimatePresence mode="wait">
@@ -235,75 +244,66 @@ export default function ProductsPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <Card>
+            <div className="rounded-xl border border-[#E2E8F0] bg-white overflow-hidden">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-12"></TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>SKU</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead className="text-right">Price</TableHead>
-                    <TableHead className="text-right">Stock</TableHead>
-                    <TableHead>Status</TableHead>
+                  <TableRow className="bg-[#F8FAFC] border-b border-[#E2E8F0] hover:bg-[#F8FAFC]">
+                    <TableHead className="w-12 text-[12px] uppercase tracking-wider font-semibold text-[#64748B]"></TableHead>
+                    <TableHead className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Name</TableHead>
+                    <TableHead className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">SKU</TableHead>
+                    <TableHead className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Category</TableHead>
+                    <TableHead className="text-right text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Price</TableHead>
+                    <TableHead className="text-right text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Stock</TableHead>
+                    <TableHead className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">Status</TableHead>
                     <TableHead className="w-10"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredProducts.map((product, i) => {
                     const status = statusConfig[product.status]
-                    const isLowStock = product.stock > 0 && product.stock <= product.lowStockThreshold
-                    const isOutOfStock = product.stock === 0
 
                     return (
                       <motion.tr
                         key={product.id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.2, delay: i * 0.03 }}
-                        className="border-b transition-colors hover:bg-muted/50"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.25, delay: i * 0.03 }}
+                        className="border-b border-[#F1F5F9] transition-colors hover:bg-[#F8FAFC]/50"
                       >
                         <TableCell>
-                          <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
-                            <Package className="size-4 text-muted-foreground/60" />
+                          <div className="flex size-10 items-center justify-center rounded-xl bg-[#F8FAFC]">
+                            <Package className="size-4 text-[#64748B]/50" />
                           </div>
                         </TableCell>
                         <TableCell>
                           <Link
                             href={`/products/${product.id}`}
-                            className="font-medium hover:text-primary transition-colors"
+                            className="font-medium text-[14px] text-[#0F172A] hover:text-[#4F46E5] transition-colors"
                           >
                             {product.name}
                           </Link>
                         </TableCell>
-                        <TableCell className="text-muted-foreground font-mono text-xs">
+                        <TableCell className="text-[#64748B] font-mono text-[12px]">
                           {product.sku}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">{product.category}</Badge>
+                          <span className="text-[13px] text-[#64748B]">{product.category}</span>
                         </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {formatPrice(product.price)}
+                        <TableCell className="text-right">
+                          <span className="font-semibold text-[14px] tabular-nums text-[#0F172A]">
+                            {formatPrice(product.price)}
+                          </span>
                           {product.compareAtPrice && (
-                            <span className="block text-xs text-muted-foreground line-through">
+                            <span className="block text-[12px] text-[#64748B] line-through">
                               {formatPrice(product.compareAtPrice)}
                             </span>
                           )}
                         </TableCell>
                         <TableCell className="text-right">
-                          {isOutOfStock ? (
-                            <span className="text-red-600 font-medium">0</span>
-                          ) : isLowStock ? (
-                            <span className="flex items-center justify-end gap-1 text-amber-600">
-                              <AlertTriangle className="size-3" />
-                              {product.stock}
-                            </span>
-                          ) : (
-                            product.stock
-                          )}
+                          <StockIndicator stock={product.stock} threshold={product.lowStockThreshold} />
                         </TableCell>
                         <TableCell>
-                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${status.className}`}>
+                          <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${status.className}`}>
                             {status.label}
                           </span>
                         </TableCell>
@@ -312,7 +312,7 @@ export default function ProductsPage() {
                             <DropdownMenuTrigger
                               render={
                                 <Button variant="ghost" size="icon-xs">
-                                  <MoreHorizontal className="size-4" />
+                                  <MoreHorizontal className="size-4 text-[#64748B]" />
                                 </Button>
                               }
                             />
@@ -339,24 +339,24 @@ export default function ProductsPage() {
                 </TableBody>
               </Table>
               {filteredProducts.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Package className="size-10 text-muted-foreground/40 mb-3" />
-                  <p className="text-sm font-medium text-muted-foreground">No products found</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <Package className="size-10 text-[#64748B]/30 mb-3" />
+                  <p className="text-[14px] font-medium text-[#64748B]">No products found</p>
+                  <p className="text-[13px] text-[#64748B] mt-1">
                     Try adjusting your search or filter
                   </p>
                 </div>
               )}
-            </Card>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {filteredProducts.length === 0 && viewMode === "grid" && (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Package className="size-12 text-muted-foreground/40 mb-3" />
-          <p className="text-sm font-medium text-muted-foreground">No products found</p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <Package className="size-12 text-[#64748B]/30 mb-3" />
+          <p className="text-[14px] font-medium text-[#64748B]">No products found</p>
+          <p className="text-[13px] text-[#64748B] mt-1">
             Try adjusting your search or filter
           </p>
         </div>

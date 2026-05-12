@@ -19,40 +19,34 @@ import {
   MessageSquare,
   StickyNote,
   Plus,
-  Crown,
-  UserCheck,
-  UserPlus,
-  AlertCircle,
   Clock,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { customers } from "@/mock/customers-data"
 import type { CustomerSegment, OrderStatus } from "@/types"
 
 const segmentConfig: Record<
   CustomerSegment,
-  { label: string; icon: typeof Crown; className: string }
+  { label: string; className: string }
 > = {
-  vip: { label: "VIP", icon: Crown, className: "bg-amber-500/10 text-amber-700 ring-amber-500/20" },
-  regular: { label: "Regular", icon: UserCheck, className: "bg-blue-500/10 text-blue-700 ring-blue-500/20" },
-  new: { label: "New", icon: UserPlus, className: "bg-emerald-500/10 text-emerald-700 ring-emerald-500/20" },
-  "at-risk": { label: "At-risk", icon: AlertCircle, className: "bg-red-500/10 text-red-700 ring-red-500/20" },
+  vip: { label: "VIP", className: "bg-violet-50 text-violet-700 border-violet-200" },
+  regular: { label: "Regular", className: "bg-sky-50 text-sky-700 border-sky-200" },
+  new: { label: "New", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  "at-risk": { label: "At-risk", className: "bg-rose-50 text-rose-700 border-rose-200" },
 }
 
 const orderStatusConfig: Record<OrderStatus, { label: string; className: string }> = {
-  pending: { label: "Pending", className: "bg-zinc-500/10 text-zinc-600 ring-zinc-500/20" },
-  confirmed: { label: "Confirmed", className: "bg-blue-500/10 text-blue-700 ring-blue-500/20" },
-  processing: { label: "Processing", className: "bg-amber-500/10 text-amber-700 ring-amber-500/20" },
-  shipped: { label: "Shipped", className: "bg-indigo-500/10 text-indigo-700 ring-indigo-500/20" },
-  delivered: { label: "Delivered", className: "bg-emerald-500/10 text-emerald-700 ring-emerald-500/20" },
-  cancelled: { label: "Cancelled", className: "bg-red-500/10 text-red-700 ring-red-500/20" },
-  refunded: { label: "Refunded", className: "bg-orange-500/10 text-orange-700 ring-orange-500/20" },
+  pending: { label: "Pending", className: "bg-zinc-50 text-zinc-600 border-zinc-200" },
+  confirmed: { label: "Confirmed", className: "bg-blue-50 text-blue-700 border-blue-200" },
+  processing: { label: "Processing", className: "bg-amber-50 text-amber-700 border-amber-200" },
+  shipped: { label: "Shipped", className: "bg-indigo-50 text-indigo-700 border-indigo-200" },
+  delivered: { label: "Delivered", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  cancelled: { label: "Cancelled", className: "bg-rose-50 text-rose-700 border-rose-200" },
+  refunded: { label: "Refunded", className: "bg-orange-50 text-orange-700 border-orange-200" },
 }
 
 const activityIcons = {
@@ -62,6 +56,15 @@ const activityIcons = {
   message_sent: MessageSquare,
   note_added: StickyNote,
   refund: DollarSign,
+}
+
+const activityColors = {
+  order_placed: "bg-[#4F46E5]",
+  payment_received: "bg-[#10B981]",
+  delivered: "bg-[#10B981]",
+  message_sent: "bg-sky-500",
+  note_added: "bg-amber-500",
+  refund: "bg-rose-500",
 }
 
 function formatPrice(price: number) {
@@ -105,12 +108,6 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(days / 30)} months ago`
 }
 
-const fadeUp = {
-  initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.35 },
-}
-
 export default function CustomerDetailPage({
   params,
 }: {
@@ -123,13 +120,13 @@ export default function CustomerDetailPage({
   if (!customer) {
     return (
       <div className="flex flex-col items-center justify-center py-24">
-        <Users className="size-12 text-muted-foreground/40 mb-4" />
-        <h2 className="text-lg font-semibold">Customer not found</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <Users className="size-12 text-[#64748B]/30 mb-4" />
+        <h2 className="text-lg font-semibold text-[#0F172A]">Customer not found</h2>
+        <p className="text-[14px] text-[#64748B] mt-1">
           The customer you&apos;re looking for doesn&apos;t exist.
         </p>
         <Link href="/customers" className="mt-4">
-          <Button variant="outline">
+          <Button variant="outline" className="border-[#E2E8F0]">
             <ArrowLeft className="size-4 mr-1.5" />
             Back to Customers
           </Button>
@@ -139,42 +136,43 @@ export default function CustomerDetailPage({
   }
 
   const seg = segmentConfig[customer.segment]
-  const SegIcon = seg.icon
 
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* Header */}
-      <motion.div {...fadeUp} className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+      >
         <div className="flex items-start gap-4">
           <Link href="/customers">
-            <Button variant="ghost" size="icon-sm" className="mt-1">
+            <button className="flex items-center justify-center size-9 rounded-lg border border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors mt-1">
               <ArrowLeft className="size-4" />
-            </Button>
+            </button>
           </Link>
           <div className="flex items-center gap-4">
-            <Avatar size="lg" className="size-16">
-              <AvatarFallback className="bg-primary/10 text-primary text-lg font-bold">
-                {getInitials(customer.name)}
-              </AvatarFallback>
-            </Avatar>
+            <div className="flex items-center justify-center size-16 rounded-full bg-[#4F46E5]/10 text-[#4F46E5] text-lg font-bold shrink-0">
+              {getInitials(customer.name)}
+            </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold tracking-tight">{customer.name}</h1>
-                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${seg.className}`}>
-                  <SegIcon className="size-3" />
+              <div className="flex items-center gap-3">
+                <h1 className="text-[24px] font-bold tracking-tight text-[#0F172A]">{customer.name}</h1>
+                <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${seg.className}`}>
                   {seg.label}
                 </span>
               </div>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-sm text-muted-foreground">
-                <span className="inline-flex items-center gap-1">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-[13px] text-[#64748B]">
+                <span className="inline-flex items-center gap-1.5">
                   <Phone className="size-3.5" />
                   {customer.phone}
                 </span>
-                <span className="inline-flex items-center gap-1">
+                <span className="inline-flex items-center gap-1.5">
                   <Mail className="size-3.5" />
                   {customer.email}
                 </span>
-                <span className="inline-flex items-center gap-1">
+                <span className="inline-flex items-center gap-1.5">
                   <MapPin className="size-3.5" />
                   {customer.address}, {customer.city}
                 </span>
@@ -182,9 +180,12 @@ export default function CustomerDetailPage({
               {customer.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {customer.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="text-[10px]">
+                    <span
+                      key={tag}
+                      className="inline-flex items-center rounded-full bg-[#F8FAFC] border border-[#E2E8F0] px-2 py-0.5 text-[11px] font-medium text-[#64748B]"
+                    >
                       {tag}
-                    </Badge>
+                    </span>
                   ))}
                 </div>
               )}
@@ -192,11 +193,11 @@ export default function CustomerDetailPage({
           </div>
         </div>
         <div className="flex items-center gap-2 ml-12 sm:ml-0">
-          <Button variant="outline">
+          <Button variant="outline" className="border-[#E2E8F0]">
             <MessageSquare className="size-4 mr-1.5" />
             Message
           </Button>
-          <Button>
+          <Button className="bg-[#4F46E5] hover:bg-[#4338CA] text-white">
             <ShoppingBag className="size-4 mr-1.5" />
             Create Order
           </Button>
@@ -204,60 +205,70 @@ export default function CustomerDetailPage({
       </motion.div>
 
       {/* Stats Row */}
-      <motion.div {...fadeUp} transition={{ delay: 0.05 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.03 }}
+      >
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {[
             {
               label: "Total Orders",
               value: customer.totalOrders.toString(),
               icon: ShoppingBag,
-              color: "text-primary",
+              color: "text-[#4F46E5]",
+              bg: "bg-[#4F46E5]/10",
             },
             {
               label: "Total Spent",
               value: formatPrice(customer.totalSpent),
               icon: TrendingUp,
-              color: "text-emerald-600",
+              color: "text-[#10B981]",
+              bg: "bg-[#10B981]/10",
             },
             {
               label: "Avg. Order Value",
               value: formatPrice(customer.averageOrderValue),
               icon: DollarSign,
-              color: "text-blue-600",
+              color: "text-sky-600",
+              bg: "bg-sky-50",
             },
             {
               label: "Last Order",
               value: timeAgo(customer.lastOrderDate),
               icon: Calendar,
-              color: "text-amber-600",
+              color: "text-[#F59E0B]",
+              bg: "bg-[#F59E0B]/10",
             },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.05 }}
+              transition={{ delay: 0.06 + i * 0.03 }}
             >
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex size-10 items-center justify-center rounded-xl bg-muted">
-                      <stat.icon className={`size-5 ${stat.color}`} />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">{stat.label}</p>
-                      <p className="text-lg font-bold">{stat.value}</p>
-                    </div>
+              <div className="rounded-xl border border-[#E2E8F0] bg-white p-4">
+                <div className="flex items-center gap-3">
+                  <div className={`flex size-10 items-center justify-center rounded-xl ${stat.bg}`}>
+                    <stat.icon className={`size-5 ${stat.color}`} />
                   </div>
-                </CardContent>
-              </Card>
+                  <div>
+                    <p className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">{stat.label}</p>
+                    <p className="text-[18px] font-bold text-[#0F172A] tabular-nums">{stat.value}</p>
+                  </div>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
       </motion.div>
 
       {/* Tabs */}
-      <motion.div {...fadeUp} transition={{ delay: 0.15 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.09 }}
+      >
         <Tabs defaultValue="orders">
           <TabsList variant="line">
             <TabsTrigger value="orders">
@@ -276,157 +287,146 @@ export default function CustomerDetailPage({
 
           {/* Orders Tab */}
           <TabsContent value="orders" className="mt-4">
-            <Card>
-              <CardContent className="p-0">
-                {customer.orders.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <ShoppingBag className="size-10 text-muted-foreground/40 mb-3" />
-                    <p className="text-sm font-medium text-muted-foreground">No orders yet</p>
-                  </div>
-                ) : (
-                  <div className="divide-y">
-                    {customer.orders.map((order, i) => {
-                      const statusCfg = orderStatusConfig[order.status]
+            <div className="rounded-xl border border-[#E2E8F0] bg-white overflow-hidden">
+              {customer.orders.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <ShoppingBag className="size-10 text-[#64748B]/30 mb-3" />
+                  <p className="text-[14px] font-medium text-[#64748B]">No orders yet</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-[#F1F5F9]">
+                  {customer.orders.map((order, i) => {
+                    const statusCfg = orderStatusConfig[order.status]
+                    return (
+                      <motion.div
+                        key={order.id}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.03 }}
+                        className="flex items-center justify-between px-5 py-3.5 hover:bg-[#F8FAFC]/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="flex size-9 items-center justify-center rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
+                            <Package className="size-4 text-[#64748B]" />
+                          </div>
+                          <div>
+                            <p className="text-[14px] font-medium text-[#0F172A]">
+                              #{order.id.toUpperCase()}
+                            </p>
+                            <p className="text-[12px] text-[#64748B]">
+                              {formatDate(order.date)} &middot; {order.items}{" "}
+                              {order.items === 1 ? "item" : "items"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[14px] font-semibold text-[#0F172A] tabular-nums">
+                            {formatPrice(order.total)}
+                          </span>
+                          <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${statusCfg.className}`}>
+                            {statusCfg.label}
+                          </span>
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Activity Tab */}
+          <TabsContent value="activity" className="mt-4">
+            <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+              {customer.activities.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <Clock className="size-10 text-[#64748B]/30 mb-3" />
+                  <p className="text-[14px] font-medium text-[#64748B]">No activity yet</p>
+                </div>
+              ) : (
+                <div className="relative">
+                  <div className="absolute left-[17px] top-2 bottom-2 w-px bg-[#E2E8F0]" />
+                  <div className="space-y-6">
+                    {customer.activities.map((activity, i) => {
+                      const Icon = activityIcons[activity.type]
+                      const dotColor = activityColors[activity.type] || "bg-[#64748B]"
                       return (
                         <motion.div
-                          key={order.id}
-                          initial={{ opacity: 0, x: -8 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.05 }}
-                          className="flex items-center justify-between px-4 py-3 hover:bg-muted/30 transition-colors"
+                          key={activity.id}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.03 }}
+                          className="relative flex gap-3 pl-0"
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="flex size-9 items-center justify-center rounded-lg bg-muted">
-                              <Package className="size-4 text-muted-foreground" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium">
-                                #{order.id.toUpperCase()}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {formatDate(order.date)} &middot; {order.items}{" "}
-                                {order.items === 1 ? "item" : "items"}
-                              </p>
-                            </div>
+                          <div className={`relative z-10 flex size-[36px] shrink-0 items-center justify-center rounded-full ${dotColor} ring-4 ring-white`}>
+                            <Icon className="size-4 text-white" />
                           </div>
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm font-semibold">
-                              {formatPrice(order.total)}
-                            </span>
-                            <span
-                              className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ring-1 ring-inset ${statusCfg.className}`}
-                            >
-                              {statusCfg.label}
-                            </span>
+                          <div className="flex-1 pt-1">
+                            <p className="text-[14px] text-[#0F172A]">{activity.description}</p>
+                            <p className="text-[12px] text-[#64748B] mt-0.5">
+                              {formatDateTime(activity.date)}
+                            </p>
                           </div>
                         </motion.div>
                       )
                     })}
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Activity Tab */}
-          <TabsContent value="activity" className="mt-4">
-            <Card>
-              <CardContent className="p-4">
-                {customer.activities.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <Clock className="size-10 text-muted-foreground/40 mb-3" />
-                    <p className="text-sm font-medium text-muted-foreground">No activity yet</p>
-                  </div>
-                ) : (
-                  <div className="relative">
-                    <div className="absolute left-[17px] top-2 bottom-2 w-px bg-border" />
-                    <div className="space-y-6">
-                      {customer.activities.map((activity, i) => {
-                        const Icon = activityIcons[activity.type]
-                        return (
-                          <motion.div
-                            key={activity.id}
-                            initial={{ opacity: 0, x: -8 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.05 }}
-                            className="relative flex gap-3 pl-0"
-                          >
-                            <div className="relative z-10 flex size-[36px] shrink-0 items-center justify-center rounded-full bg-muted ring-4 ring-background">
-                              <Icon className="size-4 text-muted-foreground" />
-                            </div>
-                            <div className="flex-1 pt-1">
-                              <p className="text-sm">{activity.description}</p>
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                {formatDateTime(activity.date)}
-                              </p>
-                            </div>
-                          </motion.div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                </div>
+              )}
+            </div>
           </TabsContent>
 
           {/* Notes Tab */}
           <TabsContent value="notes" className="mt-4">
             <div className="space-y-4">
               {/* Add Note */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Add a Note</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <Textarea
-                    placeholder="Write an internal note about this customer..."
-                    value={noteText}
-                    onChange={(e) => setNoteText(e.target.value)}
-                    className="min-h-[80px]"
-                  />
-                  <div className="flex justify-end">
-                    <Button size="sm" disabled={!noteText.trim()}>
-                      <Plus className="size-3.5 mr-1" />
-                      Add Note
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+                <h3 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B] mb-3">
+                  Add a Note
+                </h3>
+                <Textarea
+                  placeholder="Write an internal note about this customer..."
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  className="min-h-[80px] border-[#E2E8F0]"
+                />
+                <div className="flex justify-end mt-3">
+                  <Button size="sm" disabled={!noteText.trim()} className="bg-[#4F46E5] hover:bg-[#4338CA] text-white">
+                    <Plus className="size-3.5 mr-1" />
+                    Add Note
+                  </Button>
+                </div>
+              </div>
 
               {/* Existing Notes */}
               {customer.notes.length === 0 ? (
-                <Card>
-                  <CardContent className="p-0">
-                    <div className="flex flex-col items-center justify-center py-12 text-center">
-                      <StickyNote className="size-10 text-muted-foreground/40 mb-3" />
-                      <p className="text-sm font-medium text-muted-foreground">
-                        No notes yet
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Add internal notes about this customer
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="rounded-xl border border-[#E2E8F0] bg-white">
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <StickyNote className="size-10 text-[#64748B]/30 mb-3" />
+                    <p className="text-[14px] font-medium text-[#64748B]">
+                      No notes yet
+                    </p>
+                    <p className="text-[12px] text-[#64748B] mt-0.5">
+                      Add internal notes about this customer
+                    </p>
+                  </div>
+                </div>
               ) : (
                 customer.notes.map((note, i) => (
                   <motion.div
                     key={note.id}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
+                    transition={{ delay: i * 0.03 }}
                   >
-                    <Card>
-                      <CardContent className="p-4">
-                        <p className="text-sm leading-relaxed">{note.content}</p>
-                        <Separator className="my-3" />
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span className="font-medium">{note.author}</span>
-                          <span>{formatDate(note.date)}</span>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
+                      <p className="text-[14px] leading-relaxed text-[#0F172A]">{note.content}</p>
+                      <div className="h-px bg-[#F1F5F9] my-3" />
+                      <div className="flex items-center justify-between text-[12px] text-[#64748B]">
+                        <span className="font-medium">{note.author}</span>
+                        <span>{formatDate(note.date)}</span>
+                      </div>
+                    </div>
                   </motion.div>
                 ))
               )}

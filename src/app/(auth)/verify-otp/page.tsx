@@ -11,14 +11,12 @@ import { cn } from "@/lib/utils"
 const OTP_LENGTH = 6
 const RESEND_SECONDS = 60
 
-const ease = [0.22, 1, 0.36, 1] as const
-
 const fadeIn: Variants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 8 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.4, ease },
+    transition: { delay: i * 0.06, duration: 0.2, ease: "easeOut" },
   }),
 }
 
@@ -120,7 +118,6 @@ export default function VerifyOtpPage() {
       animate="visible"
       className="flex flex-col gap-8"
     >
-      {/* Back link */}
       <motion.div custom={0} variants={fadeIn}>
         <Link
           href="/login"
@@ -131,12 +128,11 @@ export default function VerifyOtpPage() {
         </Link>
       </motion.div>
 
-      {/* Header */}
       <motion.div className="flex flex-col gap-2" custom={1} variants={fadeIn}>
         <div className="mb-2 flex size-12 items-center justify-center rounded-xl bg-primary/10">
           <ShieldCheck className="size-6 text-primary" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <h1 className="text-[28px] font-bold tracking-tight text-foreground">
           Verify your identity
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -144,7 +140,6 @@ export default function VerifyOtpPage() {
         </p>
       </motion.div>
 
-      {/* OTP Input */}
       <motion.div className="flex flex-col gap-6" custom={2} variants={fadeIn}>
         <div className="flex justify-center gap-2 sm:gap-3" onPaste={handlePaste}>
           {Array.from({ length: OTP_LENGTH }).map((_, i) => (
@@ -159,35 +154,31 @@ export default function VerifyOtpPage() {
               onKeyDown={(e) => handleKeyDown(i, e)}
               onFocus={(e) => e.target.select()}
               className={cn(
-                "size-12 rounded-xl border bg-background text-center text-lg font-semibold text-foreground shadow-sm transition-all outline-none sm:size-14 sm:text-xl",
-                "focus:border-primary focus:ring-3 focus:ring-primary/20",
+                "size-12 rounded-xl border bg-background text-center text-xl font-semibold text-foreground transition-all outline-none",
+                "focus:border-primary focus:ring-2 focus:ring-primary/20",
                 otp[i]
                   ? "border-primary/40 bg-primary/[0.03]"
                   : "border-input"
               )}
+              style={{ width: 48, height: 48 }}
               aria-label={`Digit ${i + 1}`}
             />
           ))}
         </div>
 
         <Button
-          size="lg"
           disabled={!isComplete || isLoading}
           onClick={handleVerify}
-          className="h-11 w-full text-sm font-semibold"
+          className="h-[44px] w-full rounded-lg text-sm font-medium"
         >
           {isLoading ? (
-            <>
-              <Loader2 className="size-4 animate-spin" />
-              Verifying...
-            </>
+            <Loader2 className="size-4 animate-spin" />
           ) : (
             "Verify code"
           )}
         </Button>
       </motion.div>
 
-      {/* Resend */}
       <motion.div
         className="flex flex-col items-center gap-1 text-center"
         custom={3}

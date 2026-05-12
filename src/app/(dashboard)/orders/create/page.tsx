@@ -26,7 +26,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import {
   Select,
@@ -64,12 +63,6 @@ const orderSchema = z.object({
 })
 
 type OrderFormValues = z.infer<typeof orderSchema>
-
-const fadeIn = {
-  initial: { opacity: 0, y: 12 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.3 },
-}
 
 export default function CreateOrderPage() {
   const router = useRouter()
@@ -144,8 +137,13 @@ export default function CreateOrderPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 max-w-[1000px] mx-auto w-full">
-      <motion.div {...fadeIn} className="flex flex-col gap-4">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 max-w-[1000px] mx-auto w-full"
+    >
+      <div className="flex flex-col gap-4">
         <Link
           href="/orders"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors w-fit"
@@ -153,24 +151,30 @@ export default function CreateOrderPage() {
           <ArrowLeft className="size-4" />
           Back to Orders
         </Link>
-        <h1 className="text-2xl font-bold tracking-tight">Create Order</h1>
-      </motion.div>
+        <h1 className="text-[28px] font-bold tracking-tight">Create Order</h1>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         {/* Customer Selection */}
-        <motion.div {...fadeIn} transition={{ ...fadeIn.transition, delay: 0.05 }}>
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="flex items-center gap-2">
-                <User className="size-4 text-muted-foreground" />
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, delay: 0.03 }}
+        >
+          <Card className="border rounded-xl shadow-none">
+            <CardHeader className="p-6 pb-0">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <User className="size-4" />
                 Customer Information
-              </CardTitle>
+              </h3>
             </CardHeader>
-            <CardContent className="pt-4 space-y-4">
+            <CardContent className="p-6 pt-4 space-y-4">
               <div className="relative">
-                <Label htmlFor="customer-search">Search Customer</Label>
+                <Label htmlFor="customer-search" className="text-[13px] font-medium">
+                  Search Customer
+                </Label>
                 <div className="relative mt-1.5">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                   <Input
                     id="customer-search"
                     placeholder="Search by name or phone..."
@@ -180,19 +184,19 @@ export default function CreateOrderPage() {
                       setShowCustomerResults(true)
                     }}
                     onFocus={() => setShowCustomerResults(true)}
-                    className="pl-8"
+                    className="h-10 rounded-lg border-[#E2E8F0] pl-9"
                   />
                 </div>
                 {showCustomerResults && filteredCustomers.length > 0 && (
-                  <div className="absolute z-20 mt-1 w-full rounded-lg border bg-popover p-1 shadow-lg">
+                  <div className="absolute z-20 mt-1 w-full rounded-lg border border-[#E2E8F0] bg-popover p-1 shadow-lg">
                     {filteredCustomers.map((c) => (
                       <button
                         key={c.id}
                         type="button"
                         onClick={() => selectCustomer(c)}
-                        className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm hover:bg-accent"
+                        className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm hover:bg-accent transition-colors"
                       >
-                        <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                        <div className="flex size-8 items-center justify-center rounded-full bg-[#4F46E5]/10 text-xs font-semibold text-[#4F46E5]">
                           {c.name.split(" ").map((n) => n[0]).join("")}
                         </div>
                         <div className="text-left">
@@ -209,45 +213,49 @@ export default function CreateOrderPage() {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="name">Full Name *</Label>
+                  <Label htmlFor="name" className="text-[13px] font-medium">Full Name *</Label>
                   <Input
                     id="name"
                     placeholder="Customer name"
                     {...register("customerName", { required: true })}
                     aria-invalid={!!errors.customerName}
+                    className="h-10 rounded-lg border-[#E2E8F0]"
                   />
                   {errors.customerName && (
                     <p className="text-xs text-destructive">{errors.customerName.message}</p>
                   )}
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="phone">Phone *</Label>
+                  <Label htmlFor="phone" className="text-[13px] font-medium">Phone *</Label>
                   <Input
                     id="phone"
                     placeholder="+880 1XXX-XXXXXX"
                     {...register("customerPhone", { required: true })}
                     aria-invalid={!!errors.customerPhone}
+                    className="h-10 rounded-lg border-[#E2E8F0]"
                   />
                   {errors.customerPhone && (
                     <p className="text-xs text-destructive">{errors.customerPhone.message}</p>
                   )}
                 </div>
                 <div className="space-y-1.5 sm:col-span-2">
-                  <Label htmlFor="address">Address *</Label>
+                  <Label htmlFor="address" className="text-[13px] font-medium">Address *</Label>
                   <Input
                     id="address"
                     placeholder="Full delivery address"
                     {...register("customerAddress", { required: true })}
                     aria-invalid={!!errors.customerAddress}
+                    className="h-10 rounded-lg border-[#E2E8F0]"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="city">City *</Label>
+                  <Label htmlFor="city" className="text-[13px] font-medium">City *</Label>
                   <Input
                     id="city"
                     placeholder="e.g. Dhaka"
                     {...register("customerCity", { required: true })}
                     aria-invalid={!!errors.customerCity}
+                    className="h-10 rounded-lg border-[#E2E8F0]"
                   />
                 </div>
               </div>
@@ -256,27 +264,31 @@ export default function CreateOrderPage() {
         </motion.div>
 
         {/* Product Selection */}
-        <motion.div {...fadeIn} transition={{ ...fadeIn.transition, delay: 0.1 }}>
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="flex items-center gap-2">
-                <ShoppingBag className="size-4 text-muted-foreground" />
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, delay: 0.06 }}
+        >
+          <Card className="border rounded-xl shadow-none">
+            <CardHeader className="p-6 pb-0">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <ShoppingBag className="size-4" />
                 Products
-              </CardTitle>
+              </h3>
             </CardHeader>
-            <CardContent className="pt-4 space-y-3">
+            <CardContent className="p-6 pt-4 space-y-3">
               {(fields.length > 0 ? fields : items).map((field, index) => (
                 <div
                   key={"id" in field ? (field as { id: string }).id : index}
-                  className="flex flex-wrap items-end gap-2 rounded-lg border bg-muted/20 p-3"
+                  className="flex flex-wrap items-end gap-3 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC]/30 p-4"
                 >
                   <div className="flex-1 min-w-[180px] space-y-1.5">
-                    <Label className="text-xs">Product</Label>
+                    <Label className="text-[13px] font-medium">Product</Label>
                     <Select
                       value={items[index]?.productId ?? ""}
                       onValueChange={(v) => v && selectProduct(index, v)}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="h-10 w-full rounded-lg border-[#E2E8F0]">
                         <SelectValue placeholder="Select product" />
                       </SelectTrigger>
                       <SelectContent>
@@ -289,24 +301,26 @@ export default function CreateOrderPage() {
                     </Select>
                   </div>
                   <div className="w-20 space-y-1.5">
-                    <Label className="text-xs">Qty</Label>
+                    <Label className="text-[13px] font-medium">Qty</Label>
                     <Input
                       type="number"
                       min={1}
                       {...register(`items.${index}.qty`, { valueAsNumber: true })}
+                      className="h-10 rounded-lg border-[#E2E8F0]"
                     />
                   </div>
                   <div className="w-28 space-y-1.5">
-                    <Label className="text-xs">Price (৳)</Label>
+                    <Label className="text-[13px] font-medium">Price (৳)</Label>
                     <Input
                       type="number"
                       min={0}
                       {...register(`items.${index}.price`, { valueAsNumber: true })}
+                      className="h-10 rounded-lg border-[#E2E8F0]"
                     />
                   </div>
                   <div className="w-24 text-right space-y-1.5">
-                    <Label className="text-xs">Total</Label>
-                    <p className="h-8 flex items-center justify-end font-semibold tabular-nums text-sm">
+                    <Label className="text-[13px] font-medium">Total</Label>
+                    <p className="h-10 flex items-center justify-end font-semibold tabular-nums text-sm">
                       ৳{((items[index]?.price || 0) * (items[index]?.qty || 0)).toLocaleString("en-BD")}
                     </p>
                   </div>
@@ -340,42 +354,44 @@ export default function CreateOrderPage() {
 
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 pt-2">
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Delivery Charge (৳)</Label>
+                  <Label className="text-[13px] font-medium">Delivery Charge (৳)</Label>
                   <Input
                     type="number"
                     min={0}
                     {...register("deliveryCharge", { valueAsNumber: true })}
+                    className="h-10 rounded-lg border-[#E2E8F0]"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Discount (৳)</Label>
+                  <Label className="text-[13px] font-medium">Discount (৳)</Label>
                   <Input
                     type="number"
                     min={0}
                     {...register("discount", { valueAsNumber: true })}
+                    className="h-10 rounded-lg border-[#E2E8F0]"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col items-end gap-1 pt-2">
-                <div className="flex gap-4 text-sm">
+                <div className="flex gap-8 text-sm">
                   <span className="text-muted-foreground">Subtotal:</span>
-                  <span className="tabular-nums font-medium">৳{subtotal.toLocaleString("en-BD")}</span>
+                  <span className="tabular-nums font-medium text-right w-24">৳{subtotal.toLocaleString("en-BD")}</span>
                 </div>
-                <div className="flex gap-4 text-sm">
+                <div className="flex gap-8 text-sm">
                   <span className="text-muted-foreground">Delivery:</span>
-                  <span className="tabular-nums">৳{deliveryCharge.toLocaleString("en-BD")}</span>
+                  <span className="tabular-nums text-right w-24">৳{deliveryCharge.toLocaleString("en-BD")}</span>
                 </div>
                 {discount > 0 && (
-                  <div className="flex gap-4 text-sm">
+                  <div className="flex gap-8 text-sm">
                     <span className="text-muted-foreground">Discount:</span>
-                    <span className="tabular-nums text-emerald-600">-৳{discount.toLocaleString("en-BD")}</span>
+                    <span className="tabular-nums text-emerald-600 text-right w-24">-৳{discount.toLocaleString("en-BD")}</span>
                   </div>
                 )}
                 <Separator className="w-48 my-1" />
-                <div className="flex gap-4 text-base font-bold">
+                <div className="flex gap-8 text-base font-bold">
                   <span>Total:</span>
-                  <span className="tabular-nums">৳{total.toLocaleString("en-BD")}</span>
+                  <span className="tabular-nums text-right w-24">৳{total.toLocaleString("en-BD")}</span>
                 </div>
               </div>
             </CardContent>
@@ -383,21 +399,25 @@ export default function CreateOrderPage() {
         </motion.div>
 
         {/* Courier & Payment */}
-        <motion.div {...fadeIn} transition={{ ...fadeIn.transition, delay: 0.15 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, delay: 0.09 }}
+        >
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <Card>
-              <CardHeader className="border-b">
-                <CardTitle className="flex items-center gap-2">
-                  <Truck className="size-4 text-muted-foreground" />
+            <Card className="border rounded-xl shadow-none">
+              <CardHeader className="p-6 pb-0">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <Truck className="size-4" />
                   Courier
-                </CardTitle>
+                </h3>
               </CardHeader>
-              <CardContent className="pt-4">
+              <CardContent className="p-6 pt-4">
                 <Select
                   value={watch("courier")}
                   onValueChange={(v) => v && setValue("courier", v)}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="h-10 w-full rounded-lg border-[#E2E8F0]">
                     <SelectValue placeholder="Select courier" />
                   </SelectTrigger>
                   <SelectContent>
@@ -430,19 +450,19 @@ export default function CreateOrderPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader className="border-b">
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="size-4 text-muted-foreground" />
+            <Card className="border rounded-xl shadow-none">
+              <CardHeader className="p-6 pb-0">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <CreditCard className="size-4" />
                   Payment Method
-                </CardTitle>
+                </h3>
               </CardHeader>
-              <CardContent className="pt-4">
+              <CardContent className="p-6 pt-4">
                 <Select
                   value={watch("paymentMethod")}
                   onValueChange={(v) => v && setValue("paymentMethod", v)}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="h-10 w-full rounded-lg border-[#E2E8F0]">
                     <SelectValue placeholder="Select payment method" />
                   </SelectTrigger>
                   <SelectContent>
@@ -458,19 +478,23 @@ export default function CreateOrderPage() {
         </motion.div>
 
         {/* Notes */}
-        <motion.div {...fadeIn} transition={{ ...fadeIn.transition, delay: 0.2 }}>
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="size-4 text-muted-foreground" />
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, delay: 0.12 }}
+        >
+          <Card className="border rounded-xl shadow-none">
+            <CardHeader className="p-6 pb-0">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <MessageSquare className="size-4" />
                 Order Notes
-              </CardTitle>
+              </h3>
             </CardHeader>
-            <CardContent className="pt-4">
+            <CardContent className="p-6 pt-4">
               <Textarea
                 placeholder="Add any notes about this order (delivery instructions, special requests, etc.)"
                 {...register("notes")}
-                className="min-h-[80px]"
+                className="min-h-[80px] rounded-lg border-[#E2E8F0]"
               />
             </CardContent>
           </Card>
@@ -478,8 +502,9 @@ export default function CreateOrderPage() {
 
         {/* Submit */}
         <motion.div
-          {...fadeIn}
-          transition={{ ...fadeIn.transition, delay: 0.25 }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, delay: 0.15 }}
           className="flex items-center justify-end gap-3 pb-6"
         >
           <Button type="button" variant="outline" render={<Link href="/orders" />}>
@@ -491,6 +516,6 @@ export default function CreateOrderPage() {
           </Button>
         </motion.div>
       </form>
-    </div>
+    </motion.div>
   )
 }

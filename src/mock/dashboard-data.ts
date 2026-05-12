@@ -14,7 +14,7 @@ export type StatCard = {
   title: string;
   value: number;
   formattedValue: string;
-  trend: number; // percentage, positive = up
+  trend: number;
   trendDirection: "up" | "down" | "neutral";
   icon: LucideIcon;
 };
@@ -133,6 +133,7 @@ export type OrderStatus = "Pending" | "Confirmed" | "Shipped" | "Delivered";
 export type RecentOrder = {
   id: string;
   customer: string;
+  phone: string;
   products: string;
   total: number;
   formattedTotal: string;
@@ -144,6 +145,7 @@ export const recentOrders: RecentOrder[] = [
   {
     id: "#SH-1247",
     customer: "Fatima Rahman",
+    phone: "+880 1712-345678",
     products: "Silk Saree, Bangles Set",
     total: 4850,
     formattedTotal: "৳4,850",
@@ -153,6 +155,7 @@ export const recentOrders: RecentOrder[] = [
   {
     id: "#SH-1246",
     customer: "Kamal Hossain",
+    phone: "+880 1898-765432",
     products: "Wireless Earbuds",
     total: 2200,
     formattedTotal: "৳2,200",
@@ -162,6 +165,7 @@ export const recentOrders: RecentOrder[] = [
   {
     id: "#SH-1245",
     customer: "Nusrat Jahan",
+    phone: "+880 1654-321098",
     products: "Korean Skincare Set",
     total: 3500,
     formattedTotal: "৳3,500",
@@ -171,6 +175,7 @@ export const recentOrders: RecentOrder[] = [
   {
     id: "#SH-1244",
     customer: "Rafiq Ahmed",
+    phone: "+880 1912-876543",
     products: "Polo T-Shirt x3",
     total: 2700,
     formattedTotal: "৳2,700",
@@ -180,6 +185,7 @@ export const recentOrders: RecentOrder[] = [
   {
     id: "#SH-1243",
     customer: "Anika Tasnim",
+    phone: "+880 1567-234567",
     products: "Laptop Stand, USB Hub",
     total: 1850,
     formattedTotal: "৳1,850",
@@ -189,6 +195,7 @@ export const recentOrders: RecentOrder[] = [
   {
     id: "#SH-1242",
     customer: "Mehedi Hasan",
+    phone: "+880 1823-456789",
     products: "Running Shoes Nike",
     total: 8900,
     formattedTotal: "৳8,900",
@@ -206,7 +213,7 @@ export type TopProduct = {
   unitsSold: number;
   revenue: number;
   formattedRevenue: string;
-  progress: number; // 0-100, relative to top seller
+  progress: number;
 };
 
 export const topProducts: TopProduct[] = [
@@ -322,8 +329,9 @@ export const activityFeed: ActivityItem[] = [
 export type CourierProvider = {
   id: string;
   name: string;
-  logo: string; // initials for placeholder
+  logo: string;
   color: string;
+  connected: boolean;
   pendingPickups: number;
   inTransit: number;
   deliveredToday: number;
@@ -335,6 +343,7 @@ export const courierProviders: CourierProvider[] = [
     name: "Pathao",
     logo: "PA",
     color: "bg-emerald-500",
+    connected: true,
     pendingPickups: 5,
     inTransit: 12,
     deliveredToday: 8,
@@ -344,6 +353,7 @@ export const courierProviders: CourierProvider[] = [
     name: "Steadfast",
     logo: "SF",
     color: "bg-blue-500",
+    connected: true,
     pendingPickups: 3,
     inTransit: 8,
     deliveredToday: 14,
@@ -353,6 +363,7 @@ export const courierProviders: CourierProvider[] = [
     name: "RedX",
     logo: "RX",
     color: "bg-red-500",
+    connected: false,
     pendingPickups: 7,
     inTransit: 5,
     deliveredToday: 6,
@@ -362,6 +373,7 @@ export const courierProviders: CourierProvider[] = [
     name: "Paperfly",
     logo: "PF",
     color: "bg-violet-500",
+    connected: true,
     pendingPickups: 2,
     inTransit: 4,
     deliveredToday: 3,

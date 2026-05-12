@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Search, SlidersHorizontal, X } from "lucide-react"
+import { Search, X } from "lucide-react"
 import type { Courier, OrderStatus, PaymentStatus } from "@/mock/orders-data"
 
 interface OrderFiltersProps {
@@ -38,14 +38,14 @@ export function OrderFilters({
   hasActiveFilters,
 }: OrderFiltersProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <div className="relative flex-1 min-w-[200px] max-w-sm">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+    <div className="flex flex-wrap items-center gap-3">
+      <div className="relative w-full max-w-[400px]">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
         <Input
           placeholder="Search orders, customers..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-8"
+          className="h-9 rounded-lg bg-[#F8FAFC]/50 pl-9 border-[#E2E8F0]"
         />
       </div>
 
@@ -53,8 +53,7 @@ export function OrderFilters({
         value={statusFilter}
         onValueChange={(v) => onStatusFilterChange(v as OrderStatus | "all")}
       >
-        <SelectTrigger className="w-[140px]">
-          <SlidersHorizontal className="mr-1.5 size-3.5 text-muted-foreground" />
+        <SelectTrigger className="h-9 w-[140px] rounded-lg border-[#E2E8F0]">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
@@ -73,7 +72,7 @@ export function OrderFilters({
         value={paymentFilter}
         onValueChange={(v) => onPaymentFilterChange(v as PaymentStatus | "all")}
       >
-        <SelectTrigger className="w-[140px]">
+        <SelectTrigger className="h-9 w-[140px] rounded-lg border-[#E2E8F0]">
           <SelectValue placeholder="Payment" />
         </SelectTrigger>
         <SelectContent>
@@ -89,7 +88,7 @@ export function OrderFilters({
         value={courierFilter}
         onValueChange={(v) => onCourierFilterChange(v as Courier | "all")}
       >
-        <SelectTrigger className="w-[140px]">
+        <SelectTrigger className="h-9 w-[140px] rounded-lg border-[#E2E8F0]">
           <SelectValue placeholder="Courier" />
         </SelectTrigger>
         <SelectContent>
@@ -102,7 +101,12 @@ export function OrderFilters({
       </Select>
 
       {hasActiveFilters && (
-        <Button variant="ghost" size="sm" onClick={onReset} className="gap-1.5 text-muted-foreground">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onReset}
+          className="gap-1.5 text-muted-foreground hover:text-foreground"
+        >
           <X className="size-3.5" />
           Reset
         </Button>

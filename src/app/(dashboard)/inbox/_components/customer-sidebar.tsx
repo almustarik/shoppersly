@@ -13,15 +13,11 @@ import {
   X,
   Plus,
   StickyNote,
-  Package,
 } from "lucide-react"
 import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { Customer } from "@/mock/inbox-data"
 
@@ -35,10 +31,10 @@ function getInitials(name: string) {
 }
 
 const statusColors: Record<string, string> = {
-  delivered: "bg-emerald-500/10 text-emerald-700",
-  shipped: "bg-blue-500/10 text-blue-700",
-  processing: "bg-amber-500/10 text-amber-700",
-  cancelled: "bg-red-500/10 text-red-700",
+  delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  shipped: "bg-blue-50 text-blue-700 border-blue-200",
+  processing: "bg-amber-50 text-amber-700 border-amber-200",
+  cancelled: "bg-rose-50 text-rose-700 border-rose-200",
 }
 
 interface CustomerSidebarProps {
@@ -64,39 +60,35 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
   return (
     <motion.div
       initial={{ width: 0, opacity: 0 }}
-      animate={{ width: 300, opacity: 1 }}
+      animate={{ width: 280, opacity: 1 }}
       exit={{ width: 0, opacity: 0 }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
-      className="flex h-full flex-col overflow-hidden border-l border-border bg-card"
+      className="flex h-full flex-col overflow-hidden border-l border-[#E2E8F0] bg-white"
     >
-      <div className="flex flex-none items-center justify-between border-b border-border px-4 py-2.5">
-        <h3 className="text-sm font-semibold text-foreground">
+      <div className="flex flex-none items-center justify-between border-b border-[#E2E8F0] px-4 h-14">
+        <h3 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
           Customer Info
         </h3>
-        <Button
-          variant="ghost"
-          size="icon-xs"
+        <button
           onClick={onClose}
-          aria-label="Close sidebar"
+          className="flex items-center justify-center size-7 rounded-lg text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
         >
           <X className="size-4" />
-        </Button>
+        </button>
       </div>
 
       <ScrollArea className="flex-1">
         <div className="space-y-5 p-4">
           {/* Profile */}
           <div className="flex flex-col items-center gap-2 text-center">
-            <Avatar size="lg">
-              <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">
-                {getInitials(customer.name)}
-              </AvatarFallback>
-            </Avatar>
+            <div className="flex items-center justify-center size-14 rounded-full bg-[#4F46E5]/10 text-[#4F46E5] text-[14px] font-bold">
+              {getInitials(customer.name)}
+            </div>
             <div>
-              <h4 className="font-semibold text-foreground">{customer.name}</h4>
-              <p className="text-xs text-muted-foreground">
+              <h4 className="text-[14px] font-semibold text-[#0F172A]">{customer.name}</h4>
+              <p className="text-[12px] text-[#64748B]">
                 {customer.isOnline ? (
-                  <span className="text-emerald-600">Online now</span>
+                  <span className="text-[#10B981]">Online now</span>
                 ) : (
                   "Offline"
                 )}
@@ -104,35 +96,35 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
             </div>
           </div>
 
-          <Separator />
+          <div className="h-px bg-[#F1F5F9]" />
 
           {/* Contact Info */}
           <div className="space-y-2.5">
-            <h5 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h5 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
               Contact
             </h5>
             <div className="space-y-2">
-              <div className="flex items-center gap-2.5 text-sm">
-                <Phone className="size-3.5 text-muted-foreground" />
-                <span className="text-foreground/80">{customer.phone}</span>
+              <div className="flex items-center gap-2.5 text-[13px]">
+                <Phone className="size-3.5 text-[#64748B]" />
+                <span className="text-[#0F172A]/80">{customer.phone}</span>
               </div>
-              <div className="flex items-center gap-2.5 text-sm">
-                <Mail className="size-3.5 text-muted-foreground" />
-                <span className="truncate text-foreground/80">
+              <div className="flex items-center gap-2.5 text-[13px]">
+                <Mail className="size-3.5 text-[#64748B]" />
+                <span className="truncate text-[#0F172A]/80">
                   {customer.email}
                 </span>
               </div>
-              <div className="flex items-center gap-2.5 text-sm">
-                <MapPin className="size-3.5 text-muted-foreground" />
-                <span className="text-foreground/80">{customer.location}</span>
+              <div className="flex items-center gap-2.5 text-[13px]">
+                <MapPin className="size-3.5 text-[#64748B]" />
+                <span className="text-[#0F172A]/80">{customer.location}</span>
               </div>
-              <div className="flex items-center gap-2.5 text-sm">
-                <ExternalLink className="size-3.5 text-muted-foreground" />
+              <div className="flex items-center gap-2.5 text-[13px]">
+                <ExternalLink className="size-3.5 text-[#64748B]" />
                 <a
                   href={customer.profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="truncate text-primary hover:underline"
+                  className="truncate text-[#4F46E5] hover:underline"
                 >
                   {customer.channel === "facebook"
                     ? "Facebook Profile"
@@ -142,47 +134,54 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
             </div>
           </div>
 
-          <Separator />
+          <div className="h-px bg-[#F1F5F9]" />
 
-          {/* Stats */}
+          {/* Stats - 2x2 grid */}
           <div className="space-y-2.5">
-            <h5 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h5 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
               Statistics
             </h5>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="rounded-lg bg-muted/50 p-2 text-center">
-                <ShoppingBag className="mx-auto size-4 text-primary" />
-                <p className="mt-1 text-lg font-bold tabular-nums text-foreground">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-xl border border-[#E2E8F0] p-2.5 text-center">
+                <ShoppingBag className="mx-auto size-4 text-[#4F46E5]" />
+                <p className="mt-1 text-[16px] font-bold tabular-nums text-[#0F172A]">
                   {customer.totalOrders}
                 </p>
-                <p className="text-[10px] text-muted-foreground">Orders</p>
+                <p className="text-[10px] text-[#64748B]">Orders</p>
               </div>
-              <div className="rounded-lg bg-muted/50 p-2 text-center">
-                <DollarSign className="mx-auto size-4 text-emerald-600" />
-                <p className="mt-1 text-lg font-bold tabular-nums text-foreground">
+              <div className="rounded-xl border border-[#E2E8F0] p-2.5 text-center">
+                <DollarSign className="mx-auto size-4 text-[#10B981]" />
+                <p className="mt-1 text-[16px] font-bold tabular-nums text-[#0F172A]">
                   {(customer.totalSpent / 1000).toFixed(1)}k
                 </p>
-                <p className="text-[10px] text-muted-foreground">Spent</p>
+                <p className="text-[10px] text-[#64748B]">Spent</p>
               </div>
-              <div className="rounded-lg bg-muted/50 p-2 text-center">
-                <TrendingUp className="mx-auto size-4 text-amber-600" />
-                <p className="mt-1 text-lg font-bold tabular-nums text-foreground">
+              <div className="rounded-xl border border-[#E2E8F0] p-2.5 text-center">
+                <TrendingUp className="mx-auto size-4 text-[#F59E0B]" />
+                <p className="mt-1 text-[16px] font-bold tabular-nums text-[#0F172A]">
                   {(customer.avgOrderValue / 1000).toFixed(1)}k
                 </p>
-                <p className="text-[10px] text-muted-foreground">Avg</p>
+                <p className="text-[10px] text-[#64748B]">Avg</p>
+              </div>
+              <div className="rounded-xl border border-[#E2E8F0] p-2.5 text-center">
+                <ShoppingBag className="mx-auto size-4 text-sky-500" />
+                <p className="mt-1 text-[16px] font-bold tabular-nums text-[#0F172A]">
+                  {customer.recentOrders.length}
+                </p>
+                <p className="text-[10px] text-[#64748B]">Recent</p>
               </div>
             </div>
           </div>
 
-          <Separator />
+          <div className="h-px bg-[#F1F5F9]" />
 
           {/* Recent Orders */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <h5 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <h5 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
                 Recent Orders
               </h5>
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-[10px] text-[#64748B]">
                 Last 3
               </span>
             </div>
@@ -190,33 +189,32 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
               {customer.recentOrders.slice(0, 3).map((order) => (
                 <div
                   key={order.id}
-                  className="rounded-lg border border-border/50 bg-background p-2.5"
+                  className="rounded-xl border border-[#E2E8F0] bg-[#FAFBFC] p-2.5"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-foreground">
+                    <span className="text-[12px] font-semibold text-[#0F172A]">
                       {order.id}
                     </span>
-                    <Badge
-                      variant="secondary"
+                    <span
                       className={cn(
-                        "h-4 text-[10px] capitalize",
-                        statusColors[order.status]
+                        "inline-flex items-center rounded-full border px-1.5 py-0.5 text-[9px] font-semibold capitalize",
+                        statusColors[order.status] || "bg-zinc-50 text-zinc-600 border-zinc-200"
                       )}
                     >
                       {order.status}
-                    </Badge>
+                    </span>
                   </div>
-                  <p className="mt-1 truncate text-xs text-muted-foreground">
+                  <p className="mt-1 truncate text-[12px] text-[#64748B]">
                     {order.items}
                   </p>
                   <div className="mt-1 flex items-center justify-between">
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-[10px] text-[#64748B]">
                       {new Date(order.date).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                       })}
                     </span>
-                    <span className="text-xs font-semibold text-foreground">
+                    <span className="text-[12px] font-semibold text-[#0F172A] tabular-nums">
                       ৳{order.amount.toLocaleString()}
                     </span>
                   </div>
@@ -225,73 +223,68 @@ export function CustomerSidebar({ customer, onClose }: CustomerSidebarProps) {
             </div>
           </div>
 
-          <Separator />
+          <div className="h-px bg-[#F1F5F9]" />
 
           {/* Tags */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <h5 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <h5 className="text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
                 Tags
               </h5>
-              <Button variant="ghost" size="icon-xs" aria-label="Add tag">
+              <button className="flex items-center justify-center size-6 rounded-md text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">
                 <Plus className="size-3.5" />
-              </Button>
+              </button>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {tags.length === 0 ? (
-                <p className="text-xs text-muted-foreground">No tags yet</p>
+                <p className="text-[12px] text-[#64748B]">No tags yet</p>
               ) : (
                 tags.map((tag) => (
-                  <Badge
+                  <span
                     key={tag}
-                    variant="secondary"
-                    className="gap-1 pr-1 text-xs"
+                    className="inline-flex items-center gap-1 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] pl-2 pr-1 py-0.5 text-[11px] font-medium text-[#64748B]"
                   >
                     <Tag className="size-2.5" />
                     {tag}
                     <button
                       onClick={() => removeTag(tag)}
-                      className="ml-0.5 rounded-full p-0.5 hover:bg-foreground/10"
+                      className="ml-0.5 rounded-full p-0.5 hover:bg-[#E2E8F0] transition-colors"
                       aria-label={`Remove ${tag}`}
                     >
                       <X className="size-2.5" />
                     </button>
-                  </Badge>
+                  </span>
                 ))
               )}
             </div>
           </div>
 
-          <Separator />
+          <div className="h-px bg-[#F1F5F9]" />
 
           {/* Notes */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <h5 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <h5 className="flex items-center gap-1.5 text-[12px] uppercase tracking-wider font-semibold text-[#64748B]">
                 <StickyNote className="size-3" />
                 Notes
               </h5>
-              <Button
-                variant="ghost"
-                size="icon-xs"
+              <button
                 onClick={() => setIsEditingNotes(!isEditingNotes)}
-                aria-label="Edit notes"
+                className="text-[10px] font-medium text-[#4F46E5] hover:text-[#4338CA] transition-colors"
               >
-                <span className="text-[10px]">
-                  {isEditingNotes ? "Save" : "Edit"}
-                </span>
-              </Button>
+                {isEditingNotes ? "Save" : "Edit"}
+              </button>
             </div>
             {isEditingNotes ? (
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full resize-none rounded-lg border border-input bg-background p-2 text-xs leading-relaxed outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
+                className="w-full resize-none rounded-xl border border-[#E2E8F0] bg-[#FAFBFC] p-2.5 text-[12px] leading-relaxed text-[#0F172A] outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/20"
                 rows={3}
                 placeholder="Add a note about this customer..."
               />
             ) : (
-              <p className="text-xs leading-relaxed text-muted-foreground">
+              <p className="text-[12px] leading-relaxed text-[#64748B]">
                 {notes || "No notes yet. Click Edit to add one."}
               </p>
             )}

@@ -24,7 +24,7 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
@@ -34,10 +34,9 @@ import { mockOrders, COURIER_LABELS, PAYMENT_METHOD_LABELS } from "@/mock/orders
 import { OrderStatusBadge, PaymentStatusBadge } from "../_components/order-status-badge"
 import { OrderTimeline } from "../_components/order-timeline"
 
-const fadeIn = {
-  initial: { opacity: 0, y: 12 },
+const stagger = {
+  initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.3 },
 }
 
 export default function OrderDetailPage() {
@@ -71,7 +70,11 @@ export default function OrderDetailPage() {
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 max-w-[1400px] mx-auto w-full">
       {/* Back + Header */}
-      <motion.div {...fadeIn} className="flex flex-col gap-4">
+      <motion.div
+        {...stagger}
+        transition={{ duration: 0.25 }}
+        className="flex flex-col gap-4"
+      >
         <Link
           href="/orders"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors w-fit"
@@ -110,7 +113,11 @@ export default function OrderDetailPage() {
               Print
             </Button>
             {canCancel && (
-              <Button variant="destructive" size="sm" className="gap-1.5">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700"
+              >
                 <XCircle className="size-3.5" />
                 Cancel
               </Button>
@@ -123,33 +130,35 @@ export default function OrderDetailPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Left Column - Order Items + Payment */}
         <motion.div
-          {...fadeIn}
-          transition={{ ...fadeIn.transition, delay: 0.05 }}
+          {...stagger}
+          transition={{ duration: 0.25, delay: 0.03 }}
           className="lg:col-span-2 flex flex-col gap-6"
         >
           {/* Order Items */}
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="flex items-center gap-2">
-                <ShoppingBag className="size-4 text-muted-foreground" />
-                Order Items
-                <Badge variant="secondary" className="ml-auto tabular-nums text-xs">
+          <Card className="border rounded-xl shadow-none">
+            <CardHeader className="p-6 pb-0">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <ShoppingBag className="size-4" />
+                  Order Items
+                </h3>
+                <Badge variant="secondary" className="tabular-nums text-xs">
                   {order.items.length} item{order.items.length > 1 ? "s" : ""}
                 </Badge>
-              </CardTitle>
+              </div>
             </CardHeader>
-            <CardContent className="p-0">
-              <div className="divide-y">
+            <CardContent className="p-6 pt-4">
+              <div className="divide-y divide-[#F1F5F9]">
                 {order.items.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between px-4 py-3">
+                  <div key={item.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
                     <div className="flex items-center gap-3">
-                      <div className="flex size-10 items-center justify-center rounded-lg bg-muted text-xs font-medium text-muted-foreground">
+                      <div className="flex size-10 items-center justify-center rounded-lg bg-[#F8FAFC] text-xs font-medium text-muted-foreground border border-[#E2E8F0]">
                         {item.qty}x
                       </div>
                       <div>
                         <p className="text-sm font-medium">{item.name}</p>
                         {item.variant && (
-                          <p className="text-xs text-muted-foreground">{item.variant}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{item.variant}</p>
                         )}
                       </div>
                     </div>
@@ -158,7 +167,7 @@ export default function OrderDetailPage() {
                         ৳{(item.price * item.qty).toLocaleString("en-BD")}
                       </p>
                       {item.qty > 1 && (
-                        <p className="text-xs text-muted-foreground tabular-nums">
+                        <p className="text-xs text-muted-foreground tabular-nums mt-0.5">
                           ৳{item.price.toLocaleString("en-BD")} each
                         </p>
                       )}
@@ -166,8 +175,8 @@ export default function OrderDetailPage() {
                   </div>
                 ))}
               </div>
-              <Separator />
-              <div className="space-y-2 px-4 py-3">
+              <Separator className="my-4" />
+              <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span className="tabular-nums">৳{order.subtotal.toLocaleString("en-BD")}</span>
@@ -184,7 +193,7 @@ export default function OrderDetailPage() {
                     </span>
                   </div>
                 )}
-                <Separator />
+                <Separator className="my-2" />
                 <div className="flex justify-between text-base font-bold">
                   <span>Total</span>
                   <span className="tabular-nums">৳{order.total.toLocaleString("en-BD")}</span>
@@ -194,61 +203,61 @@ export default function OrderDetailPage() {
           </Card>
 
           {/* Payment Info */}
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="size-4 text-muted-foreground" />
+          <Card className="border rounded-xl shadow-none">
+            <CardHeader className="p-6 pb-0">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <CreditCard className="size-4" />
                 Payment Information
-              </CardTitle>
+              </h3>
             </CardHeader>
-            <CardContent className="pt-4">
+            <CardContent className="p-6 pt-4">
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Method</p>
-                  <p className="mt-1 text-sm font-medium">{PAYMENT_METHOD_LABELS[order.paymentMethod]}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Method</p>
+                  <p className="mt-1.5 text-sm font-medium">{PAYMENT_METHOD_LABELS[order.paymentMethod]}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</p>
-                  <div className="mt-1">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</p>
+                  <div className="mt-1.5">
                     <PaymentStatusBadge status={order.paymentStatus} />
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount</p>
-                  <p className="mt-1 text-sm font-bold tabular-nums">৳{order.total.toLocaleString("en-BD")}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Amount</p>
+                  <p className="mt-1.5 text-sm font-bold tabular-nums">৳{order.total.toLocaleString("en-BD")}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Order Timeline */}
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="size-4 text-muted-foreground" />
+          <Card className="border rounded-xl shadow-none">
+            <CardHeader className="p-6 pb-0">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <MessageSquare className="size-4" />
                 Order Timeline
-              </CardTitle>
+              </h3>
             </CardHeader>
-            <CardContent className="pt-4">
+            <CardContent className="p-6 pt-4">
               <OrderTimeline entries={[...order.timeline].reverse()} />
             </CardContent>
           </Card>
 
           {/* Notes */}
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="size-4 text-muted-foreground" />
+          <Card className="border rounded-xl shadow-none">
+            <CardHeader className="p-6 pb-0">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <MessageSquare className="size-4" />
                 Notes & Comments
-              </CardTitle>
+              </h3>
             </CardHeader>
-            <CardContent className="pt-4">
+            <CardContent className="p-6 pt-4">
               <div className="space-y-3">
                 {order.notes.length > 0 ? (
                   order.notes.map((note, i) => (
                     <div
                       key={i}
-                      className="rounded-lg border bg-muted/30 px-3 py-2 text-sm"
+                      className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC]/50 px-3 py-2.5 text-sm"
                     >
                       {note}
                     </div>
@@ -261,7 +270,7 @@ export default function OrderDetailPage() {
                     placeholder="Add a note..."
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
-                    className="min-h-[60px]"
+                    className="min-h-[60px] rounded-lg border-[#E2E8F0]"
                   />
                   <Button size="icon" className="shrink-0 self-end" disabled={!newNote.trim()}>
                     <Send className="size-4" />
@@ -274,22 +283,22 @@ export default function OrderDetailPage() {
 
         {/* Right Column */}
         <motion.div
-          {...fadeIn}
-          transition={{ ...fadeIn.transition, delay: 0.1 }}
+          {...stagger}
+          transition={{ duration: 0.25, delay: 0.06 }}
           className="flex flex-col gap-6"
         >
           {/* Customer Info */}
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="flex items-center gap-2">
-                <User className="size-4 text-muted-foreground" />
+          <Card className="border rounded-xl shadow-none">
+            <CardHeader className="p-6 pb-0">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <User className="size-4" />
                 Customer
-              </CardTitle>
+              </h3>
             </CardHeader>
-            <CardContent className="pt-4">
+            <CardContent className="p-6 pt-4">
               <div className="flex items-center gap-3">
                 <Avatar size="lg">
-                  <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                  <AvatarFallback className="bg-[#4F46E5]/10 text-[#4F46E5] font-semibold">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
@@ -339,30 +348,30 @@ export default function OrderDetailPage() {
           </Card>
 
           {/* Delivery Info */}
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="flex items-center gap-2">
-                <Truck className="size-4 text-muted-foreground" />
+          <Card className="border rounded-xl shadow-none">
+            <CardHeader className="p-6 pb-0">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <Truck className="size-4" />
                 Delivery Info
-              </CardTitle>
+              </h3>
             </CardHeader>
-            <CardContent className="pt-4">
-              <div className="space-y-3">
+            <CardContent className="p-6 pt-4">
+              <div className="space-y-4">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Courier
                   </p>
-                  <p className="mt-1 text-sm font-medium">
+                  <p className="mt-1.5 text-sm font-medium">
                     {order.courier ? COURIER_LABELS[order.courier] : "Not assigned"}
                   </p>
                 </div>
                 {order.trackingId && (
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       Tracking ID
                     </p>
-                    <div className="mt-1 flex items-center gap-2">
-                      <code className="rounded bg-muted px-2 py-0.5 text-sm font-mono">
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <code className="rounded-md bg-[#F8FAFC] border border-[#E2E8F0] px-2 py-0.5 text-[13px] font-mono">
                         {order.trackingId}
                       </code>
                       <Button variant="ghost" size="icon-xs">
@@ -372,18 +381,18 @@ export default function OrderDetailPage() {
                   </div>
                 )}
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Delivery Charge
                   </p>
-                  <p className="mt-1 text-sm font-medium tabular-nums">
+                  <p className="mt-1.5 text-sm font-medium tabular-nums">
                     ৳{order.deliveryCharge.toLocaleString("en-BD")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Destination
                   </p>
-                  <p className="mt-1 text-sm">
+                  <p className="mt-1.5 text-sm">
                     {order.customer.address}, {order.customer.city}
                   </p>
                 </div>
@@ -392,11 +401,13 @@ export default function OrderDetailPage() {
           </Card>
 
           {/* Order Meta */}
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle>Order Details</CardTitle>
+          <Card className="border rounded-xl shadow-none">
+            <CardHeader className="p-6 pb-0">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Order Details
+              </h3>
             </CardHeader>
-            <CardContent className="pt-4">
+            <CardContent className="p-6 pt-4">
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Source</span>

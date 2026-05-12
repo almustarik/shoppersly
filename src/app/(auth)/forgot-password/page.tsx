@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod/v4"
 import { motion, AnimatePresence, type Variants } from "framer-motion"
-import { ArrowLeft, Loader2, Mail, MailCheck } from "lucide-react"
+import { ArrowLeft, Loader2, Mail, CheckCircle2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,15 +19,32 @@ const forgotSchema = z.object({
 
 type ForgotValues = z.infer<typeof forgotSchema>
 
-const ease = [0.22, 1, 0.36, 1] as const
-
 const fadeIn: Variants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 8 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.4, ease },
+    transition: { delay: i * 0.06, duration: 0.2, ease: "easeOut" },
   }),
+}
+
+function AnimatedCheckmark() {
+  return (
+    <motion.div
+      className="flex size-16 items-center justify-center rounded-2xl bg-emerald-50"
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
+    >
+      <motion.div
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.3, ease: "easeOut" }}
+      >
+        <CheckCircle2 className="size-8 text-emerald-600" />
+      </motion.div>
+    </motion.div>
+  )
 }
 
 export default function ForgotPasswordPage() {
@@ -57,18 +74,16 @@ export default function ForgotPasswordPage() {
       {isSubmitted ? (
         <motion.div
           key="success"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
           className="flex flex-col items-center gap-6 text-center"
         >
-          <div className="flex size-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-500/10">
-            <MailCheck className="size-8 text-emerald-600 dark:text-emerald-400" />
-          </div>
+          <AnimatedCheckmark />
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            <h1 className="text-[28px] font-bold tracking-tight text-foreground">
               Check your email
             </h1>
             <p className="text-sm leading-relaxed text-muted-foreground">
@@ -81,8 +96,7 @@ export default function ForgotPasswordPage() {
           <div className="flex w-full flex-col gap-3">
             <Button
               variant="outline"
-              size="lg"
-              className="h-11 w-full text-sm font-medium"
+              className="h-10 w-full rounded-lg text-sm font-medium"
               onClick={() => setIsSubmitted(false)}
             >
               Try a different email
@@ -90,8 +104,7 @@ export default function ForgotPasswordPage() {
             <Link href="/login" className="w-full">
               <Button
                 variant="ghost"
-                size="lg"
-                className="h-11 w-full gap-2 text-sm font-medium"
+                className="h-10 w-full gap-2 rounded-lg text-sm font-medium"
               >
                 <ArrowLeft className="size-4" />
                 Back to sign in
@@ -114,10 +127,9 @@ export default function ForgotPasswordPage() {
           key="form"
           initial="hidden"
           animate="visible"
-          exit={{ opacity: 0, scale: 0.95 }}
+          exit={{ opacity: 0, y: -8 }}
           className="flex flex-col gap-8"
         >
-          {/* Back link */}
           <motion.div custom={0} variants={fadeIn}>
             <Link
               href="/login"
@@ -128,9 +140,8 @@ export default function ForgotPasswordPage() {
             </Link>
           </motion.div>
 
-          {/* Header */}
           <motion.div className="flex flex-col gap-2" custom={1} variants={fadeIn}>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            <h1 className="text-[28px] font-bold tracking-tight text-foreground">
               Forgot your password?
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -138,17 +149,16 @@ export default function ForgotPasswordPage() {
             </p>
           </motion.div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
             <motion.div className="flex flex-col gap-1.5" custom={2} variants={fadeIn}>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-[13px]">Email</Label>
               <div className="relative">
                 <Mail className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
-                  className={cn("h-11 pl-10", errors.email && "border-destructive ring-destructive/20 ring-3")}
+                  className={cn("h-10 pl-10", errors.email && "border-destructive ring-destructive/20 ring-2")}
                   {...register("email")}
                   aria-invalid={!!errors.email}
                 />
@@ -161,15 +171,11 @@ export default function ForgotPasswordPage() {
             <motion.div custom={3} variants={fadeIn}>
               <Button
                 type="submit"
-                size="lg"
                 disabled={isLoading}
-                className="h-11 w-full text-sm font-semibold"
+                className="h-[44px] w-full rounded-lg text-sm font-medium"
               >
                 {isLoading ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
-                    Sending link...
-                  </>
+                  <Loader2 className="size-4 animate-spin" />
                 ) : (
                   "Send reset link"
                 )}
